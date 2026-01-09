@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Tile from "../common/Tiles";
-import API from "../config/api";
+import API from "../../../config/api";
 
 const DonationAmounts = ({ onSelectAmount }) => {
   const [pageData, setPageData] = useState(null);

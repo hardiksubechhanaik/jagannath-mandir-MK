@@ -2,7 +2,7 @@ import { useState } from "react";
 import FormInput from "../common/FormInput";
 import FormButton from "../common/FormButton";
 import FormTextarea from "../common/FormTextarea";
-import API from "../config/api";
+import API from "../../../config/api";
 
 const DonorDetails = ({ amount }) => {
   const [formData, setFormData] = useState({

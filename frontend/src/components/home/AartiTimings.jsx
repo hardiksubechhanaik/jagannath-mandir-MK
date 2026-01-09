@@ -1,6 +1,6 @@
 import Tile from "../common/Tiles"
 import { useEffect, useState } from "react";
-import API from "../config/api";
+import API from "../../../config/api";
 
 const getCurrentSeason = () => {
   const month = new Date().getMonth() + 1; // 1 = Jan, 12 = Dec

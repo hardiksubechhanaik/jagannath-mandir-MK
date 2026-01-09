@@ -2,7 +2,7 @@ import { useState } from "react";
 import FormInput from "../common/FormInput";
 import FormTextarea from "../common/FormTextarea";
 import FormButton from "../common/FormButton";
-import API from "../config/api";
+import API from "../../../config/api";
 
 const ContactUsForm = () => {
   const [formData, setFormData] = useState({

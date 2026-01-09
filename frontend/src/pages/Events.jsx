@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import EventTile from "../components/common/EventTile";
-import API from "../config/api";
+import API from "@/config/api";
 
 const Events = () => {
   const [events, setEvents] = useState([]);

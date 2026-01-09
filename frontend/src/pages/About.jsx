@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../config/api";
+import API from "@/config/api";
 
 export default function About() {
   const [ content, setContent ] = useState(null);

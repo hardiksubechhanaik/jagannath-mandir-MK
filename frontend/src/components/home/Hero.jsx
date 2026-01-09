@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../../../config/api";
+import API from "@/config/api";
 
 function Hero() {
     const [content, setContent] = useState(null);

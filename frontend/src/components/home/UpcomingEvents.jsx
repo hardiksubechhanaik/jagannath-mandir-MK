@@ -6,7 +6,7 @@ const UpcomingEvents = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    fetch(`${API}/api/upcoming`)
+    fetch(`${API}/upcoming`)
       .then(res => res.json())
       .then(setEvents)
       .catch(console.error);

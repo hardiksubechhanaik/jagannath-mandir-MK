@@ -5,7 +5,7 @@ function Hero() {
     const [content, setContent] = useState(null);
 
     useEffect(() => {
-        fetch(`${API}/api/home-content`)
+        fetch(`${API}/home-content`)
         .then((res) => res.json())
         .then((data) => setContent(data))
         .catch((err) => console.error("Hero content error:", err));

@@ -7,7 +7,7 @@ const Events = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API}/api/events`)
+    fetch(`${API}/events`)
       .then(res => res.json())
       .then(data => {
         setEvents(data);

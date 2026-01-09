@@ -7,7 +7,7 @@ const DonationAmounts = ({ onSelectAmount }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API}/api/donation-page`)
+    fetch(`${API}/donation-page`)
       .then((res) => res.json())
       .then((data) => {
         setPageData(data);

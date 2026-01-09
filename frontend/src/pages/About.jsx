@@ -5,7 +5,7 @@ export default function About() {
   const [ content, setContent ] = useState(null);
 
   useEffect(() => {
-    fetch(`${API}/api/about-page`)
+    fetch(`${API}/about-page`)
     .then(res => res.json())
     .then(data => setContent(data))
     .catch(err => console.error("About page error:", err));

@@ -38,7 +38,7 @@ const DonorDetails = ({ amount }) => {
 
     try {
       const res = await fetch(
-        `${API}/api/donations`,
+        `${API}/donations`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

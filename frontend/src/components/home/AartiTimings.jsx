@@ -18,7 +18,7 @@ const AartiTimings = () => {
     useEffect(() => {
         setLoading(true);
 
-        fetch(`${API}/api/timings?season=${season}`)
+        fetch(`${API}/timings?season=${season}`)
             .then((res) => res.json())
             .then((data) => {
                 setTimings(data);

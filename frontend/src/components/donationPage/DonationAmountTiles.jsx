@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import Tile from "../common/Tiles";
+import API from "../config/api";
 
 const DonationAmounts = ({ onSelectAmount }) => {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/donation-page`)
+    fetch(`${API}/api/donation-page`)
       .then((res) => res.json())
       .then((data) => {
         setPageData(data);

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import API from "../config/api";
 
 export default function About() {
   const [ content, setContent ] = useState(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/about-page`)
+    fetch(`${API}/api/about-page`)
     .then(res => res.json())
     .then(data => setContent(data))
     .catch(err => console.error("About page error:", err));

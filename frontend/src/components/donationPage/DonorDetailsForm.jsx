@@ -2,6 +2,7 @@ import { useState } from "react";
 import FormInput from "../common/FormInput";
 import FormButton from "../common/FormButton";
 import FormTextarea from "../common/FormTextarea";
+import API from "../config/api";
 
 const DonorDetails = ({ amount }) => {
   const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ const DonorDetails = ({ amount }) => {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/donations`,
+        `${API}/api/donations`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

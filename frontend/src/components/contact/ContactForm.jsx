@@ -2,6 +2,7 @@ import { useState } from "react";
 import FormInput from "../common/FormInput";
 import FormTextarea from "../common/FormTextarea";
 import FormButton from "../common/FormButton";
+import API from "../config/api";
 
 const ContactUsForm = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ const ContactUsForm = () => {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/contact`,
+        `${API}/api/contact`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

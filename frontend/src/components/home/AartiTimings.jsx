@@ -1,6 +1,6 @@
 import Tile from "../common/Tiles"
 import { useEffect, useState } from "react";
-
+import API from "../config/api";
 
 const getCurrentSeason = () => {
   const month = new Date().getMonth() + 1; // 1 = Jan, 12 = Dec
@@ -18,7 +18,7 @@ const AartiTimings = () => {
     useEffect(() => {
         setLoading(true);
 
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/timings?season=${season}`)
+        fetch(`${API}/api/timings?season=${season}`)
             .then((res) => res.json())
             .then((data) => {
                 setTimings(data);

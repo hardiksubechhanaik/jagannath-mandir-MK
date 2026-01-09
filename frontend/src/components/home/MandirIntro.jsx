@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import API from "../config/api";
 
 const MandirIntro = () => {
     const [content, setContent] = useState(null);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/home-content`)
+        fetch(`${API}/api/home-content`)
         .then((res) => res.json())
         .then((data) => setContent(data))
         .catch((err) => console.error("Intro content not available:", err));

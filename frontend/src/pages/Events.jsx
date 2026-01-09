@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import EventTile from "../components/common/EventTile";
+import API from "../config/api";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/events`)
+    fetch(`${API}/api/events`)
       .then(res => res.json())
       .then(data => {
         setEvents(data);

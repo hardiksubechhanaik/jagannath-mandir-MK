@@ -13,7 +13,7 @@ const UpcomingEvents = () => {
   }, []);
 
   return (
-    <section className="py-16">
+    <section className="py-16 px-6 bg-orange-200/40 p-10">
       <h2 className="text-2xl font-bold text-center mb-10">
         Upcoming Events
       </h2>

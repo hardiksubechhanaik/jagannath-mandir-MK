@@ -26,7 +26,7 @@ const EventTile = ({
       {image && (
   <div className="h-48 w-full overflow-hidden rounded-lg mb-4">
     <img
-      src={image}
+      src={`/events/${image}`}
       alt={title}
       className="h-full w-full object-cover"
       style={{ objectPosition: imagePosition }}

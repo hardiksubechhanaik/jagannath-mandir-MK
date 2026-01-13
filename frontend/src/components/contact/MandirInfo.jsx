@@ -8,7 +8,7 @@ const MandirInfo = () => {
                     Shree Jagannath Mandir Trust
                     </h2>
                     <p className="text-gray-700 leading-relaxed">
-                    Shri Jagannath Mandir, 
+                    Shree Jagannath Mandir, 
                     Maruti Kunj,<br/>
                     Gurgaon, Haryana – 122102
                     </p>

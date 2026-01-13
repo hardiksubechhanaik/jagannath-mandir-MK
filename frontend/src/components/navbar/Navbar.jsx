@@ -13,7 +13,7 @@ export default function Navbar() {
           to="/"
           className="text-2xl font-bold text-orange-600"
         >
-          Shri Jagannath Mandir
+          Shree Jagannath Mandir
         </Link>
 
         {/* Desktop Links */}

@@ -18,6 +18,7 @@ const Footer = () => {
                             Connect with us through</h3>
                         <p className="text-sm leading-relaxed text-orange-100"><b>Instagram :</b>@shree_jagannathmandir</p>
                         <p className="text-sm leading-relaxed text-orange-100"><b>FaceBook :</b>@Jagannath Mandir Maruti Kunj</p>
+                        <p className="text-sm leading-relaxed text-orange-100"><b>Email :</b>Office@shreejagannathmandirmk.in</p>
                     </div>
                     
                 </div>
@@ -43,7 +44,7 @@ const Footer = () => {
                        📍 Maruti Kunj, Gurgaon, Haryana
                     </p>
                     <p className="text-sm text-orange-100 mt-2">
-                        📞 (will be updated soon)
+                        📞 +91 9717180859 
                     </p>
                 </div>
             </div>

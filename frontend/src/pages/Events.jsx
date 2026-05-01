@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import EventTile from "../components/common/EventTile";
 import API from "@/config/api";
+import Caution from "../components/caution/caution";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -25,7 +26,7 @@ const Events = () => {
 
   return (
     <div className="w-full">
-
+      <Caution />
       {/* HEADER */}
       <section className="bg-orange-200 py-12 text-center px-6">
         <h1 className="text-4xl font-bold text-orange-600">

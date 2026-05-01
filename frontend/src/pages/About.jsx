@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "@/config/api";
+import Caution from "../components/caution/caution";
 
 export default function About() {
   const [ content, setContent ] = useState(null);
@@ -17,6 +18,8 @@ export default function About() {
 
   return (
     <div className="w-full">
+
+      <Caution/>
 
       {/* PAGE TITLE */}
       <section className="bg-orange-50 py-12 text-center px-6">

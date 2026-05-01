@@ -2,10 +2,12 @@ import Hero from "../components/home/Hero"
 import MandirIntro from "../components/home/MandirIntro"
 import AartiTimings from "../components/home/AartiTimings"
 import UpcomingEvents from "../components/home/UpcomingEvents"
+import Caution from "../components/caution/caution"
 
 const Home = () => {
     return (
         <>
+            <Caution />
             <Hero />
             <div className="relative pb-20">
                 {/* Doodle background */}

@@ -2,5 +2,12 @@
   "name": "shreemandirmk-cloudflare-build",
   "private": true,
   "version": "1.0.0",
-  "description": "Legacy root directory stub for Cloudflare Workers Builds (site builds from repo root)."
+  "description": "Legacy root directory stub for Cloudflare Workers Builds (site builds from repo root).",
+  "scripts": {
+    "build": "npm install --prefix .. && npm run build --prefix ..",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.107.0"
+  }
 }

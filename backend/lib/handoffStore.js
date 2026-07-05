@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 
-const TTL_MS = 60_000;
+const TTL_MS = 5 * 60_000;
 /** Allow duplicate exchange briefly (React Strict Mode / double navigation). */
-const RECENTLY_USED_MS = 30_000;
+const RECENTLY_USED_MS = 60_000;
 
 /** @type {Map<string, { token: string, expiresAt: number }>} */
 const codes = new Map();

@@ -61,12 +61,13 @@ export default function Login() {
       try {
         const { data } = await axios.post(`${resolveApiBaseUrl()}/auth/exchange-handoff`, { code });
         finishLogin(data, lockKey);
-      } catch {
+      } catch (err) {
         exchangeStarted.delete(code);
-        setExchangeError('Sign-in link expired. Please try again.');
+        const msg = err.response?.data?.message;
+        setExchangeError(msg || 'Could not complete sign in. Please try again from the website login page.');
         window.setTimeout(() => {
           window.location.replace(`${SITE_URL}/login?redirect=admin`);
-        }, 2000);
+        }, 2500);
       }
     }
 

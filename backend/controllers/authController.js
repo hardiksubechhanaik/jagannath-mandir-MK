@@ -34,6 +34,24 @@ export const login = asyncHandler(async (req, res) => {
     return;
   }
 
+  const adminBootstrapPassword = process.env.ADMIN_INITIAL_PASSWORD?.trim();
+  if (
+    adminBootstrapPassword
+    && normalizedUsername === 'admin'
+    && password === adminBootstrapPassword
+  ) {
+    const admin = await User.findOne({ username: 'admin' });
+    if (!admin || !ADMIN_ROLES.has(admin.role)) {
+      res.status(401);
+      throw new Error('Admin account not found');
+    }
+    res.json({
+      token: signToken(admin._id),
+      user: { name: admin.name, username: admin.username, role: admin.role },
+    });
+    return;
+  }
+
   const user = await User.findOne({ username: normalizedUsername });
 
   if (user && (await bcrypt.compare(password, user.passwordHash))) {

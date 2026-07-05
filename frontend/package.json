@@ -1,0 +1,6 @@
+{
+  "name": "shreemandirmk-cloudflare-build",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Legacy root directory stub for Cloudflare Workers Builds (site builds from repo root)."
+}

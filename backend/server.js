@@ -24,6 +24,10 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 const defaultOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',

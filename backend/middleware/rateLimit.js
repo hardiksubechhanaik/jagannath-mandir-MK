@@ -16,8 +16,8 @@ function limiter({ windowMs, max, message }) {
 
 export const loginLimiter = limiter({
   windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: 'Too many login attempts. Please try again later.',
+  max: 30,
+  message: 'Too many login attempts. Please try again in a few minutes.',
 });
 
 export const handoffLimiter = limiter({

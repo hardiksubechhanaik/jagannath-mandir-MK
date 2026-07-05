@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 let memoryServer;
 
 export async function connectDB() {
-  let uri = process.env.MONGO_URI;
+  let uri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
   if (process.env.USE_MEMORY_DB === 'true') {
     const { MongoMemoryServer } = await import('mongodb-memory-server');
@@ -12,7 +12,7 @@ export async function connectDB() {
     console.log('Using in-memory MongoDB (dev mode)');
   }
 
-  if (!uri) throw new Error('MONGO_URI is not set');
+  if (!uri) throw new Error('MONGO_URI or MONGODB_URI is not set');
 
   await mongoose.connect(uri);
   console.log(`MongoDB connected: ${mongoose.connection.host}`);

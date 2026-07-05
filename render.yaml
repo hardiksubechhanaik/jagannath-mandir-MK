@@ -1,8 +1,11 @@
-# Render Blueprint — https://render.com/docs/blueprint-spec
-# 1. Push this repo to GitHub
-# 2. Render Dashboard → New → Blueprint → connect repo
-# 3. Set sync:false secrets when prompted (MongoDB Atlas URI, passwords)
-# 4. After deploy, set CLIENT_URL to your public + admin site URLs (comma-separated)
+# Render Blueprint — API only (frontends on Vercel / Cloudflare)
+# Existing service: https://jagannath-mandir-mk.onrender.com
+#
+# Required env on Render (old service may use MONGODB_URI — backend accepts both):
+#   MONGODB_URI or MONGO_URI, JWT_SECRET (32+ chars), CLIENT_URL, RATH_TRACKER_SECRET, WALL_VOLUNTEER_SECRET
+#   NODE_ENV=production, USE_MEMORY_DB=false
+#
+# Then on Vercel set: VITE_API_URL=https://jagannath-mandir-mk.onrender.com
 
 services:
   - type: web
@@ -30,43 +33,3 @@ services:
         sync: false
       - key: WALL_OTP_DEV
         value: false
-
-  - type: web
-    name: sjmmk-website
-    runtime: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: sjmmk-api
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: VITE_RATH_SEASON
-        value: true
-
-  - type: web
-    name: sjmmk-admin
-    runtime: static
-    rootDir: admin-app
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: sjmmk-api
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: VITE_SITE_URL
-        fromService:
-          type: web
-          name: sjmmk-website
-          envVarKey: RENDER_EXTERNAL_URL

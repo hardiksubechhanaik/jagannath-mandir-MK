@@ -18,7 +18,7 @@ export function assertProductionConfig() {
     throw new Error('USE_MEMORY_DB must be false in production');
   }
 
-  if (!process.env.MONGO_URI?.trim()) {
+  if (!process.env.MONGO_URI?.trim() && !process.env.MONGODB_URI?.trim()) {
     throw new Error('MONGO_URI must be set in production');
   }
 

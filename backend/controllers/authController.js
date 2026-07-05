@@ -23,6 +23,17 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   const normalizedUsername = username.trim().toLowerCase();
+  const volunteerSecret = getVolunteerSecret();
+
+  if (
+    volunteerSecret
+    && normalizedUsername === 'volunteer'
+    && password === volunteerSecret
+  ) {
+    res.json(volunteerLoginPayload());
+    return;
+  }
+
   const user = await User.findOne({ username: normalizedUsername });
 
   if (user && (await bcrypt.compare(password, user.passwordHash))) {
@@ -39,16 +50,6 @@ export const login = asyncHandler(async (req, res) => {
       token: signToken(user._id),
       user: { name: user.name, username: user.username, role: user.role },
     });
-    return;
-  }
-
-  const volunteerSecret = getVolunteerSecret();
-  if (
-    volunteerSecret
-    && normalizedUsername === 'volunteer'
-    && password === volunteerSecret
-  ) {
-    res.json(volunteerLoginPayload());
     return;
   }
 

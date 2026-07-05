@@ -1,0 +1,53 @@
+.hero {
+  position: relative;
+  background: #16100E;
+  color: #fff;
+  overflow: hidden;
+}
+
+.heroBg,
+.heroOverlay {
+  display: none;
+}
+
+.heroContent {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(56px, 14vw, 96px) clamp(16px, 5vw, 28px);
+  text-align: center;
+}
+
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #E7C36A;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: clamp(28px, 8vw, 60px);
+  line-height: 1.02;
+  margin: 0 0 12px;
+  letter-spacing: -0.5px;
+}
+
+.odia {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 18px;
+  color: #EADFC4;
+}
+
+@media (max-width: 900px) {
+  .title { font-size: 44px; }
+  .heroContent { padding: 72px 24px; }
+}
+
+@media (max-width: 560px) {
+  .title { font-size: 32px; }
+  .heroContent { padding: 60px 20px; }
+}

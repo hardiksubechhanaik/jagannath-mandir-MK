@@ -1,0 +1,434 @@
+/* src/styles/contact.module.css
+   ─────────────────────────────────────────────────────────────────────────────
+   Shree Jagannath Mandir — Contact Page
+   global.css must already be imported in main.jsx for :root tokens.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Page root ────────────────────────────────────────────────────────────── */
+.page {
+  background: #FBF6EA;
+  color: #2B2522;
+  font-family: 'Mukta', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #6E1413;
+  color: #F7EFD8;
+  box-shadow: 0 2px 14px rgba(60, 12, 11, 0.35);
+}
+.ribbon {
+  background: #5A0F0E;
+  border-bottom: 1px solid rgba(231, 195, 106, 0.18);
+}
+.ribbonInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 7px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+}
+.ribbonLeft  { display: flex; align-items: center; gap: 9px; }
+.statusDot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #1F8A5B;
+  box-shadow: 0 0 0 3px rgba(31, 138, 91, 0.25);
+  flex-shrink: 0;
+}
+.ribbonStatus { color: #F2E6C9; }
+.ribbonRight  { display: flex; align-items: center; gap: 18px; color: #D9C79A; }
+.ribbonNext   { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; }
+.langBar      { display: flex; gap: 8px; border-left: 1px solid rgba(231,195,106,.25); padding-left: 18px; font-size: 13px; }
+.langOdia     { font-family: 'Noto Sans Oriya', sans-serif; color: #E7C36A; cursor: pointer; }
+.langEn       { opacity: 0.65; cursor: pointer; }
+
+.nav {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logoLockup {
+  display: flex; align-items: center; gap: 13px;
+  flex-shrink: 0; text-decoration: none; color: inherit;
+}
+.logoCircle {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #E7C36A; flex-shrink: 0;
+}
+.logoOm      { color: #6E1413; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px; }
+.logoName    { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 21px; line-height: 1.15; color: #F7EFD8; white-space: nowrap; }
+.logoSub     { font-size: 11px; letter-spacing: 0.5px; color: #D9C79A; }
+.navLinks    { display: flex; align-items: center; gap: 24px; font-size: 14.5px; font-weight: 500; flex-shrink: 0; }
+.navLinks a,
+.navLinks span { color: #F7EFD8; cursor: pointer; text-decoration: none; transition: color 0.15s; }
+.navLinks a:hover,
+.navLinks span:hover { color: #E7C36A; }
+.navActive    { color: #E7C36A !important; }
+.donateBtn {
+  background: #C28A1E; color: #3A1009 !important;
+  padding: 9px 20px; border-radius: 3px; font-weight: 700;
+  box-shadow: 0 2px 0 #9c6c12; text-decoration: none;
+  font-family: 'Mukta', sans-serif; font-size: 14.5px;
+  transition: background 0.15s;
+}
+.donateBtn:hover { background: #E7C36A; }
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.hero { position: relative; background: #16100E; color: #fff; overflow: hidden; }
+.heroBg {
+  position: absolute; inset: 0;
+  background-color: #1c1411;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 10px, rgba(255,255,255,.09) 10px 20px);
+}
+.heroOverlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(22,16,14,.55) 0%, rgba(22,16,14,.8) 100%);
+}
+.heroContent {
+  position: relative; max-width: 1120px; margin: 0 auto;
+  padding: 90px 28px; text-align: center;
+}
+.heroEyebrow {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: #E7C36A; margin-bottom: 14px;
+}
+.heroH1 {
+  font-family: 'Cormorant Garamond', serif; font-weight: 600;
+  font-size: 58px; line-height: 1.02; margin: 0 0 12px; letter-spacing: -0.5px;
+}
+.heroOdia { font-family: 'Noto Sans Oriya', sans-serif; font-size: 18px; color: #EADFC4; }
+
+/* ── QUICK INFO CARDS ─────────────────────────────────────────────────────── */
+.infoSection {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 28px 0;
+}
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+.infoCard {
+  background: #fff;
+  border: 1px solid #E3D6B8;
+  border-radius: 8px;
+  padding: 24px 20px;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.infoCardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.infoCard:hover,
+.infoCardLink:hover {
+  box-shadow: 0 10px 26px -12px rgba(110, 20, 19, 0.35);
+  transform: translateY(-2px);
+}
+.infoIcon {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: #6E1413;
+  color: #E7C36A;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  margin: 0 auto 14px;
+}
+.infoTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600; font-size: 19px;
+  color: #6E1413; margin-bottom: 6px;
+}
+.infoBody {
+  font-size: 13px; line-height: 1.55;
+  color: #5A5043; white-space: pre-line;
+}
+
+/* ── FORM + MAP ───────────────────────────────────────────────────────────── */
+.formMapSection {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 72px 28px;
+}
+.formMapGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  align-items: stretch;
+}
+
+/* Form card */
+.formCard {
+  background: #fff;
+  border: 1px solid #E3D6B8;
+  border-radius: 10px;
+  padding: 34px 36px;
+}
+.formTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600; font-size: 30px;
+  margin: 0 0 6px; color: #6E1413;
+}
+.formSubtitle {
+  font-size: 14.5px; color: #7A6E5C;
+  margin: 0 0 24px;
+}
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+.fieldGroup:last-child { margin-bottom: 0; }
+.fieldLabel {
+  font-size: 12px; font-weight: 600;
+  color: #7A6E5C; letter-spacing: 0.3px;
+}
+.input,
+.textarea {
+  width: 100%;
+  border: 1px solid #DCCBA0;
+  border-radius: 6px;
+  padding: 13px 14px;
+  font-size: 14px;
+  font-family: 'Mukta', sans-serif;
+  background: #FBF6EA;
+  color: #2B2522;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus,
+.textarea:focus {
+  border-color: #C28A1E;
+  box-shadow: 0 0 0 3px rgba(194, 138, 30, 0.12);
+}
+.textarea { resize: vertical; }
+.inputError { border-color: #B11616 !important; }
+.errMsg {
+  font-size: 12px;
+  color: #B11616;
+  margin-top: 2px;
+}
+.submitBtn {
+  width: 100%;
+  background: #6E1413;
+  color: #F7EFD8;
+  border: none;
+  padding: 15px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 15.5px;
+  cursor: pointer;
+  font-family: 'Mukta', sans-serif;
+  margin-top: 4px;
+  transition: background 0.15s;
+}
+.submitBtn:hover { background: #5A0F0E; }
+
+/* Success state */
+.successMsg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  gap: 12px;
+  text-align: center;
+}
+.successIcon {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: #1F8A5B;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+}
+.successText {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; color: #6E1413; font-weight: 600;
+}
+.successReset {
+  font-family: 'Mukta', sans-serif;
+  font-size: 14px; color: #7A6E5C;
+  background: none; border: none;
+  cursor: pointer; text-decoration: underline;
+  padding: 0;
+}
+.successReset:hover { color: #6E1413; }
+
+/* Map card */
+.mapCard {
+  background: #fff;
+  border: 1px solid #E3D6B8;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mapEmbedWrap {
+  flex: 1;
+  min-height: 300px;
+  background: #EFE3C6;
+}
+.mapEmbed {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  border: 0;
+  display: block;
+}
+.mapFooter {
+  padding: 22px 26px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid #E3D6B8;
+}
+.mapFindUs {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600; font-size: 20px; color: #6E1413;
+}
+.mapAddress { font-size: 13.5px; color: #5A5043; }
+.directionsBtn {
+  background: #C28A1E; color: #3A1009;
+  padding: 11px 20px; border-radius: 5px;
+  font-weight: 700; font-size: 14px;
+  cursor: pointer; white-space: nowrap;
+  text-decoration: none;
+  font-family: 'Mukta', sans-serif;
+  box-shadow: 0 2px 0 #9c6c12;
+  transition: background 0.15s;
+}
+.directionsBtn:hover { background: #E7C36A; }
+
+/* ── NARASIMHA STANDALONE ─────────────────────────────────────────────────── */
+.narasimhaSection { background: #F4ECD8; }
+.narasimhaInner {
+  max-width: 1120px; margin: 0 auto;
+  padding: 84px 28px; text-align: center;
+}
+.narasimhaImg {
+  width: 200px;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto 18px;
+  background: transparent;
+}
+.figurePhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+}
+.phLabel   { font-family: 'Space Mono', monospace; font-size: 11px; color: #9A8C70; }
+.narasimhaOdia       { font-family: 'Noto Sans Oriya', sans-serif; font-size: 16px; color: #B58A2E; }
+.narasimhaName       { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 30px; color: #6E1413; line-height: 1.1; }
+.narasimhaDevanagari { font-size: 14px; color: #7A6E5C; margin-top: 4px; }
+
+/* ── FOOTER ───────────────────────────────────────────────────────────────── */
+.footer { background: #3A1009; color: #E6DCCB; }
+.footerInner { max-width: 1120px; margin: 0 auto; padding: 64px 28px 30px; }
+.footerGrid  { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.3fr; gap: 40px; }
+.footerLogo  { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.footerLogoCircle {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #E7C36A; flex-shrink: 0;
+}
+.footerOm       { color: #6E1413; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 19px; }
+.footerLogoName { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 19px; color: #F7EFD8; }
+.footerTagline  { font-size: 14px; line-height: 1.65; color: #C9B58A; margin: 0 0 18px; }
+.socialRow      { display: flex; gap: 10px; }
+.socialIcon {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid rgba(231,195,106,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; cursor: pointer; color: #C9B58A;
+  transition: border-color 0.15s, color 0.15s;
+}
+.socialIcon:hover { border-color: #E7C36A; color: #E7C36A; }
+.footerColHead  { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #E7C36A; margin-bottom: 16px; }
+.footerLinks    { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.footerLinks a  { color: #E6DCCB; text-decoration: none; transition: color 0.15s; }
+.footerLinks a:hover { color: #E7C36A; }
+.footerHours    { font-size: 14px; line-height: 1.8; color: #C9B58A; }
+.footerAddress  { font-size: 14px; line-height: 1.6; color: #C9B58A; margin-bottom: 12px; }
+.footerMap {
+  height: 140px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #2A0B06;
+}
+.footerMapEmbed {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.footerBottom {
+  border-top: 1px solid rgba(231,195,106,.18);
+  margin-top: 44px; padding-top: 22px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.footerJay  { font-family: 'Noto Sans Oriya', sans-serif; font-size: 13px; color: #C28A1E; }
+.footerCopy { font-size: 12px; color: #8C7456; }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .nav      { flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .navLinks { flex-wrap: wrap; justify-content: center; gap: 14px; font-size: 13px; }
+}
+@media (max-width: 1000px) {
+  .infoGrid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .heroH1        { font-size: 38px; }
+  .infoGrid      { grid-template-columns: repeat(2, 1fr); }
+  .formMapGrid   { grid-template-columns: 1fr; }
+  .fieldRow      { grid-template-columns: 1fr; }
+  .footerGrid    { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .heroH1        { font-size: 28px; }
+  .heroContent   { padding: 60px 20px; }
+  .infoGrid      { grid-template-columns: 1fr; }
+  .footerGrid    { grid-template-columns: 1fr; }
+  .formCard      { padding: 24px 20px; }
+  .mapFooter     { flex-direction: column; align-items: flex-start; }
+  .directionsBtn { width: 100%; text-align: center; }
+  .infoSection,
+  .formMapSection,
+  .narasimhaInner,
+  .footerInner   { padding-left: 16px; padding-right: 16px; }
+  .infoSection   { padding-top: 48px; }
+  .formMapSection,
+  .narasimhaInner { padding-top: 48px; padding-bottom: 48px; }
+  .footerBottom  { flex-direction: column; align-items: flex-start; }
+}

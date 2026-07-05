@@ -1,0 +1,175 @@
+.card {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -30px rgba(58, 16, 9, 0.45);
+}
+
+.mapWrap {
+  height: 160px;
+  border-bottom: 1px solid var(--line);
+  background: var(--cream-tint);
+}
+
+.mapEmbed {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.body {
+  padding: 26px 28px 30px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.1;
+  color: var(--maroon);
+  margin: 0 0 10px;
+}
+
+.address {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: #3d352d;
+  margin: 0 0 18px;
+}
+
+.directionsBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 15px;
+  margin-bottom: 22px;
+  border: none;
+  border-radius: 9px;
+  background: var(--maroon);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 3px 0 var(--maroon-deep);
+  transition: background 0.15s, transform 0.15s;
+  cursor: pointer;
+}
+
+.directionsBtn:hover {
+  background: var(--maroon-dark);
+}
+
+.directionsBtn:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+.directionsIcon {
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.92;
+}
+
+.rideDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rideDividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.rideDividerLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.rideGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.rideTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 88px;
+  padding: 14px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.rideTile:hover {
+  border-color: var(--gold);
+  box-shadow: 0 8px 18px -10px rgba(110, 20, 19, 0.35);
+  transform: translateY(-2px);
+}
+
+.rideTile:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+.rideChip {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.rideName {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink);
+  text-align: center;
+}
+
+@media (max-width: 420px) {
+  .body {
+    padding: 22px 18px 24px;
+  }
+
+  .heading {
+    font-size: 24px;
+  }
+
+  .rideGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rideTile {
+    min-height: 80px;
+    padding: 12px 6px;
+  }
+
+  .rideName {
+    font-size: 12px;
+  }
+}

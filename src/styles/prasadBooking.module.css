@@ -1,0 +1,730 @@
+/* src/styles/prasadBooking.module.css
+   Shree Jagannath Mandir — Prasad Booking Page */
+
+.page {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  background: #16100e;
+  color: #fff;
+  overflow: hidden;
+}
+
+.heroInner {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 88px 28px;
+  text-align: center;
+}
+
+.heroEyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 14px;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 58px;
+  line-height: 1.02;
+  margin: 0 0 12px;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.45);
+}
+
+.heroOdia {
+  font-family: var(--font-odia);
+  font-size: 18px;
+  color: #eadfc4;
+}
+
+/* ── How it works ─────────────────────────────────────────────────────────── */
+.stepsSection {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 28px 0;
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.stepCard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  border-top: 3px solid var(--gold);
+  padding: 26px;
+}
+
+.stepNum {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 34px;
+  color: #e1cfa0;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.stepTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--maroon);
+  margin-bottom: 6px;
+}
+
+.stepDesc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #5a5043;
+}
+
+/* ── Booking section ──────────────────────────────────────────────────────── */
+.bookingSection {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 72px 28px 96px;
+}
+
+.bookingGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 36px;
+  align-items: start;
+  min-width: 0;
+}
+
+.bookingGrid > * {
+  min-width: 0;
+}
+
+.formCard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  border-top: 3px solid var(--gold);
+  padding: 36px 38px;
+}
+
+.formEyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.formTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 30px;
+  margin: 0 0 6px;
+  color: var(--maroon);
+}
+
+.formHelper {
+  font-size: 14.5px;
+  color: var(--muted);
+  margin: 0 0 24px;
+  line-height: 1.55;
+}
+
+.fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fieldset legend {
+  padding: 0;
+}
+
+.fieldLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9e2b25;
+  display: block;
+  margin-bottom: 9px;
+}
+
+.fieldLabelTight {
+  margin-bottom: 7px;
+}
+
+.prasadGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.prasadSingle {
+  border: 1.5px solid var(--gold);
+  background: #fbf1d9;
+  border-radius: 9px;
+  padding: 15px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.prasadRateNote {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+
+.prasadTile {
+  border: 1.5px solid #dccba0;
+  background: #fff;
+  border-radius: 9px;
+  padding: 15px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-height: 44px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.prasadTile:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.prasadTileSelected {
+  border-color: var(--gold);
+  background: #fbf1d9;
+}
+
+.prasadName {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.prasadOdia {
+  font-family: var(--font-odia);
+  font-size: 12.5px;
+  color: #b58a2e;
+}
+
+.prasadPrice {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #9e2b25;
+  white-space: nowrap;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #dccba0;
+  border-radius: 7px;
+  padding: 12px 13px;
+  font-size: 14px;
+  background: var(--cream);
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid #dccba0;
+  border-radius: 7px;
+  padding: 12px 13px;
+  font-size: 14px;
+  background: var(--cream);
+  resize: vertical;
+  line-height: 1.6;
+  margin-bottom: 22px;
+  font-family: var(--font-body);
+  color: var(--ink);
+  min-height: 88px;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dccba0;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--cream);
+}
+
+.stepperBtn {
+  border: none;
+  background: #f0e6ce;
+  color: var(--maroon);
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 0.15s;
+}
+
+.stepperBtn:hover {
+  background: #e8dcc0;
+}
+
+.stepperBtn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+.stepperValue {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.methodRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.methodBtn {
+  flex: 1;
+  min-width: 150px;
+  min-height: 44px;
+  text-align: center;
+  border: 1.5px solid #dccba0;
+  background: #fff;
+  color: #5a5043;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.methodBtn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.methodBtnSelected {
+  border-color: var(--gold);
+  background: var(--maroon);
+  color: #f7efd8;
+}
+
+.errorLine {
+  font-size: 13.5px;
+  color: #c0392b;
+  margin-bottom: 14px;
+}
+
+.submitBtn {
+  width: 100%;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #166b44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  font-family: var(--font-body);
+  transition: background 0.15s;
+}
+
+.submitBtn:hover {
+  background: #1a7a50;
+}
+
+.submitBtn:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+.submitGlyph {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.submitCaption {
+  text-align: center;
+  font-size: 12px;
+  color: #9a8c70;
+  margin-top: 12px;
+}
+
+/* ── Summary rail ─────────────────────────────────────────────────────────── */
+.summaryRail {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: sticky;
+  top: 110px;
+}
+
+.summaryCard {
+  background: var(--maroon);
+  color: #f7efd8;
+  border-radius: 12px;
+  padding: 28px;
+}
+
+.summaryEyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 16px;
+}
+
+.summaryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(231, 195, 106, 0.2);
+  padding-bottom: 11px;
+}
+
+.summaryRowLast {
+  border-bottom: none;
+  padding-bottom: 0;
+  align-items: baseline;
+}
+
+.summaryLabel {
+  font-size: 14px;
+  color: #d9c79a;
+}
+
+.summaryValue {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.summaryTotal {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.reassureCard {
+  background: #f3f6f1;
+  border: 1px solid #d6e4d2;
+  border-radius: 12px;
+  padding: 22px 24px;
+}
+
+.reassureHead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.reassureIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.reassureTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+  color: #1f6b44;
+}
+
+.reassureText {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #3a4a38;
+}
+
+.noteCard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 24px;
+}
+
+.noteOdia {
+  font-family: var(--font-odia);
+  font-size: 14px;
+  color: #b58a2e;
+  margin-bottom: 6px;
+}
+
+.noteText {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #5a5043;
+}
+
+/* ── Mahaprasad showcase ──────────────────────────────────────────────────── */
+.prasadShowcaseFigure {
+  margin: 48px 0 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px -24px rgba(110, 20, 19, 0.35);
+}
+
+.prasadShowcaseImg {
+  display: block;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  object-position: center 42%;
+}
+
+.prasadShowcaseCaption {
+  padding: 18px 24px 22px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  line-height: 1.45;
+  color: #6e1413;
+  text-align: center;
+  border-top: 1px solid var(--line);
+  background: #fbf6ea;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroInner {
+    padding: 48px 16px;
+  }
+
+  .heroTitle {
+    font-size: 42px;
+  }
+
+  .bookingGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .summaryRail {
+    position: static;
+    gap: 16px;
+  }
+
+  .fieldRow,
+  .prasadGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .fieldRow > div {
+    min-width: 0;
+  }
+
+  .formCard {
+    padding: 28px 20px;
+  }
+
+  .formTitle {
+    font-size: 26px;
+  }
+
+  /* Stack Mahaprasad info so price does not overlap the note */
+  .prasadSingle {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .prasadPrice {
+    white-space: normal;
+    font-size: 12px;
+    line-height: 1.5;
+    width: 100%;
+    padding-top: 10px;
+    border-top: 1px solid rgba(194, 138, 30, 0.28);
+    text-align: left;
+  }
+
+  .prasadShowcaseImg {
+    height: 220px;
+  }
+
+  .methodRow {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .methodBtn {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+
+  /* Summary rows stack label above value on narrow screens */
+  .summaryCard {
+    padding: 22px 20px;
+    overflow: hidden;
+  }
+
+  .summaryRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .summaryRowLast {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .summaryValue {
+    text-align: left;
+    font-size: 13.5px;
+  }
+
+  .summaryTotal {
+    font-size: 20px;
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .reassureCard,
+  .noteCard {
+    padding: 18px 20px;
+  }
+
+  .reassureTitle {
+    font-size: 17px;
+  }
+
+  .stepsSection {
+    padding: 48px 16px 0;
+  }
+
+  .bookingSection {
+    /* Room for fixed Rath Yatra Mela FAB */
+    padding: 48px 16px calc(72px + env(safe-area-inset-bottom, 0px) + 88px);
+  }
+
+  .prasadShowcaseFigure {
+    margin-top: 36px;
+  }
+
+  .prasadShowcaseCaption {
+    padding: 16px 18px 20px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 32px;
+  }
+
+  .heroInner {
+    padding: 40px 16px;
+  }
+
+  .bookingSection {
+    padding: 40px 16px calc(64px + env(safe-area-inset-bottom, 0px) + 88px);
+  }
+
+  .formCard {
+    padding: 24px 16px;
+  }
+
+  .summaryCard {
+    padding: 20px 16px;
+  }
+
+  .summaryTotal {
+    font-size: 18px;
+  }
+
+  .stepCard {
+    padding: 20px 18px;
+  }
+}

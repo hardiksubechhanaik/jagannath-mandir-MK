@@ -1,0 +1,72 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.signal {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.dot {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.85);
+  animation: liveDotPulse 1.6s ease-in-out infinite;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(74, 222, 128, 0.75);
+  animation: liveRingExpand 1.8s ease-out infinite;
+}
+
+.ring[data-delay] {
+  animation-delay: 0.75s;
+}
+
+.label {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  line-height: 1;
+  color: #dcfce7;
+  background: rgba(21, 128, 61, 0.55);
+  border: 1px solid rgba(74, 222, 128, 0.65);
+  padding: 4px 7px;
+  border-radius: 4px;
+}
+
+@keyframes liveDotPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.88);
+    opacity: 0.85;
+  }
+}
+
+@keyframes liveRingExpand {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}

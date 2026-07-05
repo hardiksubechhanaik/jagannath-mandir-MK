@@ -1,0 +1,715 @@
+/* src/styles/about.module.css
+   ─────────────────────────────────────────────────────────────────────────────
+   Shree Jagannath Mandir — About Page CSS Module
+   NOTE: global.css must already be imported in main.jsx for :root tokens.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Page root ────────────────────────────────────────────────────────────── */
+.page {
+  background: #FBF6EA;
+  color: #2B2522;
+  font-family: 'Mukta', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER (identical to Home — shared component in full build) ──────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #6E1413;
+  color: #F7EFD8;
+  box-shadow: 0 2px 14px rgba(60, 12, 11, 0.35);
+}
+
+/* Ribbon */
+.ribbon {
+  background: #5A0F0E;
+  border-bottom: 1px solid rgba(231, 195, 106, 0.18);
+}
+.ribbonInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 7px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+}
+.ribbonLeft {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.statusDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1F8A5B;
+  box-shadow: 0 0 0 3px rgba(31, 138, 91, 0.25);
+  flex-shrink: 0;
+}
+.ribbonStatus {
+  color: #F2E6C9;
+}
+.ribbonRight {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: #D9C79A;
+}
+.ribbonNext {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.langBar {
+  display: flex;
+  gap: 8px;
+  border-left: 1px solid rgba(231, 195, 106, 0.25);
+  padding-left: 18px;
+  font-size: 13px;
+}
+.langOdia {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  color: #E7C36A;
+  cursor: pointer;
+}
+.langEn {
+  opacity: 0.65;
+  cursor: pointer;
+}
+
+/* Nav bar */
+.nav {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logoLockup {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: inherit;
+}
+.logoCircle {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #E7C36A;
+  flex-shrink: 0;
+}
+.logoOm {
+  color: #6E1413;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 22px;
+}
+.logoName {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 21px;
+  line-height: 1.15;
+  color: #F7EFD8;
+  white-space: nowrap;
+}
+.logoSub {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: #D9C79A;
+}
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 14.5px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.navLinks a,
+.navLinks span {
+  color: #F7EFD8;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.navLinks a:hover,
+.navLinks span:hover {
+  color: #E7C36A;
+}
+.navActive {
+  color: #E7C36A !important;
+}
+.donateBtn {
+  background: #C28A1E;
+  color: #3A1009;
+  padding: 9px 20px;
+  border-radius: 3px;
+  font-weight: 700;
+  box-shadow: 0 2px 0 #9c6c12;
+  text-decoration: none;
+  font-family: 'Mukta', sans-serif;
+  font-size: 14.5px;
+  transition: background 0.15s;
+}
+.donateBtn:hover {
+  background: #E7C36A;
+  color: #3A1009 !important;
+}
+
+/* ── PAGE HERO ────────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  background: #16100E;
+  color: #fff;
+  overflow: hidden;
+}
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background-color: #1c1411;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0 10px,
+    rgba(255, 255, 255, 0.09) 10px 20px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(22, 16, 14, 0.55) 0%,
+    rgba(22, 16, 14, 0.78) 100%
+  );
+}
+.heroContent {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 96px 28px;
+  text-align: center;
+}
+.heroEyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #E7C36A;
+  margin-bottom: 14px;
+}
+.heroH1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 60px;
+  line-height: 1.02;
+  margin: 0 0 12px;
+  letter-spacing: -0.5px;
+}
+.heroOdia {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 18px;
+  color: #EADFC4;
+}
+
+/* ── Shared typography ────────────────────────────────────────────────────── */
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #C28A1E;
+  margin-bottom: 14px;
+}
+.eyebrowLight {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #E7C36A;
+  margin-bottom: 12px;
+}
+.sectionH2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 42px;
+  line-height: 1.06;
+  margin: 0 0 22px;
+  color: #6E1413;
+}
+.sectionH2Light {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 42px;
+  line-height: 1.06;
+  margin: 0;
+  color: #fff;
+}
+.bodyText {
+  font-size: 17px;
+  line-height: 1.75;
+  color: #3D352D;
+  margin: 0 0 18px;
+}
+.bodyText:last-child {
+  margin-bottom: 0;
+}
+
+/* Shared: light-hatch placeholder */
+.photoPlaceholder {
+  aspect-ratio: 4 / 5;
+  border-radius: 8px;
+  border: 1px solid #E3D6B8;
+  overflow: hidden;
+  position: relative;
+  background-color: #2A1810;
+}
+.sectionPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.photoTint {
+  background-color: #EFE3C6;
+  border-color: #DCCBA0;
+}
+.phLabel {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: #9A8C70;
+}
+
+/* ── OUR TEMPLE ───────────────────────────────────────────────────────────── */
+.ourTemple {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 96px 28px;
+}
+
+/* Two-column layouts */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 60px;
+  align-items: center;
+}
+.twoColReverse {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 60px;
+  align-items: center;
+}
+.textCol {
+  /* text column, no extra style needed */
+}
+
+/* ── THE TRADITION ────────────────────────────────────────────────────────── */
+.traditionSection {
+  background: #F4ECD8;
+  padding: 96px 0;
+}
+.traditionSection .twoColReverse {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ── VALUES STRIP ─────────────────────────────────────────────────────────── */
+.valuesSection {
+  padding: 96px 0;
+}
+.valuesSectionInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+.valuesHeader {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.valueCard {
+  background: #fff;
+  border: 1px solid #E3D6B8;
+  border-radius: 8px;
+  border-top: 3px solid #C28A1E;
+  padding: 30px 28px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.valueCard:hover {
+  box-shadow: 0 10px 26px -12px rgba(110, 20, 19, 0.4);
+  transform: translateY(-2px);
+}
+.valueOdia {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 15px;
+  color: #B58A2E;
+  margin-bottom: 8px;
+}
+.valueTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 25px;
+  margin: 0 0 10px;
+  color: #6E1413;
+}
+.valueDesc {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #5A5043;
+  margin: 0;
+}
+
+/* ── GALLERY ──────────────────────────────────────────────────────────────── */
+.gallerySection {
+  background: #16100E;
+  color: #fff;
+}
+.galleryInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 96px 28px;
+}
+.galleryHeader {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  /* Rows auto-size from aspect-ratio + span */
+  grid-auto-rows: auto;
+}
+.galleryItem {
+  border-radius: 6px;
+  background-color: #241a16;
+  border: 1px solid rgba(231, 195, 106, 0.18);
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0 10px,
+    rgba(255, 255, 255, 0.09) 10px 20px
+  );
+  transition: border-color 0.2s;
+}
+.galleryItem:hover {
+  border-color: rgba(231, 195, 106, 0.45);
+}
+.galleryLabel {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: rgba(231, 195, 106, 0.6);
+}
+.galleryFooter {
+  text-align: center;
+  margin-top: 36px;
+}
+.btnOutlineGold {
+  border: 1.5px solid #E7C36A;
+  color: #E7C36A;
+  padding: 12px 26px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  background: transparent;
+  font-family: 'Mukta', sans-serif;
+  transition: background 0.15s, color 0.15s;
+}
+.btnOutlineGold:hover {
+  background: #E7C36A;
+  color: #6E1413;
+}
+
+/* ── GANAPATI STANDALONE ──────────────────────────────────────────────────── */
+.ganapatiSection {
+  background: #FBF6EA;
+}
+.ganapatiInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 84px 28px;
+  text-align: center;
+}
+.ganapatiImg {
+  width: 190px;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto 18px;
+  background: transparent;
+}
+.figurePhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+}
+.ganapatiOdia {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 16px;
+  color: #B58A2E;
+}
+.ganapatiName {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 30px;
+  color: #6E1413;
+  line-height: 1.1;
+}
+.ganapatiDevanagari {
+  font-size: 14px;
+  color: #7A6E5C;
+  margin-top: 4px;
+}
+
+/* ── DONATE CTA ───────────────────────────────────────────────────────────── */
+.donateCta {
+  background: #6E1413;
+  color: #F7EFD8;
+}
+.donateCtaInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 72px 28px;
+  text-align: center;
+}
+.donateCtaOdia {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 15px;
+  color: #E7C36A;
+  margin-bottom: 12px;
+}
+.donateCtaH2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.1;
+  margin: 0 0 16px;
+}
+.donateCtaBody {
+  font-size: 17px;
+  line-height: 1.7;
+  color: #E6DCCB;
+  max-width: 520px;
+  margin: 0 auto 28px;
+}
+.donatePrimaryBtn {
+  display: inline-block;
+  background: #C28A1E;
+  color: #3A1009;
+  padding: 15px 34px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 3px 0 #9c6c12;
+  text-decoration: none;
+  font-family: 'Mukta', sans-serif;
+  transition: background 0.15s;
+}
+.donatePrimaryBtn:hover {
+  background: #E7C36A;
+}
+
+/* ── FOOTER ───────────────────────────────────────────────────────────────── */
+.footer {
+  background: #3A1009;
+  color: #E6DCCB;
+}
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 28px 30px;
+}
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+  gap: 40px;
+}
+.footerLogo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 16px;
+}
+.footerLogoCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #E7C36A;
+  flex-shrink: 0;
+}
+.footerOm {
+  color: #6E1413;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 19px;
+}
+.footerLogoName {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 19px;
+  color: #F7EFD8;
+}
+.footerTagline {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #C9B58A;
+  margin: 0 0 18px;
+}
+.socialRow {
+  display: flex;
+  gap: 10px;
+}
+.socialIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(231, 195, 106, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  color: #C9B58A;
+  transition: border-color 0.15s, color 0.15s;
+}
+.socialIcon:hover {
+  border-color: #E7C36A;
+  color: #E7C36A;
+}
+.footerColHead {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #E7C36A;
+  margin-bottom: 16px;
+}
+.footerLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  color: #E6DCCB;
+}
+.footerLinks a {
+  color: #E6DCCB;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footerLinks a:hover {
+  color: #E7C36A;
+}
+.footerHours {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #C9B58A;
+}
+.footerAddress {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #C9B58A;
+  margin-bottom: 12px;
+}
+.mapPlaceholder {
+  height: 96px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2A0B06;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(110, 20, 19, 0.045) 0 10px,
+    rgba(110, 20, 19, 0.09) 10px 20px
+  );
+}
+.mapLabel {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: #7a5a44;
+}
+.footerBottom {
+  border-top: 1px solid rgba(231, 195, 106, 0.18);
+  margin-top: 44px;
+  padding-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footerJay {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 13px;
+  color: #C28A1E;
+}
+.footerCopy {
+  font-size: 12px;
+  color: #8C7456;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .heroH1         { font-size: 42px; }
+  .twoCol,
+  .twoColReverse  { grid-template-columns: 1fr; }
+  /* On mobile: text always first, image second */
+  .twoColReverse .photoPlaceholder { order: -1; }
+  .valuesGrid     { grid-template-columns: 1fr; }
+  .galleryGrid    { grid-template-columns: repeat(2, 1fr); }
+  .galleryItem    { grid-row: span 1 !important; }
+  .footerGrid     { grid-template-columns: 1fr 1fr; }
+  .sectionH2      { font-size: 32px; }
+  .sectionH2Light { font-size: 32px; }
+}
+
+@media (max-width: 600px) {
+  .heroH1         { font-size: 30px; }
+  .heroContent    { padding: 60px 20px; }
+  .ourTemple,
+  .valuesSectionInner,
+  .ganapatiInner,
+  .galleryInner,
+  .donateCtaInner,
+  .footerInner    { padding-left: 16px; padding-right: 16px; }
+  .ourTemple,
+  .galleryInner,
+  .ganapatiInner,
+  .donateCtaInner { padding-top: 48px; padding-bottom: 48px; }
+  .valuesSection  { padding: 48px 0; }
+  .traditionSection { padding: 48px 0; }
+  .footerGrid     { grid-template-columns: 1fr; }
+  .galleryGrid    { grid-template-columns: 1fr; }
+  .donateCtaH2    { font-size: 28px; }
+  .footerBottom   { flex-direction: column; align-items: flex-start; }
+}

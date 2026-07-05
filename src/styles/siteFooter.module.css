@@ -1,0 +1,177 @@
+.footer {
+  background: #3A1009;
+  color: #E6DCCB;
+}
+
+.footerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 28px 30px;
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+  gap: 40px;
+}
+
+.footerLogo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 16px;
+}
+
+.footerLogoImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+
+.footerLogoName {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 19px;
+  color: #F7EFD8;
+}
+
+.footerTagline {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #C9B58A;
+  margin: 0 0 18px;
+}
+
+.socialRow {
+  display: flex;
+  gap: 10px;
+}
+
+.socialIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(231, 195, 106, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  color: #C9B58A;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.socialIcon:hover {
+  border-color: #E7C36A;
+  color: #E7C36A;
+}
+
+.socialIcon:focus-visible {
+  outline: 2px solid #E7C36A;
+  outline-offset: 2px;
+}
+
+.footerColHead {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #E7C36A;
+  margin-bottom: 16px;
+}
+
+.footerLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  color: #E6DCCB;
+}
+
+.footerLinks a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.15s;
+}
+
+.footerLinks a:hover {
+  color: #E7C36A;
+}
+
+.footerHours {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #C9B58A;
+}
+
+.footerHoursNote {
+  color: #9C8862;
+}
+
+.footerAddress {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #C9B58A;
+  margin-bottom: 12px;
+}
+
+.footerMap {
+  height: 96px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #2A0B06;
+}
+
+.footerMapEmbed {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.footerBottom {
+  border-top: 1px solid rgba(231, 195, 106, 0.18);
+  margin-top: 44px;
+  padding-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footerJay {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 13px;
+  color: #C28A1E;
+}
+
+.footerCopy {
+  font-size: 12px;
+  color: #8C7456;
+}
+
+@media (max-width: 900px) {
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .footerInner {
+    padding: 48px 16px 24px;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

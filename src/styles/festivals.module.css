@@ -1,0 +1,359 @@
+/* src/styles/festivals.module.css
+   ─────────────────────────────────────────────────────────────────────────────
+   Shree Jagannath Mandir — Festivals Page
+   global.css must already be imported in main.jsx for :root tokens.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Page root ────────────────────────────────────────────────────────────── */
+.page {
+  background: #FBF6EA;
+  color: #2B2522;
+  font-family: 'Mukta', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: #6E1413; color: #F7EFD8;
+  box-shadow: 0 2px 14px rgba(60, 12, 11, 0.35);
+}
+.ribbon       { background: #5A0F0E; border-bottom: 1px solid rgba(231,195,106,.18); }
+.ribbonInner  {
+  max-width: 1120px; margin: 0 auto; padding: 7px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; font-size: 13px;
+}
+.ribbonLeft   { display: flex; align-items: center; gap: 9px; }
+.statusDot    {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: #1F8A5B; box-shadow: 0 0 0 3px rgba(31,138,91,.25); flex-shrink: 0;
+}
+.ribbonStatus { color: #F2E6C9; }
+.ribbonRight  { display: flex; align-items: center; gap: 18px; color: #D9C79A; }
+.ribbonNext   { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; }
+.langBar      { display: flex; gap: 8px; border-left: 1px solid rgba(231,195,106,.25); padding-left: 18px; font-size: 13px; }
+.langOdia     { font-family: 'Noto Sans Oriya', sans-serif; color: #E7C36A; cursor: pointer; }
+.langEn       { opacity: 0.65; cursor: pointer; }
+
+.nav          { max-width: 1120px; margin: 0 auto; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; }
+.logoLockup   { display: flex; align-items: center; gap: 13px; flex-shrink: 0; text-decoration: none; color: inherit; }
+.logoCircle   {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #E7C36A; flex-shrink: 0;
+}
+.logoOm       { color: #6E1413; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px; }
+.logoName     { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 21px; line-height: 1.15; color: #F7EFD8; white-space: nowrap; }
+.logoSub      { font-size: 11px; letter-spacing: 0.5px; color: #D9C79A; }
+.navLinks     { display: flex; align-items: center; gap: 24px; font-size: 14.5px; font-weight: 500; flex-shrink: 0; }
+.navLinks a,
+.navLinks span { color: #F7EFD8; cursor: pointer; text-decoration: none; transition: color 0.15s; }
+.navLinks a:hover,
+.navLinks span:hover { color: #E7C36A; }
+.navActive    { color: #E7C36A !important; }
+.donateBtn    {
+  background: #C28A1E; color: #3A1009 !important;
+  padding: 9px 20px; border-radius: 3px; font-weight: 700;
+  box-shadow: 0 2px 0 #9c6c12; text-decoration: none;
+  font-family: 'Mukta', sans-serif; font-size: 14.5px;
+  transition: background 0.15s;
+}
+.donateBtn:hover { background: #E7C36A; }
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.hero         { position: relative; background: #16100E; color: #fff; overflow: hidden; }
+.heroBg       {
+  position: absolute; inset: 0; background-color: #1c1411;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 10px, rgba(255,255,255,.09) 10px 20px);
+}
+.heroOverlay  {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(22,16,14,.5) 0%, rgba(22,16,14,.82) 100%);
+}
+.heroContent  { position: relative; max-width: 1120px; margin: 0 auto; padding: 90px 28px; text-align: center; }
+.heroEyebrow  { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #E7C36A; margin-bottom: 14px; }
+.heroH1       { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 58px; line-height: 1.02; margin: 0 0 12px; letter-spacing: -0.5px; }
+.heroOdia     { font-family: 'Noto Sans Oriya', sans-serif; font-size: 18px; color: #EADFC4; }
+
+/* ── FEATURED FESTIVAL ────────────────────────────────────────────────────── */
+.featuredSection {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 80px 28px 40px;
+}
+.featuredCard {
+  background: #6E1413;
+  color: #F7EFD8;
+  border-radius: 12px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Left photo placeholder */
+.featuredImg {
+  min-height: 340px;
+  background-color: #4A0C0B;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 10px, rgba(255,255,255,.09) 10px 20px);
+  display: flex;
+  align-items: flex-end;
+  padding: 18px;
+}
+.phLabelDark { font-family: 'Space Mono', monospace; font-size: 12px; color: rgba(231,195,106,.7); }
+
+/* Right content */
+.featuredBody {
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.featuredEyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #E7C36A; margin-bottom: 14px;
+}
+.featuredOdia { font-family: 'Noto Sans Oriya', sans-serif; font-size: 18px; color: #EADFC4; margin-bottom: 4px; }
+.featuredH2   { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 46px; line-height: 1.02; margin: 0 0 16px; }
+.featuredDesc { font-size: 16px; line-height: 1.7; color: #E6DCCB; margin: 0 0 26px; }
+.featuredBtns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btnGold {
+  background: #C28A1E; color: #3A1009;
+  padding: 13px 26px; border-radius: 4px;
+  font-weight: 700; font-size: 15px;
+  cursor: pointer; border: none;
+  font-family: 'Mukta', sans-serif;
+  box-shadow: 0 2px 0 #9c6c12;
+  transition: background 0.15s;
+  min-height: 44px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.btnGold:hover { background: #E7C36A; }
+
+.btnOutlineGold {
+  border: 1.5px solid rgba(231,195,106,.5);
+  color: #E7C36A; background: transparent;
+  padding: 13px 26px; border-radius: 4px;
+  font-weight: 600; font-size: 15px;
+  cursor: pointer; font-family: 'Mukta', sans-serif;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  min-height: 44px;
+}
+.btnOutlineGold:hover {
+  background: rgba(231,195,106,.12);
+  border-color: #E7C36A;
+}
+
+/* ── FESTIVAL CALENDAR ────────────────────────────────────────────────────── */
+.calendarSection {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 56px 28px 96px;
+}
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 48px;
+  text-align: left;
+}
+.calendarHeader > div:first-child { flex: 1; }
+.panjikaNote {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #7A6E5C;
+  margin: 12px 0 0;
+  max-width: 640px;
+}
+.panjikaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.panjikaDownload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9E2B25;
+  text-decoration: none;
+  border: 1px solid #E3D6B8;
+  border-radius: 4px;
+  padding: 10px 16px;
+  background: #FBF7EE;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.panjikaDownload:hover {
+  border-color: #C28A1E;
+  color: #6E1413;
+  background: #fff;
+}
+.eventCount {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9A8C70;
+  white-space: nowrap;
+  padding: 10px 14px;
+  border: 1px solid #E3D6B8;
+  border-radius: 999px;
+  background: #FBF7EE;
+}
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: #C28A1E; margin-bottom: 12px;
+}
+.calendarH2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600; font-size: 44px;
+  margin: 0; color: #6E1413;
+}
+
+.calendarList { display: flex; flex-direction: column; gap: 14px; }
+
+.calendarRow {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 24px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #E3D6B8;
+  border-radius: 10px;
+  padding: 22px 28px;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.calendarRow:hover {
+  box-shadow: 0 10px 26px -14px rgba(110, 20, 19, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Date chip */
+.dateChip {
+  text-align: center;
+  border-right: 1px solid #F0E8D4;
+  padding-right: 20px;
+}
+.dateDay   { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 34px; color: #9E2B25; line-height: 1; }
+.dateMonth { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; color: #9A8C70; text-transform: uppercase; }
+
+/* Row body */
+.rowBody  { min-width: 0; }
+.rowWeekday {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9A8C70;
+  margin-bottom: 4px;
+}
+.rowOdia  { font-family: 'Noto Sans Oriya', sans-serif; font-size: 14px; color: #B58A2E; }
+.rowName  { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 25px; color: #6E1413; line-height: 1.1; margin: 0; }
+.rowDesc  { font-size: 14px; line-height: 1.55; color: #7A6E5C; margin: 4px 0 0; }
+.rowDateIso {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: #9A8C70;
+  white-space: nowrap;
+}
+
+/* Details link */
+.rowDetails {
+  font-weight: 600; font-size: 14px;
+  color: #9E2B25; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0;
+  padding: 8px 0;
+  transition: color 0.15s;
+  min-width: 44px; text-align: right;
+}
+.rowDetails:hover { color: #6E1413; }
+
+/* ── FOOTER ───────────────────────────────────────────────────────────────── */
+.footer       { background: #3A1009; color: #E6DCCB; }
+.footerInner  { max-width: 1120px; margin: 0 auto; padding: 64px 28px 30px; }
+.footerGrid   { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.3fr; gap: 40px; }
+.footerLogo   { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.footerLogoCircle {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #E7C36A; flex-shrink: 0;
+}
+.footerOm       { color: #6E1413; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 19px; }
+.footerLogoName { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 19px; color: #F7EFD8; }
+.footerTagline  { font-size: 14px; line-height: 1.65; color: #C9B58A; margin: 0 0 18px; }
+.socialRow      { display: flex; gap: 10px; }
+.socialIcon     {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid rgba(231,195,106,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; cursor: pointer; color: #C9B58A;
+  transition: border-color 0.15s, color 0.15s;
+}
+.socialIcon:hover { border-color: #E7C36A; color: #E7C36A; }
+.footerColHead  { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #E7C36A; margin-bottom: 16px; }
+.footerLinks    { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.footerLinks a  { color: #E6DCCB; text-decoration: none; transition: color 0.15s; }
+.footerLinks a:hover { color: #E7C36A; }
+.footerHours    { font-size: 14px; line-height: 1.8; color: #C9B58A; }
+.footerAddress  { font-size: 14px; line-height: 1.6; color: #C9B58A; margin-bottom: 12px; }
+.footerMap      {
+  height: 96px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  background-color: #2A0B06;
+  background-image: repeating-linear-gradient(135deg, rgba(110,20,19,.045) 0 10px, rgba(110,20,19,.09) 10px 20px);
+}
+.footerMapLabel { font-family: 'Space Mono', monospace; font-size: 10px; color: #7a5a44; }
+.footerBottom   {
+  border-top: 1px solid rgba(231,195,106,.18);
+  margin-top: 44px; padding-top: 22px;
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 12px;
+}
+.footerJay  { font-family: 'Noto Sans Oriya', sans-serif; font-size: 13px; color: #C28A1E; }
+.footerCopy { font-size: 12px; color: #8C7456; }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .heroH1         { font-size: 38px; }
+  .featuredCard   { grid-template-columns: 1fr; }
+  .featuredImg    { min-height: 220px; }
+  .featuredBody   { padding: 28px 24px; }
+  .featuredH2     { font-size: 34px; }
+  .calendarRow    { grid-template-columns: 1fr; gap: 12px; }
+  .calendarHeader { flex-direction: column; align-items: flex-start; }
+  .eventCount     { align-self: flex-start; }
+  .dateChip       { border-right: none; padding-right: 0; border-bottom: 1px solid #F0E8D4; padding-bottom: 12px; text-align: left; display: flex; align-items: baseline; gap: 8px; }
+  .dateDay        { font-size: 28px; }
+  .rowDetails     { text-align: left; }
+  .footerGrid     { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 560px) {
+  .heroH1       { font-size: 28px; }
+  .heroContent  { padding: 60px 20px; }
+  .featuredSection,
+  .calendarSection,
+  .footerInner  { padding-left: 16px; padding-right: 16px; }
+  .featuredSection { padding-top: 48px; }
+  .calendarSection { padding-top: 48px; padding-bottom: 56px; }
+  .calendarRow  { padding: 18px 16px; }
+  .footerGrid   { grid-template-columns: 1fr; }
+  .featuredBtns { flex-direction: column; }
+  .btnGold,
+  .btnOutlineGold { width: 100%; text-align: center; }
+  .featuredH2   { font-size: 28px; }
+  .footerBottom { flex-direction: column; align-items: flex-start; }
+}

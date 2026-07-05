@@ -1,0 +1,365 @@
+/* src/styles/deities.module.css
+   ─────────────────────────────────────────────────────────────────────────────
+   Shree Jagannath Mandir — The Deities Page
+   global.css must already be imported in main.jsx for :root tokens.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Page root ────────────────────────────────────────────────────────────── */
+.page {
+  background: #FBF6EA;
+  color: #2B2522;
+  font-family: 'Mukta', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+.header       { position: sticky; top: 0; z-index: 50; background: #6E1413; color: #F7EFD8; box-shadow: 0 2px 14px rgba(60,12,11,.35); }
+.ribbon       { background: #5A0F0E; border-bottom: 1px solid rgba(231,195,106,.18); }
+.ribbonInner  { max-width: 1120px; margin: 0 auto; padding: 7px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; }
+.ribbonLeft   { display: flex; align-items: center; gap: 9px; }
+.statusDot    { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #1F8A5B; box-shadow: 0 0 0 3px rgba(31,138,91,.25); flex-shrink: 0; }
+.ribbonStatus { color: #F2E6C9; }
+.ribbonRight  { display: flex; align-items: center; gap: 18px; color: #D9C79A; }
+.ribbonNext   { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; }
+.langBar      { display: flex; gap: 8px; border-left: 1px solid rgba(231,195,106,.25); padding-left: 18px; font-size: 13px; }
+.langOdia     { font-family: 'Noto Sans Oriya', sans-serif; color: #E7C36A; cursor: pointer; }
+.langEn       { opacity: .65; cursor: pointer; }
+.nav          { max-width: 1120px; margin: 0 auto; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; }
+.logoLockup   { display: flex; align-items: center; gap: 13px; flex-shrink: 0; text-decoration: none; color: inherit; }
+.logoCircle   { width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%); display: flex; align-items: center; justify-content: center; border: 2px solid #E7C36A; flex-shrink: 0; }
+.logoOm       { color: #6E1413; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px; }
+.logoName     { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 21px; line-height: 1.15; color: #F7EFD8; white-space: nowrap; }
+.logoSub      { font-size: 11px; letter-spacing: .5px; color: #D9C79A; }
+.navLinks     { display: flex; align-items: center; gap: 24px; font-size: 14.5px; font-weight: 500; flex-shrink: 0; }
+.navLinks a,
+.navLinks span { color: #F7EFD8; cursor: pointer; text-decoration: none; transition: color .15s; }
+.navLinks a:hover,
+.navLinks span:hover { color: #E7C36A; }
+.navActive    { color: #E7C36A !important; }
+.donateBtn    { background: #C28A1E; color: #3A1009 !important; padding: 9px 20px; border-radius: 3px; font-weight: 700; box-shadow: 0 2px 0 #9c6c12; text-decoration: none; font-family: 'Mukta', sans-serif; font-size: 14.5px; transition: background .15s; }
+.donateBtn:hover { background: #E7C36A; }
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.hero        { position: relative; background: #16100E; color: #fff; overflow: hidden; }
+.heroBg      { position: absolute; inset: 0; background-color: #1c1411; background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 10px, rgba(255,255,255,.09) 10px 20px); }
+.heroOverlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(22,16,14,.45) 0%, rgba(22,16,14,.85) 100%); }
+.heroContent { position: relative; max-width: 1120px; margin: 0 auto; padding: 96px 28px; text-align: center; }
+.heroEyebrow { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #E7C36A; margin-bottom: 14px; }
+.heroH1      { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 60px; line-height: 1.02; margin: 0 0 12px; letter-spacing: -.5px; }
+.heroOdia    { font-family: 'Noto Sans Oriya', sans-serif; font-size: 18px; color: #EADFC4; }
+
+/* ── Shared helpers ───────────────────────────────────────────────────────── */
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: #C28A1E; margin-bottom: 12px;
+}
+.sectionHeader { text-align: center; margin-bottom: 48px; }
+
+/* Light + dark photo placeholder patterns */
+.phLabel     { font-family: 'Space Mono', monospace; font-size: 11px; color: #9A8C70; }
+.phLabelDark { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(231,195,106,.75); }
+
+/* ── INTRO ────────────────────────────────────────────────────────────────── */
+.introSection { max-width: 820px; margin: 0 auto; padding: 80px 28px 24px; text-align: center; }
+.introText    { font-size: 19px; line-height: 1.8; color: #3D352D; margin: 0; }
+
+/* ── THE HOLY TRINITY ─────────────────────────────────────────────────────── */
+.trinitySection      { max-width: 1120px; margin: 0 auto; padding: 56px 28px 40px; }
+.trinitySectionInner { /* inherits */ }
+.trinityH2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600; font-size: 44px; margin: 0; color: #6E1413;
+}
+.trinityRows { display: flex; flex-direction: column; gap: 36px; }
+
+/* Each alternating row — columns set inline from JS data */
+.trinityRow {
+  display: grid;
+  gap: 48px;
+  align-items: center;
+}
+
+/* Trinity image placeholder — 4:5 aspect, light hatch */
+.trinityImg {
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+  border: 1px solid #DCCBA0;
+  overflow: hidden;
+  position: relative;
+  background-color: #2A1810;
+}
+.trinityPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Trinity text block */
+.trinityText {
+  /* gridColumn & gridRow set inline — always gridRow:1 */
+}
+.trinityTag {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: #C28A1E;
+  background: #F4ECD8;
+  padding: 5px 12px; border-radius: 999px;
+  margin-bottom: 14px;
+}
+.trinityOdia  { font-family: 'Noto Sans Oriya', sans-serif; font-size: 18px; color: #B58A2E; }
+.trinityName  { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 40px; color: #6E1413; line-height: 1.05; margin: 2px 0 4px; }
+.trinityMeta  { font-size: 14px; color: #7A6E5C; margin-bottom: 16px; }
+.trinityDesc  { font-size: 16.5px; line-height: 1.75; color: #3D352D; margin: 0; }
+
+/* ── SUDARSHAN STANDALONE ─────────────────────────────────────────────────── */
+.sudarshanSection { background: #5A0F0E; color: #F7EFD8; }
+.sudarshanInner   {
+  max-width: 1120px; margin: 0 auto;
+  padding: 80px 28px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+}
+.sudarshanCircle {
+  flex-shrink: 0;
+  width: 200px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(231,195,106,.4);
+  background-color: #4A0C0B;
+  overflow: hidden;
+}
+.sudarshanPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 32%;
+  display: block;
+}
+.sudarshanText  { max-width: 560px; }
+.sudarshanOdia  { font-family: 'Noto Sans Oriya', sans-serif; font-size: 16px; color: #E7C36A; margin-bottom: 6px; }
+.sudarshanName  { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 36px; line-height: 1.05; margin: 0 0 14px; }
+.sudarshanDesc  { font-size: 16.5px; line-height: 1.75; color: #E6DCCB; margin: 0; }
+
+/* ── PARIVAR DEVATA ───────────────────────────────────────────────────────── */
+.parivarSection { max-width: 1120px; margin: 0 auto; padding: 96px 28px; }
+.parivarInner   { /* inherits */ }
+.parivarH2      { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 44px; margin: 0 0 14px; color: #6E1413; }
+.parivarSubhead { font-size: 16px; line-height: 1.7; color: #7A6E5C; max-width: 640px; margin: 0 auto; }
+
+.innerSanctumBlock {
+  margin-top: 72px;
+  padding-top: 56px;
+  border-top: 1px solid #DCCBA0;
+}
+.innerSanctumH3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 36px;
+  margin: 0 0 14px;
+  color: #6E1413;
+}
+
+.parivarGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  margin-top: 48px;
+}
+.parivarCard {
+  background: #fff;
+  border: 1px solid #E3D6B8;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow .2s, transform .2s;
+}
+.parivarCard:hover {
+  box-shadow: 0 12px 28px -14px rgba(110,20,19,.4);
+  transform: translateY(-3px);
+}
+.parivarImg {
+  aspect-ratio: 1;
+  overflow: hidden;
+  position: relative;
+  background-color: #2A1810;
+}
+.parivarImgBare {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px 4px;
+  background: transparent;
+}
+.figurePhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+}
+.parivarPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.parivarBody  { padding: 18px 20px; }
+.parivarOdia  { font-family: 'Noto Sans Oriya', sans-serif; font-size: 14px; color: #B58A2E; }
+.parivarName  { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 23px; color: #6E1413; line-height: 1.1; }
+.parivarRole  { font-size: 13.5px; line-height: 1.5; color: #7A6E5C; margin-top: 6px; }
+
+/* ── MANTRA BAND ──────────────────────────────────────────────────────────── */
+.mantraSection { background: #5A0F0E; color: #F7EFD8; overflow: hidden; }
+.mantraInner   {
+  max-width: 1120px; margin: 0 auto;
+  padding: 60px 28px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 40px;
+}
+
+/* Flanking deity figure */
+.mantraDeity     { flex-shrink: 0; width: 140px; text-align: center; }
+.mantraDeityImg  {
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  border: 1px solid rgba(231,195,106,.35);
+  background-color: #4A0C0B;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mantraDeityPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  display: block;
+}
+.mantraDeityOdia { font-family: 'Noto Sans Oriya', sans-serif; font-size: 13px; color: #E7C36A; margin-top: 10px; }
+
+/* Mantra center block */
+.mantraText    { flex: 1; max-width: 580px; text-align: center; }
+.mantraOdia    { font-family: 'Noto Sans Oriya', sans-serif; font-size: 22px; line-height: 1.7; color: #E7C36A; margin-bottom: 14px; }
+.mantraRoman   { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 21px; color: #F2E6C9; margin-bottom: 10px; }
+.mantraMeaning { font-size: 14.5px; color: #C9B58A; line-height: 1.6; }
+
+/* ── DARSHAN CTA ──────────────────────────────────────────────────────────── */
+.ctaSection { max-width: 1120px; margin: 0 auto; padding: 84px 28px; text-align: center; }
+.ctaInner   { /* inherits */ }
+.ctaH2      { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 40px; line-height: 1.1; margin: 0 0 16px; color: #6E1413; }
+.ctaBody    { font-size: 17px; line-height: 1.7; color: #5A5043; max-width: 540px; margin: 0 auto 28px; }
+.ctaBtns    { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+.btnMaroon {
+  background: #6E1413; color: #F7EFD8;
+  padding: 14px 30px; border-radius: 4px;
+  font-weight: 600; font-size: 15px;
+  text-decoration: none; font-family: 'Mukta', sans-serif;
+  transition: background .15s;
+  min-height: 44px; display: inline-flex; align-items: center;
+}
+.btnMaroon:hover { background: #5A0F0E; }
+
+.btnOutlineMaroon {
+  border: 1.5px solid #6E1413; color: #6E1413;
+  background: transparent;
+  padding: 14px 30px; border-radius: 4px;
+  font-weight: 600; font-size: 15px;
+  text-decoration: none; font-family: 'Mukta', sans-serif;
+  transition: background .15s, color .15s;
+  min-height: 44px; display: inline-flex; align-items: center;
+}
+.btnOutlineMaroon:hover { background: #6E1413; color: #F7EFD8; }
+
+/* ── FOOTER ───────────────────────────────────────────────────────────────── */
+.footer       { background: #3A1009; color: #E6DCCB; }
+.footerInner  { max-width: 1120px; margin: 0 auto; padding: 64px 28px 30px; }
+.footerGrid   { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.3fr; gap: 40px; }
+.footerLogo   { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.footerLogoCircle { width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 50% 38%, #E7C36A, #C28A1E 70%); display: flex; align-items: center; justify-content: center; border: 2px solid #E7C36A; flex-shrink: 0; }
+.footerOm       { color: #6E1413; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 19px; }
+.footerLogoName { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 19px; color: #F7EFD8; }
+.footerTagline  { font-size: 14px; line-height: 1.65; color: #C9B58A; margin: 0 0 18px; }
+.socialRow      { display: flex; gap: 10px; }
+.socialIcon     { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(231,195,106,.4); display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; color: #C9B58A; transition: border-color .15s, color .15s; }
+.socialIcon:hover { border-color: #E7C36A; color: #E7C36A; }
+.footerColHead  { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #E7C36A; margin-bottom: 16px; }
+.footerLinks    { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.footerLinks a  { color: #E6DCCB; text-decoration: none; transition: color .15s; }
+.footerLinks a:hover { color: #E7C36A; }
+.footerHours    { font-size: 14px; line-height: 1.8; color: #C9B58A; }
+.footerAddress  { font-size: 14px; line-height: 1.6; color: #C9B58A; margin-bottom: 12px; }
+.footerMap      { height: 96px; border-radius: 5px; display: flex; align-items: center; justify-content: center; background-color: #2A0B06; background-image: repeating-linear-gradient(135deg, rgba(110,20,19,.045) 0 10px, rgba(110,20,19,.09) 10px 20px); }
+.footerMapLabel { font-family: 'Space Mono', monospace; font-size: 10px; color: #7a5a44; }
+.footerBottom   { border-top: 1px solid rgba(231,195,106,.18); margin-top: 44px; padding-top: 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footerJay      { font-family: 'Noto Sans Oriya', sans-serif; font-size: 13px; color: #C28A1E; }
+.footerCopy     { font-size: 12px; color: #8C7456; }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  /* Trinity rows stack — image above text, full width */
+  .trinityRow {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+  /* Portrait frame so full deity figure stays visible */
+  .trinityImg {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    aspect-ratio: 3 / 4;
+    width: min(100%, 300px);
+    margin-inline: auto;
+  }
+  .trinityPhoto {
+    object-fit: contain;
+    object-position: center center !important;
+    transform: none !important;
+  }
+  .trinityText {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+
+  .parivarGrid   { grid-template-columns: repeat(3, 1fr); }
+  .mantraInner   { flex-direction: column; align-items: center; gap: 28px; }
+  .mantraDeity   { width: 110px; }
+  .footerGrid    { grid-template-columns: 1fr 1fr; }
+  .heroH1        { font-size: 44px; }
+}
+
+@media (max-width: 560px) {
+  .heroH1      { font-size: 32px; }
+  .heroContent { padding: 64px 20px; }
+  .parivarGrid { grid-template-columns: repeat(2, 1fr); }
+  .innerSanctumH3 { font-size: 30px; }
+  .footerGrid  { grid-template-columns: 1fr; }
+  .trinityH2   { font-size: 30px; }
+  .ctaH2       { font-size: 28px; }
+  .sudarshanInner { flex-direction: column; text-align: center; }
+  .ctaBtns     { flex-direction: column; align-items: stretch; }
+  .btnMaroon,
+  .btnOutlineMaroon { width: 100%; justify-content: center; }
+  .trinitySection,
+  .parivarSection,
+  .ctaSection,
+  .introSection,
+  .footerInner { padding-left: 16px; padding-right: 16px; }
+  .trinitySection,
+  .parivarSection,
+  .ctaSection,
+  .introSection { padding-top: 48px; padding-bottom: 48px; }
+  .footerBottom { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 400px) {
+  .parivarGrid { grid-template-columns: 1fr; }
+}

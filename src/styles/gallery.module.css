@@ -1,0 +1,135 @@
+/* src/styles/gallery.module.css — Darshan Gallery component */
+
+.gallerySection {
+  background: #16100E;
+  color: #fff;
+}
+
+.galleryInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 96px 28px;
+}
+
+.galleryHeader {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #E7C36A;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 44px;
+  line-height: 1.05;
+  color: #F7EFD8;
+  margin: 0;
+}
+
+.emptyText {
+  text-align: center;
+  color: rgba(247, 239, 216, 0.72);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 520px;
+  margin: 0 auto 32px;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  grid-auto-rows: auto;
+}
+
+.galleryItem {
+  position: relative;
+  border-radius: 6px;
+  border: 1px solid rgba(231, 195, 106, 0.18);
+  overflow: hidden;
+  margin: 0;
+  background: #241a16;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.galleryItem:hover {
+  border-color: rgba(231, 195, 106, 0.45);
+  transform: translateY(-2px);
+}
+
+.galleryPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.galleryCaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 28px 14px 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: rgba(247, 239, 216, 0.92);
+  background: linear-gradient(transparent, rgba(22, 16, 14, 0.88));
+  pointer-events: none;
+}
+
+.galleryFooter {
+  text-align: center;
+  margin-top: 36px;
+}
+
+.btnOutlineGold {
+  display: inline-block;
+  border: 1.5px solid #E7C36A;
+  color: #E7C36A;
+  padding: 11px 24px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  background: transparent;
+  font-family: 'Mukta', sans-serif;
+  transition: background 0.15s, color 0.15s;
+  text-decoration: none;
+}
+
+.btnOutlineGold:hover {
+  background: #E7C36A;
+  color: #3A1009;
+}
+
+@media (max-width: 900px) {
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .galleryItem {
+    grid-row: span 1 !important;
+  }
+  .title {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 560px) {
+  .galleryInner {
+    padding: 72px 20px;
+  }
+  .galleryGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -12,7 +12,8 @@
     "seed": "USE_MEMORY_DB=true node seed/seed.js",
     "seed:mongo": "node seed/seed.js",
     "seed:reset": "USE_MEMORY_DB=true node seed/seed.js",
-    "seed:reset:mongo": "node seed/seed.js"
+    "seed:reset:mongo": "node seed/seed.js",
+    "reset-admin-password": "node scripts/reset-admin-password.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

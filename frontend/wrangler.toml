@@ -3,7 +3,7 @@ compatibility_date = "2025-06-01"
 
 # Cloudflare Workers Builds still uses the legacy frontend/ root directory.
 [build]
-command = "npm run build"
+command = "npm install && npm run build"
 
 [assets]
 directory = "../dist"

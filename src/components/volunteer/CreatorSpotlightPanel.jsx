@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   apiDeleteAuth,
   apiGetAuth,
@@ -8,14 +8,76 @@ import {
   resolveMediaUrl,
 } from '../../api/client';
 import {
+  CREATOR_TIERS,
+  CREATOR_TIER_LABELS,
   formatInstagramHandle,
   instagramProfileUrl,
   notifyCreatorSpotlightUpdate,
+  partitionCreators,
 } from '../../lib/creatorSpotlight';
 import { isVolunteerAuthError, withVolunteerAuth } from '../../lib/volunteerAuth';
 import styles from '../../styles/rathWallVolunteer.module.css';
 
-const EMPTY_FORM = { name: '', instagramHandle: '', photo: null, photoPreview: '' };
+const EMPTY_FORM = {
+  name: '',
+  instagramHandle: '',
+  photo: null,
+  photoPreview: '',
+  tier: CREATOR_TIERS.DIGITAL,
+};
+
+function CreatorManageRow({ creator, saving, onEdit, onDelete }) {
+  const isOfficial = creator.tier === CREATOR_TIERS.OFFICIAL;
+
+  return (
+    <article
+      key={creator.id}
+      className={`${styles.creatorManageItem} ${isOfficial ? styles.creatorManageItemOfficial : ''}`}
+    >
+      {creator.photoUrl ? (
+        <img
+          src={resolveMediaUrl(creator.photoUrl)}
+          alt=""
+          className={styles.creatorManagePhoto}
+        />
+      ) : (
+        <div className={styles.creatorManagePhotoFallback} aria-hidden="true">🎥</div>
+      )}
+      <div className={styles.creatorManageMeta}>
+        <span className={isOfficial ? styles.creatorTierBadgeOfficial : styles.creatorTierBadgeDigital}>
+          {CREATOR_TIER_LABELS[creator.tier] ?? CREATOR_TIER_LABELS[CREATOR_TIERS.DIGITAL]}
+        </span>
+        <h3 className={styles.creatorManageName}>{creator.name}</h3>
+        <a
+          href={instagramProfileUrl(creator.instagramHandle)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.creatorManageHandle}
+        >
+          {formatInstagramHandle(creator.instagramHandle)}
+        </a>
+      </div>
+      <div className={styles.creatorManageActions}>
+        <button
+          type="button"
+          className={styles.approveBtn}
+          onClick={() => onEdit(creator)}
+          disabled={saving}
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          className={styles.rejectBtn}
+          onClick={() => onDelete(creator.id)}
+          disabled={saving}
+        >
+          Remove
+        </button>
+      </div>
+    </article>
+  );
+}
 
 export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
   const [creators, setCreators] = useState([]);
@@ -23,7 +85,11 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [formMessage, setFormMessage] = useState('');
   const fileInputRef = useRef(null);
+  const formRef = useRef(null);
+
+  const { official, digital } = useMemo(() => partitionCreators(creators), [creators]);
 
   const fetchCreators = useCallback(async () => {
     try {
@@ -52,7 +118,16 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
     }
     setForm(EMPTY_FORM);
     setEditingId(null);
+    setFormMessage('');
     if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function showFormError(message) {
+    setFormMessage(message);
+    onError(message);
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
   }
 
   function startEdit(creator) {
@@ -65,6 +140,7 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
       instagramHandle: creator.instagramHandle,
       photo: null,
       photoPreview: creator.photoUrl ? resolveMediaUrl(creator.photoUrl) : '',
+      tier: creator.tier === CREATOR_TIERS.OFFICIAL ? CREATOR_TIERS.OFFICIAL : CREATOR_TIERS.DIGITAL,
     });
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
@@ -86,35 +162,44 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
     event.preventDefault();
     const name = form.name.trim();
     const instagramHandle = form.instagramHandle.trim();
-    if (!name || !instagramHandle) return;
-    if (!editingId && !form.photo) {
-      onError('Please add a profile photo for the creator.');
+
+    if (!name) {
+      showFormError('Please enter a display name.');
+      return;
+    }
+    if (!instagramHandle) {
+      showFormError('Please enter an Instagram handle or profile link.');
       return;
     }
 
     setSaving(true);
+    setFormMessage('');
     onError('');
     const body = new FormData();
     body.append('name', name);
     body.append('instagramHandle', instagramHandle);
+    body.append('tier', form.tier);
     if (form.photo) body.append('photo', form.photo);
 
     try {
+      const successMsg = editingId ? 'Creator updated.' : 'Creator added.';
       if (editingId) {
         await withVolunteerAuth((token) => apiUploadPutAuth(endpoints.creatorsVolunteerUpdate(editingId), body, token));
       } else {
         await withVolunteerAuth((token) => apiUploadAuth(endpoints.creatorsVolunteer, body, token));
       }
+      onError('');
       notifyCreatorSpotlightUpdate();
       resetForm();
+      setFormMessage(successMsg);
       await fetchCreators();
     } catch (err) {
       if (isVolunteerAuthError(err)) {
-        onError('Session expired — please sign in again.');
+        showFormError('Session expired — please sign in again.');
         onAuthFailure?.();
         return;
       }
-      onError(err.message ?? 'Could not save creator');
+      showFormError(err.message ?? 'Could not save creator');
     } finally {
       setSaving(false);
     }
@@ -141,22 +226,91 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
     }
   }
 
+  function renderCreatorSection(title, items, emptyMessage) {
+    return (
+      <>
+        <h2 className={styles.sectionTitle}>{title}</h2>
+        {items.length === 0 ? (
+          <p className={styles.empty}>{emptyMessage}</p>
+        ) : (
+          <div className={styles.creatorManageList}>
+            {items.map((creator) => (
+              <CreatorManageRow
+                key={creator.id}
+                creator={creator}
+                saving={saving}
+                onEdit={startEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <div className={styles.card}>
         <h2 className={styles.controlTitle}>Creator Spotlight</h2>
         <p className={styles.controlBody}>
-          Add or edit creators shown on the mela ground. Include a profile photo and Instagram handle.
+          Add Official Creator Partners and Digital Partners for the mela ground spotlight.
+          Official partners appear highlighted at the top of the modal.
         </p>
         <span className={`${styles.statusPill} ${styles.statusOn}`}>
-          {creators.length} live on mela
+          {official.length} official · {digital.length} digital
         </span>
       </div>
 
-      <form className={styles.creatorFormCard} onSubmit={handleSubmit}>
+      <form ref={formRef} className={styles.creatorFormCard} onSubmit={handleSubmit}>
         <h3 className={styles.creatorFormTitle}>
           {editingId ? 'Edit creator' : 'Add creator'}
         </h3>
+
+        {formMessage ? (
+          <p
+            className={
+              formMessage.endsWith('added.') || formMessage.endsWith('updated.')
+                ? styles.formSuccess
+                : styles.formError
+            }
+            role="alert"
+          >
+            {formMessage}
+          </p>
+        ) : null}
+
+        <fieldset className={styles.creatorTierFieldset}>
+          <legend className={styles.inputLabel}>Partner type</legend>
+          <div className={styles.creatorTierOptions}>
+            <label className={styles.creatorTierOption}>
+              <input
+                type="radio"
+                name="creator-tier"
+                value={CREATOR_TIERS.OFFICIAL}
+                checked={form.tier === CREATOR_TIERS.OFFICIAL}
+                onChange={() => setForm((prev) => ({ ...prev, tier: CREATOR_TIERS.OFFICIAL }))}
+              />
+              <span className={styles.creatorTierOptionLabel}>
+                <strong>{CREATOR_TIER_LABELS[CREATOR_TIERS.OFFICIAL]}</strong>
+                <small>Featured with gold highlight on the mela modal</small>
+              </span>
+            </label>
+            <label className={styles.creatorTierOption}>
+              <input
+                type="radio"
+                name="creator-tier"
+                value={CREATOR_TIERS.DIGITAL}
+                checked={form.tier === CREATOR_TIERS.DIGITAL}
+                onChange={() => setForm((prev) => ({ ...prev, tier: CREATOR_TIERS.DIGITAL }))}
+              />
+              <span className={styles.creatorTierOptionLabel}>
+                <strong>{CREATOR_TIER_LABELS[CREATOR_TIERS.DIGITAL]}</strong>
+                <small>Listed under Digital Partners</small>
+              </span>
+            </label>
+          </div>
+        </fieldset>
 
         <label className={styles.inputLabel} htmlFor="creator-name">Display name</label>
         <input
@@ -178,7 +332,9 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
           required
         />
 
-        <label className={styles.inputLabel} htmlFor="creator-photo">Profile photo</label>
+        <label className={styles.inputLabel} htmlFor="creator-photo">
+          Profile photo <span className={styles.optionalHint}>(optional)</span>
+        </label>
         <input
           id="creator-photo"
           ref={fileInputRef}
@@ -187,6 +343,7 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
           accept="image/*"
           onChange={handlePhotoChange}
         />
+        <p className={styles.fieldHint}>If no photo is uploaded, a default camera icon is shown on the mela modal.</p>
 
         {form.photoPreview ? (
           <img src={form.photoPreview} alt="" className={styles.creatorFormPreview} />
@@ -204,57 +361,21 @@ export default function CreatorSpotlightPanel({ onError, onAuthFailure }) {
         </div>
       </form>
 
-      <h2 className={styles.sectionTitle}>Current creators</h2>
-
       {loading ? (
         <p className={styles.empty}>Loading creators…</p>
-      ) : creators.length === 0 ? (
-        <p className={styles.empty}>No creators added yet.</p>
       ) : (
-        <div className={styles.creatorManageList}>
-          {creators.map((creator) => (
-            <article key={creator.id} className={styles.creatorManageItem}>
-              {creator.photoUrl ? (
-                <img
-                  src={resolveMediaUrl(creator.photoUrl)}
-                  alt=""
-                  className={styles.creatorManagePhoto}
-                />
-              ) : (
-                <div className={styles.creatorManagePhotoFallback} aria-hidden="true">🎥</div>
-              )}
-              <div className={styles.creatorManageMeta}>
-                <h3 className={styles.creatorManageName}>{creator.name}</h3>
-                <a
-                  href={instagramProfileUrl(creator.instagramHandle)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.creatorManageHandle}
-                >
-                  {formatInstagramHandle(creator.instagramHandle)}
-                </a>
-              </div>
-              <div className={styles.creatorManageActions}>
-                <button
-                  type="button"
-                  className={styles.approveBtn}
-                  onClick={() => startEdit(creator)}
-                  disabled={saving}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className={styles.rejectBtn}
-                  onClick={() => handleDelete(creator.id)}
-                  disabled={saving}
-                >
-                  Remove
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+        <>
+          {renderCreatorSection(
+            'Official Creator Partners',
+            official,
+            'No official partners yet. Use the form above and choose Official Creator Partner.',
+          )}
+          {renderCreatorSection(
+            'Digital Partners',
+            digital,
+            'No digital partners yet.',
+          )}
+        </>
       )}
     </>
   );

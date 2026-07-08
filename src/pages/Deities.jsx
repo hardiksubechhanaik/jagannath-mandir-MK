@@ -16,7 +16,7 @@ export default function Deities() {
   const { t } = useTranslation();
   const { data, loading, error } = usePageData(endpoints.deities);
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <PageShell active="deities" className={styles.page}>
         <PageLoading />
@@ -24,7 +24,7 @@ export default function Deities() {
     );
   }
 
-  if (error) {
+  if (error && !data) {
     return (
       <PageShell active="deities" className={styles.page}>
         <PageError message={error.message} />

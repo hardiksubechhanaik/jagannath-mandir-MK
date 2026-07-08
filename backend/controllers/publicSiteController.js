@@ -16,6 +16,7 @@ import {
   getPublicNiti,
 } from '../services/publicDataService.js';
 import { getPersistenceMode } from '../config/devSnapshot.js';
+import { isValidEmail, isValidIndianMobile, sanitizeIndianMobileDigits } from '../lib/validators.js';
 
 export const publicHealth = (_req, res) => {
   const payload = {
@@ -82,12 +83,24 @@ export const publicNiti = asyncHandler(async (req, res) => {
 });
 
 export const createLiveNotification = asyncHandler(async (req, res) => {
-  const contact = String(req.body?.contact ?? '').trim().slice(0, 120);
-  if (!contact) {
+  const raw = String(req.body?.contact ?? '').trim().slice(0, 120);
+  if (!raw) {
     res.status(400);
     throw new Error('Email or phone number is required.');
   }
 
+  const isEmail = raw.includes('@');
+  if (isEmail) {
+    if (!isValidEmail(raw)) {
+      res.status(400);
+      throw new Error('Enter a valid email address.');
+    }
+  } else if (!isValidIndianMobile(raw)) {
+    res.status(400);
+    throw new Error('Enter a valid 10-digit mobile number starting with 5, 6, 7, 8, or 9.');
+  }
+
+  const contact = isEmail ? raw : sanitizeIndianMobileDigits(raw);
   const record = await LiveNotification.create({ contact });
   res.status(201).json({ ok: true, id: record._id.toString() });
 });

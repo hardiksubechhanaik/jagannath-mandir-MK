@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { prefetchRoute } from '../api/prefetchRoutes';
 import {
   LOGIN_PATH,
   isNavGroupActive,
@@ -20,6 +21,8 @@ function NavDropdownLink({ to, label, pathname, locationHash, onNavigate }) {
       to={to}
       className={active ? `${styles.dropdownLink} ${styles.dropdownLinkActive}` : styles.dropdownLink}
       onClick={onNavigate}
+      onMouseEnter={() => prefetchRoute(to)}
+      onFocus={() => prefetchRoute(to)}
       role="menuitem"
     >
       {label}
@@ -310,6 +313,8 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                         className={({ isActive }) =>
                           isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink
                         }
+                        onMouseEnter={() => prefetchRoute(entry.to)}
+                        onFocus={() => prefetchRoute(entry.to)}
                       >
                         {entry.label}
                       </NavLink>
@@ -350,6 +355,8 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                   to="/donate"
                   className={donateActive ? styles.donateBtnActive : styles.donateBtn}
                   onClick={closeMenus}
+                  onMouseEnter={() => prefetchRoute('/donate')}
+                  onFocus={() => prefetchRoute('/donate')}
                 >
                   {t('nav.donate')}
                 </Link>
@@ -373,6 +380,8 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                             : styles.mobileLink
                         }
                         onClick={closeMenus}
+                        onMouseEnter={() => prefetchRoute(entry.to)}
+                        onFocus={() => prefetchRoute(entry.to)}
                       >
                         {entry.label}
                       </NavLink>
@@ -394,6 +403,8 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                                 : styles.mobileLink
                             }
                             onClick={closeMenus}
+                            onMouseEnter={() => prefetchRoute(item.to)}
+                            onFocus={() => prefetchRoute(item.to)}
                           >
                             {item.label}
                           </Link>

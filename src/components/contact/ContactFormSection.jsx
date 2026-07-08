@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { adminPost, endpoints } from '../../api/client';
 import FindUsCard from '../FindUsCard';
+import IndianMobileInput from '../IndianMobileInput';
+import { isValidIndianMobile } from '../../lib/indianMobile';
 import { useTranslation } from '../../i18n/useTranslation';
 import styles from '../../styles/contact.module.css';
 
@@ -21,6 +23,9 @@ export default function ContactFormSection() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
       e.email = t('forms.emailInvalidLong');
     if (!data.message.trim()) e.message = t('forms.messageRequired');
+    if (data.mobile.trim() && !isValidIndianMobile(data.mobile)) {
+      e.mobile = t('forms.mobileInvalid');
+    }
     return e;
   }
 
@@ -99,16 +104,17 @@ export default function ContactFormSection() {
 
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel} htmlFor="mobile">{t('forms.mobile')}</label>
-                <input
+                <IndianMobileInput
                   id="mobile"
                   name="mobile"
-                  type="tel"
                   placeholder={t('forms.phonePlaceholder')}
                   value={form.mobile}
                   onChange={handleChange}
                   className={styles.input}
-                  autoComplete="tel"
+                  hasError={Boolean(errors.mobile)}
+                  errorClassName={styles.inputError}
                 />
+                {errors.mobile && <span className={styles.errMsg}>{errors.mobile}</span>}
               </div>
 
               <div className={styles.fieldGroup}>

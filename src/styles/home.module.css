@@ -323,77 +323,145 @@
   grid-area: card;
   display: flex;
   align-items: stretch;
-  border-radius: 8px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 20px 44px -18px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
   min-width: 0;
   width: 100%;
   max-width: 520px;
 }
+
 .statusCardLeft {
-  background: rgba(251, 246, 234, 0.97);
+  --status-color: #1f8a5b;
+  --status-glow: rgba(31, 138, 91, 0.18);
+  background: linear-gradient(180deg, #fffdf8 0%, #fbf6ea 100%);
   color: var(--ink);
-  padding: 22px 26px;
+  padding: 20px 22px 18px;
   flex: 1;
-}
-.statusCardHead {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  border-right: 1px solid rgba(58, 16, 9, 0.06);
 }
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--status-glow);
+  border: 1px solid color-mix(in srgb, var(--status-color) 28%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
 .statusDotLg {
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: var(--status-color);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--status-color) 22%, transparent),
+    0 0 12px color-mix(in srgb, var(--status-color) 45%, transparent);
+  animation: statusPulse 2.4s ease-in-out infinite;
 }
+
+.statusBadgeText {
+  color: var(--status-color);
+  font-family: 'Mukta', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+@keyframes statusPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.92; }
+}
+
 .statusCardSub {
-  font-size: 14.5px;
-  color: #5A5043;
+  font-size: 14px;
+  color: #5a5043;
   line-height: 1.55;
-  margin-bottom: 16px;
+  margin: 0;
+  max-width: 28ch;
 }
+
 .statusCardHours {
-  border-top: 1px solid var(--line);
-  padding-top: 14px;
+  width: 100%;
+  border-top: 1px solid rgba(58, 16, 9, 0.08);
+  padding-top: 12px;
+  margin-top: 2px;
 }
+
 .statusCardHoursLabel {
   font-family: 'Space Mono', monospace;
   font-size: 10px;
   letter-spacing: 1px;
-  color: #9A8C70;
+  color: #9a8c70;
   text-transform: uppercase;
+  margin-bottom: 4px;
 }
+
 .statusCardHoursVal {
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #3a3228;
+  line-height: 1.35;
 }
+
 .statusCardCta {
-  background: var(--gold);
-  color: #3A1009;
-  padding: 22px 28px;
+  appearance: none;
+  border: none;
+  background: linear-gradient(165deg, #e7c35a 0%, #d4a843 48%, #c9982f 100%);
+  color: #3a1009;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s;
+  min-width: 148px;
+  transition: filter 0.15s ease, transform 0.15s ease;
 }
+
 .statusCardCta:hover {
-  background: var(--gold-light);
+  filter: brightness(1.05);
 }
+
+.statusCardCta:active {
+  transform: scale(0.98);
+}
+
+.statusCardCta:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
 .statusCardCtaText {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 600;
-  font-size: 24px;
-  line-height: 1;
+  font-size: 23px;
+  line-height: 1.08;
 }
+
 .statusCardCtaArrow {
   font-family: 'Space Mono', monospace;
-  font-size: 12px;
+  font-size: 11px;
   margin-top: 10px;
+  opacity: 0.88;
+  letter-spacing: 0.02em;
 }
 
 /* ── TODAY BAND ──────────────────────────────────────────────────────────── */
@@ -1091,21 +1159,22 @@
   }
 
   .statusCardLeft {
-    padding: 14px 16px;
+    padding: 16px 14px 14px;
+    gap: 10px;
   }
 
-  .statusCardHead {
-    margin-bottom: 8px;
+  .statusBadge {
+    padding: 8px 14px;
   }
 
-  .statusCardHead span:last-child {
-    font-size: 15px !important;
+  .statusBadgeText {
+    font-size: 15px;
   }
 
   .statusCardSub {
     font-size: 13px;
     line-height: 1.45;
-    margin-bottom: 0;
+    max-width: none;
   }
 
   .statusCardHours {

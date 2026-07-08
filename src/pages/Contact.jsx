@@ -13,7 +13,7 @@ export default function Contact() {
   const { t } = useTranslation();
   const { data, loading, error } = usePageData(endpoints.contact);
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <PageShell active="contact" className={styles.page}>
         <PageLoading />
@@ -21,7 +21,7 @@ export default function Contact() {
     );
   }
 
-  if (error) {
+  if (error && !data) {
     return (
       <PageShell active="contact" className={styles.page}>
         <PageError message={error.message} />

@@ -4,6 +4,7 @@ import WelcomeOverlay from '../components/WelcomeOverlay';
 import HomeHero from '../components/home/HomeHero';
 import useTempleStatusCopy from '../hooks/useTempleStatusCopy';
 import RathCountdown from '../components/RathCountdown';
+import CreatorMarquee from '../components/home/CreatorMarquee';
 import TodayBand from '../components/home/TodayBand';
 import AboutPreview from '../components/home/AboutPreview';
 import HomeMantraBand from '../components/home/HomeMantraBand';
@@ -22,15 +23,16 @@ export default function Home() {
   const { data, loading, error } = usePageData(endpoints.home);
 
   let content;
-  if (loading) {
+  if (loading && !data) {
     content = <PageLoading />;
-  } else if (error) {
+  } else if (error && !data) {
     content = <PageError message={error.message} />;
   } else {
     content = (
       <>
         <HomeHero deityImages={data.deityImages} />
         <RathCountdown />
+        <CreatorMarquee />
         <TodayBand />
         <AboutPreview templeImages={data.templeImages} />
         <HomeMantraBand deityImages={data.deityImages} />

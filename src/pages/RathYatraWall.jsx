@@ -9,23 +9,27 @@ import {
 } from '../api/client';
 import styles from './RathYatraWall.module.css';
 import { layoutWallBoard } from '../lib/rathWallLayout';
+import DraggableWallItem from '../components/rath/DraggableWallItem';
 
 const PHOTOS_POLL_MS = 5_000;
 const WALL_REFRESH_CHANNEL = 'rath-yatra-wall';
 
-function PolaroidPhoto({ photo }) {
+function PolaroidPhoto({ photo, boardRef }) {
   const rotRad = `${photo.rot * (Math.PI / 180)}rad`;
 
   return (
-    <div
+    <DraggableWallItem
+      boardRef={boardRef}
+      itemType="photo"
+      itemId={photo.id}
+      leftPct={photo.leftPct}
+      topPct={photo.topPct}
+      rot={photo.rot}
+      z={photo.z}
       className={`${styles.photo} ${photo._new ? styles.dropin : ''}`}
-      style={{
-        left: `${photo.leftPct}%`,
-        top: `${photo.topPct}%`,
-        zIndex: photo.z,
-        transform: photo._new ? undefined : `rotate(${photo.rot}deg)`,
-        '--r': rotRad,
-      }}
+      draggingClassName={styles.photoDragging}
+      style={photo._new ? { '--r': rotRad } : undefined}
+      suppressTransform={photo._new}
     >
       {photo.style === 'tape' ? (
         <span className={styles.tape} aria-hidden="true" />
@@ -42,50 +46,55 @@ function PolaroidPhoto({ photo }) {
         <div className={styles.photoCaption}>{photo.caption}</div>
       </div>
       <div className={styles.photoName}>{photo.name}</div>
-    </div>
+    </DraggableWallItem>
   );
 }
 
-function SankalpNote({ sankalp }) {
+function SankalpNote({ sankalp, boardRef }) {
   return (
-    <div
+    <DraggableWallItem
+      boardRef={boardRef}
+      itemType="sankalp"
+      itemId={sankalp.id}
+      leftPct={sankalp.leftPct}
+      topPct={sankalp.topPct}
+      rot={sankalp.rot}
+      z={sankalp.z}
       className={styles.sankalpNote}
-      style={{
-        left: `${sankalp.leftPct}%`,
-        top: `${sankalp.topPct}%`,
-        zIndex: sankalp.z,
-        transform: `rotate(${sankalp.rot}deg)`,
-      }}
+      draggingClassName={styles.wallItemDragging}
     >
       <span className={styles.tape} aria-hidden="true" />
       <div className={styles.sankalpNoteCard}>
         <span className={styles.sankalpNoteIcon} aria-hidden="true">🙏</span>
         <p className={styles.sankalpNoteText}>{sankalp.text}</p>
       </div>
-    </div>
+    </DraggableWallItem>
   );
 }
 
-function DiyaPin({ diya }) {
+function DiyaPin({ diya, boardRef }) {
   return (
-    <div
+    <DraggableWallItem
+      boardRef={boardRef}
+      itemType="diya"
+      itemId={diya.id}
+      leftPct={diya.leftPct}
+      topPct={diya.topPct}
+      rot={diya.rot}
+      z={diya.z}
       className={styles.diyaPin}
-      style={{
-        left: `${diya.leftPct}%`,
-        top: `${diya.topPct}%`,
-        zIndex: diya.z,
-        transform: `rotate(${diya.rot}deg)`,
-        '--flicker-delay': `${(diya.id.charCodeAt(3) % 10) * 0.25}s`,
-      }}
+      draggingClassName={styles.wallItemDragging}
+      style={{ '--flicker-delay': `${(diya.id.charCodeAt(3) % 10) * 0.25}s` }}
     >
       <span className={styles.diyaFlame} aria-hidden="true">🪔</span>
       <span className={styles.diyaName}>{diya.name}</span>
-    </div>
+    </DraggableWallItem>
   );
 }
 
 export default function RathYatraWall() {
   const fileInputRef = useRef(null);
+  const boardRef = useRef(null);
   const knownPhotoIdsRef = useRef(new Set());
   const [photos, setPhotos] = useState([]);
   const [photoCount, setPhotoCount] = useState(0);
@@ -285,7 +294,7 @@ export default function RathYatraWall() {
         <span className={styles.instruction}>
           {!uploadsOpen
             ? 'Uploads are closed — volunteers will open the board during the yatra'
-            : 'Tap 📷 to upload photos · sankalps & diyas from the mela appear here once approved'}
+            : 'Tap 📷 to upload · drag notes, diyas & photos to rearrange · sankalps from the mela appear once approved'}
         </span>
 
         {!uploadsOpen ? (
@@ -295,17 +304,17 @@ export default function RathYatraWall() {
         {submitMessage ? <p className={styles.successMsg}>{submitMessage}</p> : null}
         {loadError ? <p className={styles.errorMsg}>{loadError}</p> : null}
 
-        <div className={styles.board}>
+        <div className={styles.board} ref={boardRef}>
           {boardLayout.diyas.map((entry) => (
-            <DiyaPin key={entry.id} diya={entry} />
+            <DiyaPin key={entry.id} diya={entry} boardRef={boardRef} />
           ))}
 
           {boardLayout.sankalps.map((entry) => (
-            <SankalpNote key={entry.id} sankalp={entry} />
+            <SankalpNote key={entry.id} sankalp={entry} boardRef={boardRef} />
           ))}
 
           {boardLayout.photos.map((photo) => (
-            <PolaroidPhoto key={photo.id} photo={photo} />
+            <PolaroidPhoto key={photo.id} photo={photo} boardRef={boardRef} />
           ))}
 
           <input

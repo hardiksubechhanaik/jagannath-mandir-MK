@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { endpoints } from './api/client'
+import { prefetchPageData } from './hooks/usePageData'
 import HashScroll from './components/HashScroll'
 import MelaFloatingLogo from './components/MelaFloatingLogo'
 import Home from './pages/Home'
@@ -19,7 +22,35 @@ import RathWallVolunteer from './pages/RathWallVolunteer'
 import RathPlayground from './pages/RathPlayground'
 import Login from './pages/Login'
 
+const PREFETCH_ENDPOINTS = [
+  endpoints.home,
+  endpoints.visit,
+  endpoints.deities,
+  endpoints.festivals,
+  endpoints.about,
+  endpoints.contact,
+  endpoints.donate,
+  endpoints.liveDarshan,
+];
+
 function App() {
+  useEffect(() => {
+    prefetchPageData(endpoints.home);
+
+    const schedule = window.requestIdleCallback ?? ((cb) => window.setTimeout(cb, 1500));
+    const idleId = schedule(() => {
+      PREFETCH_ENDPOINTS.forEach((endpoint) => prefetchPageData(endpoint));
+    });
+
+    return () => {
+      if (window.cancelIdleCallback) {
+        window.cancelIdleCallback(idleId);
+      } else {
+        window.clearTimeout(idleId);
+      }
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <HashScroll />

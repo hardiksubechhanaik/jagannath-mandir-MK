@@ -4,18 +4,26 @@ import { apiGet, apiPost, endpoints, resolveMediaUrl } from '../api/client';
 import { INSTAGRAM_URL, TEMPLE_PHONE } from '../data/site';
 import { CERT_NAME_Y_RATIO, certificateFilename, downloadCertificate, renderCertificatePng } from '../lib/melaCertificate';
 import {
+  CREATOR_TIERS,
+  CREATOR_TIER_LABELS,
   formatInstagramHandle,
   instagramProfileUrl,
+  partitionCreators,
   subscribeCreatorSpotlightUpdates,
 } from '../lib/creatorSpotlight';
 import { notifyDivyangAssistUpdate, pushLocalDivyangRequest, saveDivyangRequestLocally } from '../lib/divyangAssist';
+import { buildTriviaRound } from '../lib/rathTrivia';
 import { fetchMelaStats, trackMelaInteraction } from '../lib/melaStats';
 import MemoryMatch from '../components/MemoryMatch';
+import MelaTicTacToe from '../components/MelaTicTacToe';
+import IndianMobileInput from '../components/IndianMobileInput';
+import { isValidIndianMobile } from '../lib/indianMobile';
+import RathPuzzleSlider from '../components/RathPuzzleSlider';
 import DiyaLanternCanvas from '../components/DiyaLanternCanvas';
 import RopePetalCanvas from '../components/RopePetalCanvas';
 import styles from './RathPlayground.module.css';
 
-const STALLS_WITHOUT_BADGE = new Set(['trivia', 'guide']);
+const STALLS_WITHOUT_BADGE = new Set(['trivia', 'guide', 'puzzle', 'tictactoe']);
 
 const STALL_KEYS = [
   'rope',
@@ -24,11 +32,18 @@ const STALL_KEYS = [
   'trivia',
   'cert',
   'guide',
-  'divyang',
-  'helpline',
   'creators',
   'memory',
+  'tictactoe',
+  'puzzle',
 ];
+
+const SUPPORT_META = {
+  title: 'Support',
+  icon: '🤝',
+  color: '#FF922B',
+  colorLight: '#FFC078',
+};
 
 const STALL_META = {
   rope: { title: 'Pull the Rope', icon: '🪢', color: '#FF6B6B', colorLight: '#FFA8A8' },
@@ -37,10 +52,10 @@ const STALL_META = {
   trivia: { title: 'Ratha Yatra Trivia', icon: '🎯', color: '#B983FF', colorLight: '#DBBBFF' },
   cert: { title: 'Darshan Certificate', icon: '🎖', color: '#4D96FF', colorLight: '#9DC4FF' },
   guide: { title: 'First-Time Guide', icon: '🧭', color: '#6BCB77', colorLight: '#A6E6AC' },
-  divyang: { title: 'Divyang Support', icon: '♿', color: '#FF922B', colorLight: '#FFC078' },
-  helpline: { title: 'Senior Helpline', icon: '📞', color: '#F783AC', colorLight: '#FFB3CE' },
   creators: { title: 'Creator Spotlight', icon: '🎥', color: '#FF6BAA', colorLight: '#FFA8D0' },
   memory: { title: 'Memory Match', icon: '🧠', color: '#7C5CFF', colorLight: '#B983FF' },
+  tictactoe: { title: 'Tic Tac Toe', icon: '⭕', color: '#22B8CF', colorLight: '#99E9F2' },
+  puzzle: { title: 'Rath Yatra Puzzle', icon: '🧩', color: '#F06595', colorLight: '#FAA2C1' },
 };
 
 const BUNTING_COLORS = ['#FF6F91', '#FFC93C', '#4FD1C5', '#FF6B6B', '#B983FF', '#6BCB77'];
@@ -52,6 +67,29 @@ const SANKALP_CONCH_SOUND = '/mela-sankalp-conch.mp3';
 const CERT_CHEER_SOUND = '/mela-cert-cheer.mp3';
 const CREATORS_AMBIENT_SOUND = '/mela-creators-ambient.mp3';
 const MEMORY_WIN_SOUND = '/mela-memory-win.mp3';
+const MELA_AMBIENT_SOUND = '/mela-ambient.mp3';
+const MELA_LOADER_VOLUME = 0.9;
+const MELA_BG_VOLUME = 0.15;
+const MELA_FADE_MS = 3200;
+
+function fadeAudioVolume(audio, toVolume, durationMs) {
+  const from = audio.volume;
+  const start = performance.now();
+  let rafId = 0;
+
+  const cancel = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+  };
+
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / durationMs);
+    audio.volume = from + (toVolume - from) * t;
+    if (t < 1) rafId = requestAnimationFrame(step);
+  };
+
+  rafId = requestAnimationFrame(step);
+  return cancel;
+}
 
 function playTrackedSound(src, registry, { loop = false } = {}) {
   const audio = new Audio(src);
@@ -71,34 +109,6 @@ function stopTrackedSounds(registry) {
   registry.clear();
 }
 
-const TRIVIA = [
-  {
-    q: 'How many wheels does each Ratha (chariot) traditionally have?',
-    options: ['4 wheels', '8 wheels', '16 wheels', '24 wheels'],
-    answer: 2,
-  },
-  {
-    q: 'What does Bahuda Yatra mark in the Ratha Yatra festival?',
-    options: ['Chariots being built', 'Return journey of the chariots', 'Snana Yatra bathing', 'New year celebration'],
-    answer: 1,
-  },
-  {
-    q: 'Which three deities ride the chariots during Ratha Yatra?',
-    options: ['Krishna, Radha, Lakshmi', 'Jagannath, Balabhadra, Subhadra', 'Shiva, Parvati, Ganesha', 'Rama, Sita, Lakshman'],
-    answer: 1,
-  },
-  {
-    q: 'Mahaprasad from the Jagannath temple is special because…',
-    options: ['It is never wasted or sold', 'It is only for priests', 'It is cooked once a year', 'It is always sweet'],
-    answer: 0,
-  },
-  {
-    q: 'The original Ratha Yatra of Lord Jagannath takes place in which city?',
-    options: ['Puri', 'Gurugram', 'Varanasi', 'Dwarka'],
-    answer: 0,
-  },
-];
-
 const GUIDE_TIPS = [
   'Dress modestly — traditional or fully covered attire is appreciated at the mandir and during the procession.',
   'Photography may not be permitted inside the sanctum — please follow posted signs.',
@@ -112,9 +122,9 @@ const GUIDE_TIPS = [
 ];
 
 const DEFAULT_CREATORS = [
-  { id: 'fallback-1', name: 'Devotee Reels', instagramHandle: '@devotee_reels', photoUrl: '' },
-  { id: 'fallback-2', name: 'Mandir Moments', instagramHandle: '@mandir_moments', photoUrl: '' },
-  { id: 'fallback-3', name: 'Bhakti Vlogs', instagramHandle: '@bhakti_vlogs', photoUrl: '' },
+  { id: 'fallback-1', name: 'Devotee Reels', instagramHandle: '@devotee_reels', photoUrl: '', tier: 'digital' },
+  { id: 'fallback-2', name: 'Mandir Moments', instagramHandle: '@mandir_moments', photoUrl: '', tier: 'digital' },
+  { id: 'fallback-3', name: 'Bhakti Vlogs', instagramHandle: '@bhakti_vlogs', photoUrl: '', tier: 'digital' },
 ];
 
 const SIZE_VARIATIONS = [0.82, 1.0, 1.14, 0.88, 1.08, 0.92, 1.18, 0.86, 1.05, 0.95];
@@ -469,7 +479,7 @@ function generateSankalpSpiritFx() {
 }
 
 function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount, onRopePull, onMemoryCelebrate, onMemoryCelebrateStop }) {
-  const meta = STALL_META[stallKey];
+  const meta = stallKey === 'support' ? SUPPORT_META : STALL_META[stallKey];
 
   const [diyaName, setDiyaName] = useState('');
   const [diyaDone, setDiyaDone] = useState(false);
@@ -479,6 +489,7 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
   const [sankalpDone, setSankalpDone] = useState(false);
   const [sankalpSubmitting, setSankalpSubmitting] = useState(false);
   const [sankalpError, setSankalpError] = useState('');
+  const [triviaRound, setTriviaRound] = useState(() => buildTriviaRound());
   const [triviaIndex, setTriviaIndex] = useState(0);
   const [triviaScore, setTriviaScore] = useState(0);
   const [triviaDone, setTriviaDone] = useState(false);
@@ -488,6 +499,7 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
   const [certShown, setCertShown] = useState('');
   const [certDownloading, setCertDownloading] = useState(false);
   const [divyangPhone, setDivyangPhone] = useState('');
+  const [divyangPhoneError, setDivyangPhoneError] = useState('');
   const [divyangDone, setDivyangDone] = useState('');
   const [divyangSubmitting, setDivyangSubmitting] = useState(false);
   const [showRopeVideo, setShowRopeVideo] = useState(false);
@@ -682,6 +694,13 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
 
   useEffect(() => {
     triviaWinSoundPlayedRef.current = false;
+    if (stallKey !== 'trivia') return;
+    setTriviaRound(buildTriviaRound());
+    setTriviaIndex(0);
+    setTriviaScore(0);
+    setTriviaDone(false);
+    setTriviaFeedback(null);
+    setTriviaPick(null);
   }, [stallKey]);
 
   useEffect(() => {
@@ -747,12 +766,14 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
 
   function answerTrivia(optionIndex) {
     if (triviaFeedback !== null) return;
-    const correct = optionIndex === TRIVIA[triviaIndex].answer;
+    const current = triviaRound[triviaIndex];
+    if (!current) return;
+    const correct = optionIndex === current.answer;
     setTriviaPick(optionIndex);
     setTriviaFeedback(correct ? 'correct' : 'wrong');
     if (correct) setTriviaScore((s) => s + 1);
     window.setTimeout(() => {
-      if (triviaIndex >= TRIVIA.length - 1) {
+      if (triviaIndex >= triviaRound.length - 1) {
         setTriviaDone(true);
         onInteraction?.('trivia');
       } else {
@@ -765,6 +786,7 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
 
   function resetTrivia() {
     onMemoryCelebrateStop?.();
+    setTriviaRound(buildTriviaRound());
     setTriviaIndex(0);
     setTriviaScore(0);
     setTriviaDone(false);
@@ -799,6 +821,12 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
     const phone = divyangPhone.trim();
     if (!phone || divyangSubmitting) return;
 
+    if (!isValidIndianMobile(phone)) {
+      setDivyangPhoneError('Enter a valid 10-digit mobile number starting with 5, 6, 7, 8, or 9.');
+      return;
+    }
+
+    setDivyangPhoneError('');
     setDivyangSubmitting(true);
     try {
       const data = await apiPost(endpoints.divyangAssistRequest, { phone });
@@ -887,11 +915,15 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
             ) : null}
           </>
         );
-      case 'trivia':
+      case 'trivia': {
+        const currentQuestion = triviaRound[triviaIndex];
+        if (!currentQuestion) {
+          return <p style={{ textAlign: 'center', color: '#7a6e5c' }}>Loading trivia…</p>;
+        }
         if (triviaDone) {
           return (
             <>
-              <p className={styles.bigNumber} style={{ fontSize: 42 }}>{triviaScore} / {TRIVIA.length}</p>
+              <p className={styles.bigNumber} style={{ fontSize: 42 }}>{triviaScore} / {triviaRound.length}</p>
               <p style={{ textAlign: 'center', marginBottom: 14 }}>Well done, devotee!</p>
               <button type="button" className={styles.modalBtn} style={{ background: meta.color, width: '100%' }} onClick={resetTrivia}>
                 Play again
@@ -901,17 +933,17 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
         }
         return (
           <>
-            <p className={styles.triviaQuestion}>{TRIVIA[triviaIndex].q}</p>
+            <p className={styles.triviaQuestion}>{currentQuestion.q}</p>
             <div className={styles.triviaOptions}>
-              {TRIVIA[triviaIndex].options.map((opt, i) => {
+              {currentQuestion.options.map((opt, i) => {
                 let cls = styles.triviaOption;
                 if (triviaFeedback !== null) {
-                  if (i === TRIVIA[triviaIndex].answer) cls += ` ${styles.triviaCorrect}`;
+                  if (i === currentQuestion.answer) cls += ` ${styles.triviaCorrect}`;
                   else if (i === triviaPick) cls += ` ${styles.triviaWrong}`;
                 }
                 return (
                   <button
-                    key={opt}
+                    key={`${triviaIndex}-${i}-${opt}`}
                     type="button"
                     className={cls}
                     onClick={() => answerTrivia(i)}
@@ -922,9 +954,10 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
                 );
               })}
             </div>
-            <p style={{ marginTop: 10, fontSize: 12, color: '#7a6e5c' }}>Question {triviaIndex + 1} of {TRIVIA.length}</p>
+            <p style={{ marginTop: 10, fontSize: 12, color: '#7a6e5c' }}>Question {triviaIndex + 1} of {triviaRound.length}</p>
           </>
         );
+      }
       case 'cert':
         return (
           <>
@@ -988,78 +1021,121 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
             </li>
           </ul>
         );
-      case 'divyang':
+      case 'support':
         return (
           <>
-            <p className={styles.modalText}>Need assistance during your visit? Leave your number and our seva team will help.</p>
-            <input
-              className={styles.modalInput}
-              type="tel"
-              inputMode="tel"
-              placeholder="Phone number"
-              value={divyangPhone}
-              onChange={(e) => setDivyangPhone(e.target.value)}
-            />
-            <button
-              type="button"
-              className={styles.modalBtn}
-              style={{ background: meta.color, width: '100%' }}
-              onClick={requestDivyang}
-              disabled={divyangSubmitting || !divyangPhone.trim()}
-            >
-              {divyangSubmitting ? 'Sending…' : 'Request assistance'}
-            </button>
-            {divyangDone ? <p className={styles.confirmMsg} style={{ marginTop: 12 }}>{divyangDone}</p> : null}
+            <section className={styles.supportBlock}>
+              <h3 className={styles.supportBlockTitle}>Senior Helpline</h3>
+              <p className={styles.modalText}>Tap to call our seva helpline:</p>
+              <a
+                className={styles.helplineLink}
+                href={`tel:${TEMPLE_PHONE.replace(/\s/g, '')}`}
+                onClick={() => onInteraction?.('helpline')}
+              >
+                {TEMPLE_PHONE}
+              </a>
+            </section>
+            <section className={styles.supportBlock}>
+              <h3 className={styles.supportBlockTitle}>Request assistance</h3>
+              <p className={styles.modalText}>
+                Need help during your visit? Leave your number and our seva team will reach out.
+              </p>
+              <IndianMobileInput
+                className={styles.modalInput}
+                placeholder="9876543210"
+                value={divyangPhone}
+                onChange={(e) => {
+                  setDivyangPhone(e.target.value);
+                  setDivyangPhoneError('');
+                }}
+                hasError={Boolean(divyangPhoneError)}
+              />
+              {divyangPhoneError ? (
+                <p className={styles.modalText} style={{ color: '#c92a04', marginTop: 8 }} role="alert">
+                  {divyangPhoneError}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                className={styles.modalBtn}
+                style={{ background: meta.color, width: '100%' }}
+                onClick={requestDivyang}
+                disabled={divyangSubmitting || !divyangPhone.trim() || divyangPhone.length < 10}
+              >
+                {divyangSubmitting ? 'Sending…' : 'Request assistance'}
+              </button>
+              {divyangDone ? <p className={styles.confirmMsg} style={{ marginTop: 12 }}>{divyangDone}</p> : null}
+            </section>
           </>
         );
-      case 'helpline':
-        return (
-          <>
-            <p style={{ marginBottom: 14 }}>Tap to call our senior helpline:</p>
+      case 'creators': {
+        const { official, digital } = partitionCreators(creators);
+
+        function renderCreatorCard(creator, isOfficial) {
+          return (
             <a
-              className={styles.helplineLink}
-              href={`tel:${TEMPLE_PHONE.replace(/\s/g, '')}`}
-              onClick={() => onInteraction?.('helpline')}
+              key={creator.id}
+              href={instagramProfileUrl(creator.instagramHandle)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.creatorCard} ${isOfficial ? styles.creatorCardOfficial : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onInteraction?.('creators');
+              }}
             >
-              {TEMPLE_PHONE}
+              {isOfficial ? (
+                <span className={styles.creatorOfficialBadge}>★ Official Partner</span>
+              ) : null}
+              {creator.photoUrl ? (
+                <img
+                  src={resolveMediaUrl(creator.photoUrl)}
+                  alt=""
+                  className={`${styles.creatorPhoto} ${isOfficial ? styles.creatorPhotoOfficial : ''}`}
+                />
+              ) : (
+                <div
+                  className={`${styles.creatorPhotoFallback} ${isOfficial ? styles.creatorPhotoOfficial : ''}`}
+                  aria-hidden="true"
+                >
+                  {isOfficial ? '★' : '🎥'}
+                </div>
+              )}
+              <div className={styles.creatorName}>{creator.name}</div>
+              <div className={styles.creatorHandle}>
+                {formatInstagramHandle(creator.instagramHandle)}
+              </div>
             </a>
-          </>
-        );
-      case 'creators':
+          );
+        }
+
         return (
           <>
             {creators.length === 0 ? (
               <p className={styles.modalText}>Creator spotlight coming soon!</p>
             ) : (
-              <div className={styles.creatorGrid}>
-                {creators.map((creator) => (
-                  <a
-                    key={creator.id}
-                    href={instagramProfileUrl(creator.instagramHandle)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.creatorCard}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onInteraction?.('creators');
-                    }}
-                  >
-                    {creator.photoUrl ? (
-                      <img
-                        src={resolveMediaUrl(creator.photoUrl)}
-                        alt=""
-                        className={styles.creatorPhoto}
-                      />
-                    ) : (
-                      <div className={styles.creatorPhotoFallback} aria-hidden="true">🎥</div>
-                    )}
-                    <div className={styles.creatorName}>{creator.name}</div>
-                    <div className={styles.creatorHandle}>
-                      {formatInstagramHandle(creator.instagramHandle)}
+              <>
+                {official.length > 0 ? (
+                  <section className={styles.creatorSection}>
+                    <h3 className={styles.creatorSectionTitleOfficial}>
+                      {CREATOR_TIER_LABELS[CREATOR_TIERS.OFFICIAL]}
+                    </h3>
+                    <div className={styles.creatorGridOfficial}>
+                      {official.map((creator) => renderCreatorCard(creator, true))}
                     </div>
-                  </a>
-                ))}
-              </div>
+                  </section>
+                ) : null}
+                {digital.length > 0 ? (
+                  <section className={styles.creatorSection}>
+                    <h3 className={styles.creatorSectionTitleDigital}>
+                      {CREATOR_TIER_LABELS[CREATOR_TIERS.DIGITAL]}
+                    </h3>
+                    <div className={styles.creatorGrid}>
+                      {digital.map((creator) => renderCreatorCard(creator, false))}
+                    </div>
+                  </section>
+                ) : null}
+              </>
             )}
             <a
               className={styles.creatorJoin}
@@ -1072,10 +1148,27 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
             </a>
           </>
         );
+      }
       case 'memory':
         return (
           <MemoryMatch
             onWin={() => onInteraction?.('memory')}
+            onCelebrate={onMemoryCelebrate}
+            onCelebrateStop={onMemoryCelebrateStop}
+          />
+        );
+      case 'tictactoe':
+        return (
+          <MelaTicTacToe
+            onGameComplete={() => onInteraction?.('tictactoe')}
+            onCelebrate={onMemoryCelebrate}
+            onCelebrateStop={onMemoryCelebrateStop}
+          />
+        );
+      case 'puzzle':
+        return (
+          <RathPuzzleSlider
+            onSolve={() => onInteraction?.('puzzle')}
             onCelebrate={onMemoryCelebrate}
             onCelebrateStop={onMemoryCelebrateStop}
           />
@@ -1186,7 +1279,13 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
         </div>
       ) : null}
       <div
-        className={stallKey === 'memory' ? `${styles.modalCard} ${styles.modalCardMemory}` : styles.modalCard}
+        className={
+          stallKey === 'puzzle'
+            ? `${styles.modalCard} ${styles.modalCardGame} ${styles.modalCardPuzzle}`
+            : stallKey === 'memory' || stallKey === 'tictactoe'
+              ? `${styles.modalCard} ${styles.modalCardGame}`
+              : styles.modalCard
+        }
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -1218,6 +1317,8 @@ export default function RathPlayground() {
   const fxIdRef = useRef(0);
   const winCelebrationIntervalRef = useRef(null);
   const winCelebrationEndTimerRef = useRef(null);
+  const melaAudioRef = useRef(null);
+  const melaFadeCancelRef = useRef(null);
 
   const [showPortal, setShowPortal] = useState(true);
   const [loadProgress, setLoadProgress] = useState(0);
@@ -1273,6 +1374,63 @@ export default function RathPlayground() {
     cancelProgressAnimation();
     setShowPortal(false);
   }, [cancelProgressAnimation]);
+
+  const ensureMelaAudio = useCallback(() => {
+    if (!melaAudioRef.current) {
+      const audio = new Audio(MELA_AMBIENT_SOUND);
+      audio.loop = true;
+      audio.preload = 'auto';
+      melaAudioRef.current = audio;
+    }
+    return melaAudioRef.current;
+  }, []);
+
+  const startMelaLoaderSound = useCallback(() => {
+    const audio = ensureMelaAudio();
+    if (melaFadeCancelRef.current) {
+      melaFadeCancelRef.current();
+      melaFadeCancelRef.current = null;
+    }
+    audio.volume = MELA_LOADER_VOLUME;
+    audio.play().catch(() => {});
+  }, [ensureMelaAudio]);
+
+  const fadeMelaToBackground = useCallback(() => {
+    const audio = melaAudioRef.current;
+    if (!audio) return;
+    if (melaFadeCancelRef.current) melaFadeCancelRef.current();
+    melaFadeCancelRef.current = fadeAudioVolume(audio, MELA_BG_VOLUME, MELA_FADE_MS);
+  }, []);
+
+  const pauseMelaAmbient = useCallback(() => {
+    if (melaFadeCancelRef.current) {
+      melaFadeCancelRef.current();
+      melaFadeCancelRef.current = null;
+    }
+    melaAudioRef.current?.pause();
+  }, []);
+
+  const resumeMelaBackground = useCallback(() => {
+    const audio = melaAudioRef.current;
+    if (!audio) return;
+    if (melaFadeCancelRef.current) {
+      melaFadeCancelRef.current();
+      melaFadeCancelRef.current = null;
+    }
+    audio.volume = MELA_BG_VOLUME;
+    audio.play().catch(() => {});
+  }, []);
+
+  const stopMelaAmbient = useCallback(() => {
+    if (melaFadeCancelRef.current) {
+      melaFadeCancelRef.current();
+      melaFadeCancelRef.current = null;
+    }
+    if (melaAudioRef.current) {
+      melaAudioRef.current.pause();
+      melaAudioRef.current = null;
+    }
+  }, []);
 
   const addConfettiBurst = useCallback((clientX, clientY, pieceCount = 28) => {
     const batchId = fxIdRef.current;
@@ -1417,6 +1575,34 @@ export default function RathPlayground() {
   }, []);
 
   useEffect(() => {
+    if (!showPortal) return undefined;
+    startMelaLoaderSound();
+    return undefined;
+  }, [showPortal, startMelaLoaderSound]);
+
+  useEffect(() => {
+    if (showPortal) return undefined;
+
+    if (activeStall) {
+      pauseMelaAmbient();
+      return undefined;
+    }
+
+    const audio = melaAudioRef.current;
+    if (!audio) return undefined;
+
+    if (audio.volume > MELA_BG_VOLUME + 0.05) {
+      fadeMelaToBackground();
+    } else {
+      resumeMelaBackground();
+    }
+
+    return undefined;
+  }, [showPortal, activeStall, pauseMelaAmbient, resumeMelaBackground, fadeMelaToBackground]);
+
+  useEffect(() => () => stopMelaAmbient(), [stopMelaAmbient]);
+
+  useEffect(() => {
     if (showPortal) return undefined;
     refreshMelaStats();
     const timer = window.setInterval(refreshMelaStats, 8_000);
@@ -1521,6 +1707,7 @@ export default function RathPlayground() {
   }
 
   function handlePortalClick() {
+    startMelaLoaderSound();
     dismissPortal();
   }
 
@@ -1601,7 +1788,18 @@ export default function RathPlayground() {
 
       <header className={styles.header}>
         <Link to="/" className={styles.backLink}>← Back to the Mandir</Link>
-        <span className={styles.headerTag}>RATHA YATRA 2026 · THE MELA</span>
+        <div className={styles.headerMelaRow}>
+          <button
+            type="button"
+            className={styles.supportHeaderBtn}
+            onClick={() => setActiveStall('support')}
+            aria-haspopup="dialog"
+          >
+            <span className={styles.supportHeaderIcon} aria-hidden="true">🤝</span>
+            Support
+          </button>
+          <span className={styles.headerTag}>RATHA YATRA 2026 · THE MELA</span>
+        </div>
       </header>
 
       <section className={styles.hero}>

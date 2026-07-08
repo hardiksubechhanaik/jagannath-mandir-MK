@@ -44,21 +44,21 @@ export default function HomeHero({ deityImages = DEITY_IMAGES }) {
           </div>
 
           <div className={styles.statusCard}>
-            <div className={styles.statusCardLeft}>
-              <div className={styles.statusCardHead}>
-                <span
-                  className={styles.statusDotLg}
-                  style={{ background: statusDot, boxShadow: `0 0 0 4px ${statusGlow}` }}
-                />
-                <span style={{ color: statusDot, fontWeight: 700, fontSize: 16 }}>{statusHead}</span>
+            <div
+              className={styles.statusCardLeft}
+              style={{ '--status-color': statusDot, '--status-glow': statusGlow }}
+            >
+              <div className={styles.statusBadge} aria-live="polite">
+                <span className={styles.statusDotLg} aria-hidden="true" />
+                <span className={styles.statusBadgeText}>{statusHead}</span>
               </div>
-              <div className={styles.statusCardSub}>{statusSub}</div>
+              <p className={styles.statusCardSub}>{statusSub}</p>
               <div className={styles.statusCardHours}>
                 <div className={styles.statusCardHoursLabel}>{t('status.openDaily')}</div>
                 <div className={styles.statusCardHoursVal}>{t('status.hoursRange')}</div>
               </div>
             </div>
-            <div className={styles.statusCardCta} onClick={scrollToTimings}>
+            <button type="button" className={styles.statusCardCta} onClick={scrollToTimings}>
               <div className={styles.statusCardCtaText}>
                 {t('status.viewSchedule').split('\n').map((line, i) => (
                   <span key={line}>
@@ -68,7 +68,7 @@ export default function HomeHero({ deityImages = DEITY_IMAGES }) {
                 ))}
               </div>
               <div className={styles.statusCardCtaArrow}>{t('status.fullTimetable')}</div>
-            </div>
+            </button>
           </div>
 
           <div className={styles.dwarapaala}>

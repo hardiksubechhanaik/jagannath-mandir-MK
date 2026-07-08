@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import PageShell from '../components/layout/PageShell';
+import PrasadDatePicker from '../components/prasad/PrasadDatePicker';
+import IndianMobileInput from '../components/IndianMobileInput';
+import { isValidIndianMobile } from '../lib/indianMobile';
 import {
   WHATSAPP_NUMBER,
   formatPrice,
@@ -8,6 +11,8 @@ import {
   isWeekend,
   parsePreferredDate,
 } from '../data/prasad';
+import { formatPrasadDateLabel, isPrasadDateBookable } from '../lib/prasadBookingDates';
+import useIstClock from '../hooks/useIstClock';
 import mahaprasadMealImg from '../assets/prasad/mahaprasad-meal.png';
 import { useTranslation } from '../i18n/useTranslation';
 import styles from '../styles/prasadBooking.module.css';
@@ -52,7 +57,8 @@ function buildWhatsAppMessage({ name, phone, qty, method, date, notes, total, pr
 }
 
 export default function PrasadBooking() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const now = useIstClock();
   const methods = t('prasad.methods', { object: true });
   const steps = t('prasad.steps', { object: true });
 
@@ -63,6 +69,13 @@ export default function PrasadBooking() {
   const [date, setDate] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+  const [dateError, setDateError] = useState(false);
+
+  const dateLabel = useMemo(
+    () => (date ? formatPrasadDateLabel(date, locale) : ''),
+    [date, locale],
+  );
 
   const selectedMethod = useMemo(
     () => methods.find((m) => m.id === method) ?? methods[0],
@@ -78,8 +91,28 @@ export default function PrasadBooking() {
 
     if (!name.trim() || !phone.trim()) {
       setError(true);
+      setPhoneError(false);
+      setDateError(false);
       return;
     }
+
+    if (!isValidIndianMobile(phone)) {
+      setError(false);
+      setPhoneError(true);
+      setDateError(false);
+      return;
+    }
+
+    if (!date || !isPrasadDateBookable(date, now)) {
+      setError(false);
+      setPhoneError(false);
+      setDateError(true);
+      return;
+    }
+
+    setError(false);
+    setPhoneError(false);
+    setDateError(false);
 
     const resolvedUnit =
       unitPrice ?? getRatesForMethod(method).weekday;
@@ -90,7 +123,7 @@ export default function PrasadBooking() {
       phone,
       qty,
       method: selectedMethod,
-      date,
+      date: dateLabel,
       notes,
       total: resolvedTotal,
       priceLabel,
@@ -197,25 +230,28 @@ export default function PrasadBooking() {
                 <label htmlFor="prasad-phone" className={`${styles.fieldLabel} ${styles.fieldLabelTight}`}>
                   {t('prasad.phoneRequired')}
                 </label>
-                <input
+                <IndianMobileInput
                   id="prasad-phone"
                   name="phone"
-                  type="tel"
-                  autoComplete="tel"
                   required
                   value={phone}
                   onChange={(e) => {
                     setPhone(e.target.value);
                     setError(false);
+                    setPhoneError(false);
                   }}
                   placeholder={t('forms.phoneShort')}
                   className={styles.input}
+                  hasError={phoneError}
                 />
+                {phoneError ? (
+                  <p className={styles.errorLine} role="alert">{t('forms.mobileInvalid')}</p>
+                ) : null}
               </div>
             </div>
 
             <div className={styles.fieldRow}>
-              <div>
+              <div className={styles.qtyField}>
                 <span className={`${styles.fieldLabel} ${styles.fieldLabelTight}`} id="qty-label">
                   {t('prasad.quantity')}
                 </span>
@@ -241,24 +277,29 @@ export default function PrasadBooking() {
                   </button>
                 </div>
               </div>
-              <div>
-                <label htmlFor="prasad-date" className={`${styles.fieldLabel} ${styles.fieldLabelTight}`}>
-                  {t('prasad.preferredDate')}
-                </label>
-                <input
-                  id="prasad-date"
-                  name="date"
-                  type="text"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  placeholder={t('prasad.datePlaceholder')}
-                  className={styles.input}
-                  aria-describedby="date-hint"
-                />
-                <p id="date-hint" className={styles.fieldHint}>
-                  {t('prasad.dateHint')}
+            </div>
+
+            <div className={styles.dateFieldBlock}>
+              <span className={`${styles.fieldLabel} ${styles.fieldLabelTight}`} id="prasad-date-label">
+                {t('prasad.preferredDate')}
+              </span>
+              <PrasadDatePicker
+                id="prasad-date"
+                value={date}
+                onChange={(nextDate) => {
+                  setDate(nextDate);
+                  setDateError(false);
+                }}
+                describedById="date-hint"
+              />
+              <p id="date-hint" className={styles.fieldHint}>
+                {t('prasad.dateHint')}
+              </p>
+              {dateError ? (
+                <p className={styles.errorLine} role="alert">
+                  {t('prasad.dateRequired')}
                 </p>
-              </div>
+              ) : null}
             </div>
 
             <label htmlFor="prasad-notes" className={`${styles.fieldLabel} ${styles.fieldLabelTight}`}>
@@ -312,7 +353,7 @@ export default function PrasadBooking() {
                 {date.trim() && parsePreferredDate(date) && (
                   <div className={styles.summaryRow}>
                     <dt className={styles.summaryLabel}>{t('prasad.summaryDate')}</dt>
-                    <dd className={styles.summaryValue}>{date.trim()}</dd>
+                    <dd className={styles.summaryValue}>{dateLabel}</dd>
                   </div>
                 )}
                 <div className={`${styles.summaryRow} ${styles.summaryRowLast}`}>

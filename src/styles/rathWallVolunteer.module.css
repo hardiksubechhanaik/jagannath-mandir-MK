@@ -705,6 +705,42 @@
   font-weight:700;
 }
 
+.formError {
+  color:#b71c1c;
+  background:#ffebee;
+  border:1px solid #ef9a9a;
+  border-radius:8px;
+  margin:0 0 12px;
+  padding:10px 12px;
+  font-family:Mukta,sans-serif;
+  font-size:14px;
+}
+
+.formSuccess {
+  color:#1b5e20;
+  background:#e8f5e9;
+  border:1px solid #81c784;
+  border-radius:8px;
+  margin:0 0 12px;
+  padding:10px 12px;
+  font-family:Mukta,sans-serif;
+  font-size:14px;
+}
+
+.optionalHint {
+  color:#7a6e5c;
+  font-size:12px;
+  font-weight:500;
+}
+
+.fieldHint {
+  color:#7a6e5c;
+  margin:-4px 0 12px;
+  font-family:Mukta,sans-serif;
+  font-size:12px;
+  line-height:1.4;
+}
+
 .fileInput {
   width:100%;
   margin-bottom:12px;
@@ -744,6 +780,83 @@
   padding:14px;
   display:flex;
   box-shadow:0 6px 18px #3a10090f;
+}
+
+.creatorManageItemOfficial {
+  border:2px solid #c28a1e;
+  background:linear-gradient(180deg,#fffdf8 0%,#fff6e8 100%);
+  box-shadow:0 8px 20px #c28a1e1f;
+}
+
+.creatorTierFieldset {
+  border:none;
+  margin:0 0 14px;
+  padding:0;
+}
+
+.creatorTierOptions {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.creatorTierOption {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:12px;
+  border:1px solid #c28a1e40;
+  border-radius:10px;
+  background:#fffaf2;
+  cursor:pointer;
+}
+
+.creatorTierOption:has(input:checked) {
+  border-color:#c28a1e;
+  background:#fff4df;
+  box-shadow:0 0 0 2px #c28a1e26;
+}
+
+.creatorTierOption input {
+  margin-top:3px;
+}
+
+.creatorTierOptionLabel {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  font-family:Mukta,sans-serif;
+  font-size:14px;
+  color:#2b2522;
+}
+
+.creatorTierOptionLabel small {
+  font-size:12px;
+  color:#7a6550;
+  font-weight:500;
+}
+
+.creatorTierBadgeOfficial,
+.creatorTierBadgeDigital {
+  display:inline-block;
+  margin-bottom:6px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-family:Mukta,sans-serif;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+}
+
+.creatorTierBadgeOfficial {
+  background:linear-gradient(90deg,#c28a1e,#e6b422);
+  color:#fff;
+}
+
+.creatorTierBadgeDigital {
+  background:#ffe8f3;
+  color:#c2185b;
 }
 
 .creatorManagePhoto {

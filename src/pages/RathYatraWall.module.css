@@ -210,9 +210,11 @@
   position: absolute;
   width: 190px;
   max-width: 42vw;
+  cursor: grab;
   user-select: none;
-  pointer-events: none;
+  touch-action: none;
 }
+
 
 .sankalpNoteCard {
   background: linear-gradient(180deg, #f0fdf8 0%, #fff 100%);
@@ -258,8 +260,9 @@
   align-items: center;
   justify-content: flex-start;
   gap: 5px;
+  cursor: grab;
   user-select: none;
-  pointer-events: none;
+  touch-action: none;
   text-align: center;
 }
 
@@ -300,8 +303,10 @@
   z-index: 50;
 }
 
-.photoDragging {
+.photoDragging,
+.wallItemDragging {
   cursor: grabbing;
+  filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.28));
 }
 
 .photoCard {

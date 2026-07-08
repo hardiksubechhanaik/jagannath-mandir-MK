@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Message from '../models/Message.js';
 import { relativeTime } from '../utils/format.js';
-import { clampText, isValidEmail } from '../lib/validators.js';
+import { clampText, isValidEmail, isValidIndianMobile, sanitizeIndianMobileDigits } from '../lib/validators.js';
 
 function toClient(doc) {
   return {
@@ -23,7 +23,8 @@ export const createMessage = asyncHandler(async (req, res) => {
   const name = clampText(req.body?.name, 120);
   const email = clampText(req.body?.email, 254);
   const message = clampText(req.body?.message, 5000);
-  const mobile = clampText(req.body?.mobile, 20);
+  const mobileRaw = clampText(req.body?.mobile, 20);
+  const mobile = sanitizeIndianMobileDigits(mobileRaw);
 
   if (!name || !email || !message) {
     res.status(400);
@@ -32,6 +33,10 @@ export const createMessage = asyncHandler(async (req, res) => {
   if (!isValidEmail(email)) {
     res.status(400);
     throw new Error('A valid email is required');
+  }
+  if (mobileRaw && !isValidIndianMobile(mobileRaw)) {
+    res.status(400);
+    throw new Error('Enter a valid 10-digit mobile number starting with 5, 6, 7, 8, or 9');
   }
 
   const fullMessage = mobile

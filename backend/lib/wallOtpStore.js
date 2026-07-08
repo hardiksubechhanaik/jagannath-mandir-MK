@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { INDIAN_MOBILE_RE, sanitizeIndianMobileDigits } from './validators.js';
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const OTP_COOLDOWN_MS = 60 * 1000;
@@ -11,10 +12,8 @@ const otpByPhone = new Map();
 const rateByPhone = new Map();
 
 export function normalizePhone(raw) {
-  const digits = String(raw ?? '').replace(/\D/g, '');
-  if (digits.length === 10) return `91${digits}`;
-  if (digits.length === 12 && digits.startsWith('91')) return digits;
-  if (digits.length === 11 && digits.startsWith('0')) return `91${digits.slice(1)}`;
+  const digits = sanitizeIndianMobileDigits(raw);
+  if (INDIAN_MOBILE_RE.test(digits)) return `91${digits}`;
   return null;
 }
 

@@ -6,7 +6,7 @@ import {
   statusToBackend,
   statusToFrontend,
 } from '../utils/format.js';
-import { clampText, isValidEmail, parseDonationAmount } from '../lib/validators.js';
+import { clampText, isValidEmail, isValidIndianMobile, parseDonationAmount, sanitizeIndianMobileDigits } from '../lib/validators.js';
 
 function toClient(doc) {
   return {
@@ -38,6 +38,7 @@ export const createDonation = asyncHandler(async (req, res) => {
 
   const resolvedName = clampText(donorName || name || donor.name, 120);
   const resolvedEmail = clampText(email || donor.email, 254);
+  const resolvedMobile = sanitizeIndianMobileDigits(donor.mobile);
   const parsedAmount = parseDonationAmount(amount);
 
   if (!resolvedName) {
@@ -47,6 +48,10 @@ export const createDonation = asyncHandler(async (req, res) => {
   if (!resolvedEmail || !isValidEmail(resolvedEmail)) {
     res.status(400);
     throw new Error('A valid email is required');
+  }
+  if (!resolvedMobile || !isValidIndianMobile(resolvedMobile)) {
+    res.status(400);
+    throw new Error('A valid 10-digit mobile number is required');
   }
   if (parsedAmount == null) {
     res.status(400);

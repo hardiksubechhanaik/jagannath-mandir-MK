@@ -1,5 +1,46 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiGet } from '../api/client';
+import { getPageFallback } from '../api/pageFallbacks';
+
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const cache = new Map();
+
+function readCache(endpoint) {
+  return cache.get(endpoint) ?? null;
+}
+
+function writeCache(endpoint, data) {
+  cache.set(endpoint, { data, fetchedAt: Date.now() });
+}
+
+function isFresh(entry) {
+  return entry && Date.now() - entry.fetchedAt < CACHE_TTL_MS;
+}
+
+/** Warm the in-memory cache ahead of navigation (nav hover / idle prefetch). */
+export function prefetchPageData(endpoint) {
+  if (!endpoint) return Promise.resolve(null);
+
+  const cached = readCache(endpoint);
+  if (isFresh(cached)) return Promise.resolve(cached.data);
+  if (cached?.inFlight) return cached.inFlight;
+
+  const promise = apiGet(endpoint)
+    .then((data) => {
+      writeCache(endpoint, data);
+      return data;
+    })
+    .catch(() => null)
+    .finally(() => {
+      const entry = readCache(endpoint);
+      if (entry?.inFlight === promise) {
+        delete entry.inFlight;
+      }
+    });
+
+  cache.set(endpoint, { ...(cached ?? {}), inFlight: promise });
+  return promise;
+}
 
 /** Refetch when the user returns to this tab or restores the page from cache. */
 export function useRefetchOnFocus(fetchFn, enabled = true) {
@@ -33,12 +74,24 @@ export function useRefetchOnFocus(fetchFn, enabled = true) {
   }, [enabled]);
 }
 
+function getInitialState(endpoint) {
+  const cached = readCache(endpoint);
+  const fallback = getPageFallback(endpoint);
+  const data = cached?.data ?? fallback;
+  return {
+    data,
+    loading: !data,
+    hasLoaded: Boolean(data),
+  };
+}
+
 export default function usePageData(endpoint, { refetchOnFocus = true } = {}) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const initial = getInitialState(endpoint);
+  const [data, setData] = useState(initial.data);
+  const [loading, setLoading] = useState(initial.loading);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const hasLoadedRef = useRef(false);
+  const hasLoadedRef = useRef(initial.hasLoaded);
 
   const fetchData = useCallback((options = {}) => {
     const background = options.background ?? hasLoadedRef.current;
@@ -52,6 +105,7 @@ export default function usePageData(endpoint, { refetchOnFocus = true } = {}) {
 
     return apiGet(endpoint)
       .then((result) => {
+        writeCache(endpoint, result);
         hasLoadedRef.current = true;
         setData(result);
         return result;
@@ -67,24 +121,45 @@ export default function usePageData(endpoint, { refetchOnFocus = true } = {}) {
   }, [endpoint]);
 
   useEffect(() => {
-    hasLoadedRef.current = false;
+    const cached = readCache(endpoint);
+    const fallback = getPageFallback(endpoint);
+    const immediate = cached?.data ?? fallback;
+
+    hasLoadedRef.current = Boolean(immediate);
+    setData(immediate);
+    setError(null);
+
+    if (immediate) {
+      setLoading(false);
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+      setRefreshing(false);
+    }
+
     let cancelled = false;
 
-    setLoading(true);
-    setError(null);
+    if (isFresh(cached)) {
+      setRefreshing(false);
+      return undefined;
+    }
 
     apiGet(endpoint)
       .then((result) => {
         if (!cancelled) {
+          writeCache(endpoint, result);
           hasLoadedRef.current = true;
           setData(result);
         }
       })
       .catch((err) => {
-        if (!cancelled) setError(err);
+        if (!cancelled && !immediate) setError(err);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       });
 
     return () => {

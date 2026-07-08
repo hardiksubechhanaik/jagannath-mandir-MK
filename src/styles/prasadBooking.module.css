@@ -201,6 +201,146 @@
   line-height: 1.4;
 }
 
+.datePicker {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.datePickerSelected {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dccba0;
+  border-radius: 7px;
+  background: var(--cream);
+  padding: 11px 13px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.datePickerShell {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dccba0;
+  border-radius: 10px;
+  background: #fff;
+  padding: 14px 16px;
+}
+
+.dateFieldBlock {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.qtyField {
+  max-width: 220px;
+}
+
+.datePickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.datePickerMonth {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--maroon);
+  text-align: center;
+  flex: 1;
+}
+
+.datePickerNav {
+  border: 1px solid #dccba0;
+  background: #f0e6ce;
+  color: var(--maroon);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.datePickerNav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.datePickerNav:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.datePickerWeekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.datePickerWeekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.datePickerGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.datePickerBlank {
+  min-height: 44px;
+}
+
+.datePickerDay {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #fbf6ea;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.datePickerDay:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: #fff4df;
+}
+
+.datePickerDaySelected {
+  background: var(--maroon);
+  color: #fff;
+  border-color: var(--maroon);
+}
+
+.datePickerDaySelected:hover:not(:disabled) {
+  background: #8b1514;
+  border-color: #8b1514;
+}
+
+.datePickerDayDisabled {
+  background: #f3f0e8;
+  color: #b8b0a0;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.datePickerDay:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
 .prasadTile {
   border: 1.5px solid #dccba0;
   background: #fff;

@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { apiPost, endpoints } from '../../api/client';
+import { isValidIndianMobile, looksLikeEmail, sanitizeIndianMobileInput } from '../../lib/indianMobile';
 import { useTranslation } from '../../i18n/useTranslation';
 import styles from '../../styles/liveDarshan.module.css';
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value ?? '').trim());
+}
 
 export default function NotifyBand() {
   const { t } = useTranslation();
@@ -10,15 +15,36 @@ export default function NotifyBand() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
+  function handleContactChange(event) {
+    const { value } = event.target;
+    if (looksLikeEmail(value) || /[a-zA-Z]/.test(value)) {
+      setNotify(value);
+      return;
+    }
+    setNotify(sanitizeIndianMobileInput(value));
+    if (submitError) setSubmitError('');
+  }
+
   async function handleNotify(e) {
     e.preventDefault();
-    if (!notify.trim()) return;
+    const contact = notify.trim();
+    if (!contact) return;
+
+    if (looksLikeEmail(contact)) {
+      if (!isValidEmail(contact)) {
+        setSubmitError(t('forms.emailInvalid'));
+        return;
+      }
+    } else if (!isValidIndianMobile(contact)) {
+      setSubmitError(t('forms.mobileInvalid'));
+      return;
+    }
 
     setSubmitting(true);
     setSubmitError('');
 
     try {
-      await apiPost(endpoints.liveNotify, { contact: notify });
+      await apiPost(endpoints.liveNotify, { contact });
       setNotified(true);
       setNotify('');
     } catch (err) {
@@ -44,7 +70,7 @@ export default function NotifyBand() {
               className={styles.notifyInput}
               placeholder={t('live.notifyPlaceholder')}
               value={notify}
-              onChange={(e) => setNotify(e.target.value)}
+              onChange={handleContactChange}
               aria-label={t('live.notifyAria')}
             />
             <button type="submit" className={styles.notifyBtn} disabled={submitting}>

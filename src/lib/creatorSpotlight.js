@@ -1,3 +1,31 @@
+export const CREATOR_TIERS = {
+  OFFICIAL: 'official',
+  DIGITAL: 'digital',
+};
+
+export const CREATOR_TIER_LABELS = {
+  [CREATOR_TIERS.OFFICIAL]: 'Official Creator Partner',
+  [CREATOR_TIERS.DIGITAL]: 'Digital Partner',
+};
+
+export function normalizeCreatorTier(tier) {
+  return tier === CREATOR_TIERS.OFFICIAL ? CREATOR_TIERS.OFFICIAL : CREATOR_TIERS.DIGITAL;
+}
+
+export function isOfficialCreator(creator) {
+  return creator?.tier === CREATOR_TIERS.OFFICIAL;
+}
+
+export function partitionCreators(creators = []) {
+  const official = [];
+  const digital = [];
+  for (const creator of creators) {
+    if (isOfficialCreator(creator)) official.push(creator);
+    else digital.push(creator);
+  }
+  return { official, digital };
+}
+
 const CHANNEL = 'creator-spotlight';
 
 export function notifyCreatorSpotlightUpdate() {

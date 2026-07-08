@@ -136,7 +136,47 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 4px 18px 8px;
+}
+
+.headerMelaRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.supportHeaderBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff922b 0%, #f76707 100%);
+  color: #fff;
+  font-family: 'Coiny', cursive;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #c92a04, 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.supportHeaderBtn:hover {
+  filter: brightness(1.05);
+}
+
+.supportHeaderBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.supportHeaderIcon {
+  font-size: 15px;
+  line-height: 1;
 }
 
 .backLink {
@@ -1190,12 +1230,24 @@
   font-family: 'Mukta', sans-serif;
 }
 
-.modalCardMemory {
+.modalCardMemory,
+.modalCardGame {
   width: min(480px, 100%);
 }
 
-.modalCardMemory .modalBody {
-  padding: 12px;
+.modalCardMemory .modalBody,
+.modalCardGame .modalBody {
+  padding: 10px 12px;
+}
+
+.modalCardGame.modalCardPuzzle {
+  width: min(360px, 100%);
+  max-height: min(92vh, 520px);
+}
+
+.modalCardGame.modalCardPuzzle .modalBody {
+  padding: 8px 10px 10px;
+  overflow: hidden;
 }
 
 .modalHeader {
@@ -1473,6 +1525,19 @@
   background: #fff0f6;
 }
 
+.supportBlock + .supportBlock {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.supportBlockTitle {
+  margin: 0 0 8px;
+  font-family: 'Coiny', cursive;
+  font-size: 16px;
+  color: #c92a04;
+}
+
 .toggleRow {
   display: flex;
   align-items: center;
@@ -1517,6 +1582,35 @@
   margin-bottom: 14px;
 }
 
+.creatorGridOfficial {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.creatorSection {
+  margin-bottom: 16px;
+}
+
+.creatorSectionTitleOfficial {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9a6700;
+}
+
+.creatorSectionTitleDigital {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #c2185b;
+}
+
 .creatorCard {
   background: #fff;
   border: 1px solid #ffa8d0;
@@ -1538,6 +1632,31 @@
   box-shadow: 0 6px 16px rgba(255, 107, 170, 0.2);
 }
 
+.creatorCardOfficial {
+  background: linear-gradient(180deg, #fffdf5 0%, #fff8e8 100%);
+  border: 2px solid #d4a017;
+  box-shadow: 0 8px 22px rgba(194, 138, 30, 0.22);
+  padding-top: 10px;
+}
+
+.creatorCardOfficial:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(194, 138, 30, 0.28);
+}
+
+.creatorOfficialBadge {
+  display: inline-block;
+  margin-bottom: 2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c28a1e, #e6b422);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .creatorPhoto {
   width: 56px;
   height: 56px;
@@ -1556,6 +1675,19 @@
   align-items: center;
   justify-content: center;
   font-size: 22px;
+}
+
+.creatorPhotoOfficial {
+  width: 64px;
+  height: 64px;
+  border: 3px solid #d4a017;
+  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18);
+}
+
+.creatorPhotoOfficial.creatorPhotoFallback {
+  background: #fff8e8;
+  font-size: 24px;
+  color: #9a6700;
 }
 
 .creatorName {
@@ -1596,6 +1728,25 @@
 }
 
 @media (max-width: 640px) {
+  .header {
+    padding: 4px 12px 8px;
+  }
+
+  .headerMelaRow {
+    gap: 8px;
+  }
+
+  .supportHeaderBtn {
+    min-height: 32px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .headerTag {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+
   .bunting {
     height: 40px;
     padding-bottom: 4px;
@@ -1638,7 +1789,8 @@
     margin: 2px 0 0;
   }
 
-  .creatorGrid {
+  .creatorGrid,
+  .creatorGridOfficial {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     margin-bottom: 10px;

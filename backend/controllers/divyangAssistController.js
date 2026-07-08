@@ -4,12 +4,13 @@ import {
   dismissDivyangRequest,
   listPendingDivyangRequests,
 } from '../lib/divyangAssistStore.js';
+import { isValidIndianMobile, sanitizeIndianMobileDigits } from '../lib/validators.js';
 
 export const submitDivyangRequest = asyncHandler(async (req, res) => {
-  const phone = String(req.body?.phone ?? '').trim();
-  if (phone.length < 6) {
+  const phone = sanitizeIndianMobileDigits(req.body?.phone);
+  if (!isValidIndianMobile(phone)) {
     res.status(400);
-    throw new Error('Please enter a valid phone number');
+    throw new Error('Enter a valid 10-digit mobile number starting with 5, 6, 7, 8, or 9');
   }
 
   const request = createDivyangRequest(phone);

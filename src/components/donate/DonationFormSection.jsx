@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { adminPost, endpoints } from '../../api/client';
 import { useTranslation } from '../../i18n/useTranslation';
+import IndianMobileInput from '../IndianMobileInput';
+import { isValidIndianMobile } from '../../lib/indianMobile';
 import styles from '../../styles/donate.module.css';
 
 const EMPTY_DONOR = { name: '', email: '', mobile: '', pan: '' };
@@ -36,6 +38,7 @@ export default function DonationFormSection({ paymentsEnabled = false }) {
     if (!donor.email.trim()) e.email = t('forms.emailRequired');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donor.email)) e.email = t('forms.emailInvalid');
     if (!donor.mobile.trim()) e.mobile = t('forms.mobileRequired');
+    else if (!isValidIndianMobile(donor.mobile)) e.mobile = t('forms.mobileInvalid');
     return e;
   }
 
@@ -154,12 +157,16 @@ export default function DonationFormSection({ paymentsEnabled = false }) {
                   </div>
                   <div className={styles.fieldGroup}>
                     <label className={styles.fieldLabel} htmlFor="dn-mobile">{t('forms.mobile')} *</label>
-                    <input
-                      id="dn-mobile" name="mobile" type="tel"
+                    <IndianMobileInput
+                      id="dn-mobile"
+                      name="mobile"
                       placeholder={t('forms.phonePlaceholder')}
-                      value={donor.mobile} onChange={handleDonorChange}
-                      className={`${styles.fieldInput} ${errors.mobile ? styles.fieldError : ''}`}
-                      autoComplete="tel"
+                      value={donor.mobile}
+                      onChange={handleDonorChange}
+                      className={styles.fieldInput}
+                      hasError={Boolean(errors.mobile)}
+                      errorClassName={styles.fieldError}
+                      required
                     />
                     {errors.mobile && <span className={styles.errMsg}>{errors.mobile}</span>}
                   </div>

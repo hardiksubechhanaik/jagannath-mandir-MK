@@ -38,7 +38,13 @@ export const STEPS = [
 
 export function parsePreferredDate(dateStr) {
   if (!dateStr?.trim()) return null;
-  const parsed = new Date(dateStr.trim());
+  const trimmed = dateStr.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    const [y, m, d] = trimmed.split('-').map(Number);
+    const parsed = new Date(y, m - 1, d);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  const parsed = new Date(trimmed);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 

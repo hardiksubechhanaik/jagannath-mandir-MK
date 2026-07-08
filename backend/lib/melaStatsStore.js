@@ -16,6 +16,8 @@ export const MELA_STALL_KEYS = [
   'helpline',
   'creators',
   'memory',
+  'tictactoe',
+  'puzzle',
 ];
 
 const counts = Object.fromEntries(MELA_STALL_KEYS.map((key) => [key, 0]));

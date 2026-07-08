@@ -5,6 +5,7 @@ import GalleryItem from '../models/GalleryItem.js';
 import BlogPost from '../models/BlogPost.js';
 import Festival from '../models/Festival.js';
 import Setting from '../models/Setting.js';
+import Creator from '../models/Creator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SNAPSHOT_DIR = path.join(__dirname, '../.data');
@@ -32,11 +33,12 @@ function stripDoc(doc) {
 export async function saveDevSnapshot() {
   if (!isMemoryDb()) return;
 
-  const [gallery, blogs, festivals, settings] = await Promise.all([
+  const [gallery, blogs, festivals, settings, creators] = await Promise.all([
     GalleryItem.find().sort({ createdAt: -1 }).lean(),
     BlogPost.find().sort({ createdAt: -1 }).lean(),
     Festival.find().sort({ order: 1, createdAt: 1 }).lean(),
     Setting.findOne().lean(),
+    Creator.find().sort({ order: 1, createdAt: 1 }).lean(),
   ]);
 
   const snapshot = {
@@ -45,6 +47,7 @@ export async function saveDevSnapshot() {
     blogs: blogs.map(stripDoc),
     festivals: festivals.map(stripDoc),
     settings: settings ? stripDoc(settings) : null,
+    creators: creators.map(stripDoc),
   };
 
   fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
@@ -74,10 +77,11 @@ export async function restoreDevSnapshot() {
 
   const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, 'utf8'));
 
-  const [galleryRestored, blogsRestored, festivalsRestored] = await Promise.all([
+  const [galleryRestored, blogsRestored, festivalsRestored, creatorsRestored] = await Promise.all([
     replaceCollection(GalleryItem, snapshot.gallery),
     replaceCollection(BlogPost, snapshot.blogs),
     replaceCollection(Festival, snapshot.festivals),
+    replaceCollection(Creator, snapshot.creators),
   ]);
 
   if (snapshot.settings) {
@@ -89,12 +93,13 @@ export async function restoreDevSnapshot() {
     }
   }
 
-  if (galleryRestored || blogsRestored || festivalsRestored || snapshot.settings) {
+  if (galleryRestored || blogsRestored || festivalsRestored || creatorsRestored || snapshot.settings) {
     console.log(
       `Restored dev snapshot (${[
         galleryRestored ? `${snapshot.gallery.length} gallery` : null,
         blogsRestored ? `${snapshot.blogs.length} blogs` : null,
         festivalsRestored ? `${snapshot.festivals.length} festivals` : null,
+        creatorsRestored ? `${snapshot.creators?.length ?? 0} creators` : null,
         snapshot.settings ? 'settings' : null,
       ]
         .filter(Boolean)

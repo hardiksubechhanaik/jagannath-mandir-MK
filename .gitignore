@@ -36,3 +36,5 @@ vite
 
 # Cursor
 .cursor/
+.vercel
+.env*

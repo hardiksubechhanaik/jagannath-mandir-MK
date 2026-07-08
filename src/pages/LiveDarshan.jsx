@@ -10,7 +10,7 @@ import styles from '../styles/liveDarshan.module.css';
 export default function LiveDarshan() {
   const { data, loading, error } = usePageData(endpoints.liveDarshan);
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <PageShell active="live-darshan" className={styles.page}>
         <PageLoading />
@@ -18,7 +18,7 @@ export default function LiveDarshan() {
     );
   }
 
-  if (error) {
+  if (error && !data) {
     return (
       <PageShell active="live-darshan" className={styles.page}>
         <PageError message={error.message} />

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { endpoints } from './api/client'
 import { prefetchPageData } from './hooks/usePageData'
 import HashScroll from './components/HashScroll'
+import MandirLoader from './components/MandirLoader'
 import MelaFloatingLogo from './components/MelaFloatingLogo'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -53,6 +54,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <MandirLoader />
       <HashScroll />
       <MelaFloatingLogo />
       <Routes>

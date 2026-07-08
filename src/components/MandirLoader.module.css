@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Anek+Odia:wght@100..800&family=Abel&family=Kaushan+Script&display=swap');
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0ecd4;
+  gap: 0.5rem;
+  transition: opacity 420ms ease, visibility 420ms ease;
+}
+
+.overlayClosing {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.logo {
+  position: fixed;
+  top: 16px;
+  width: clamp(80px, 20vw, 250px);
+  height: auto;
+}
+
+.mandirLogo {
+  left: 0;
+}
+
+.yatraLogo {
+  right: 22px;
+}
+
+.loading {
+  color: #c17a00;
+  font-family: 'Kaushan Script', cursive;
+  font-size: clamp(14px, 2.2vw, 18px);
+  margin-bottom: 3%;
+  animation: fadePulse 5500ms infinite;
+}
+
+.eyes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3vw;
+}
+
+.eye {
+  width: 25vw;
+  height: 25vw;
+  max-width: 314px;
+  max-height: 314px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: conic-gradient(from 0deg, #360606 0%, #b11616 50%, #b11616 75%, #360606 100%);
+  animation: spinRing 3000ms linear infinite;
+}
+
+.eyeWhite {
+  width: 79%;
+  height: 79%;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pupil {
+  background-color: #000;
+  height: 56%;
+  width: 56%;
+  border-radius: 50%;
+  animation: eyeMoves 4s ease-in-out infinite;
+}
+
+.text {
+  margin-top: 2%;
+  text-align: center;
+}
+
+.odiatext {
+  color: #8b0000;
+  font-family: 'Anek Odia', sans-serif;
+  font-weight: 700;
+  font-size: clamp(12px, 2.5vw, 15px);
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+}
+
+.odiatext h1 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.meaning {
+  color: #c17a00;
+  font-family: 'Kaushan Script', cursive;
+  font-size: clamp(14px, 2.2vw, 18px);
+  margin-bottom: 1vw;
+}
+
+.meaning h2 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.quote {
+  color: #3b2a1a;
+  font-size: clamp(12px, 2.4vw, 20px);
+  font-family: 'Abel', sans-serif;
+  margin-bottom: 3vw;
+  max-width: min(92vw, 520px);
+  padding: 0 16px;
+}
+
+.footer {
+  color: #555;
+  font-family: 'Arial Narrow', 'Arial', sans-serif;
+  font-size: clamp(10px, 2vw, 13px);
+  position: fixed;
+  bottom: 5px;
+  text-align: center;
+  padding: 0 12px;
+}
+
+@media (max-width: 480px) {
+  .eye {
+    width: 38vw;
+    height: 38vw;
+  }
+
+  .eyes {
+    gap: 8vw;
+  }
+}
+
+@keyframes eyeMoves {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(28%);
+  }
+
+  75% {
+    transform: translateX(-28%);
+  }
+}
+
+@keyframes spinRing {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadePulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

@@ -70,8 +70,6 @@ export default function CreatorMarquee() {
     <>
       <section className={styles.section} aria-labelledby="creator-marquee-title">
         <div className={styles.header}>
-          <span className={styles.eyebrow}>{t('home.creatorMarqueeEyebrow')}</span>
-          <span className={styles.divider} aria-hidden="true" />
           <h2 id="creator-marquee-title" className={styles.title}>
             {t('home.creatorMarqueeTitle')}
           </h2>

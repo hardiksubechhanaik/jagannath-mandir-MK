@@ -53,7 +53,7 @@ const STALL_META = {
   trivia: { title: 'Ratha Yatra Trivia', icon: '🎯', color: '#B983FF', colorLight: '#DBBBFF' },
   cert: { title: 'Darshan Certificate', icon: '🎖', color: '#4D96FF', colorLight: '#9DC4FF' },
   guide: { title: 'First-Time Guide', icon: '🧭', color: '#6BCB77', colorLight: '#A6E6AC' },
-  creators: { title: 'Creator Spotlight', icon: '🎥', color: '#FF6BAA', colorLight: '#FFA8D0' },
+  creators: { title: 'Partners Spotlight', icon: '🎥', color: '#FF6BAA', colorLight: '#FFA8D0' },
   memory: { title: 'Memory Match', icon: '🧠', color: '#7C5CFF', colorLight: '#B983FF' },
   tictactoe: { title: 'Tic Tac Toe', icon: '⭕', color: '#22B8CF', colorLight: '#99E9F2' },
   puzzle: { title: 'Rath Yatra Puzzle', icon: '🧩', color: '#F06595', colorLight: '#FAA2C1' },

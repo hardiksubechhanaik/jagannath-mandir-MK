@@ -10,9 +10,10 @@
     "dev:admin": "npm run dev --prefix admin-app",
     "dev:backend": "npm run dev --prefix backend",
     "start:server": "node server/index.js",
-    "build": "vite build",
+    "build": "vite build && npm run build:admin:embed",
     "build:admin": "npm run build --prefix admin-app",
-    "build:all": "npm run build && npm run build:admin",
+    "build:admin:embed": "VITE_ADMIN_BASE=/admin/ VITE_API_URL=${VITE_API_URL:-https://jagannath-mandir-mk.onrender.com} npm run build --prefix admin-app && node scripts/embed-admin.mjs",
+    "build:all": "npm run build",
     "start:backend": "npm start --prefix backend",
     "lint": "eslint .",
     "preview": "vite preview"

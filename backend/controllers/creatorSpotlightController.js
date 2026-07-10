@@ -1,7 +1,4 @@
 import asyncHandler from 'express-async-handler';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { scheduleDevSnapshot } from '../config/devSnapshot.js';
 import {
   createCreator,
@@ -10,11 +7,7 @@ import {
   listCreators,
   updateCreator,
 } from '../lib/creatorSpotlightStore.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export const creatorUploadsDir = path.join(__dirname, '../uploads/rath-creators');
-
-fs.mkdirSync(creatorUploadsDir, { recursive: true });
+import { deleteStoredMedia, mediaPath, saveUploadedImage } from '../lib/mediaStorage.js';
 
 function normalizeHandle(raw) {
   const value = String(raw ?? '').trim();
@@ -24,15 +17,8 @@ function normalizeHandle(raw) {
   return `@${handle}`;
 }
 
-function photoPublicPath(filename) {
-  return `/uploads/rath-creators/${filename}`;
-}
-
-function removePhotoFile(photoUrl) {
-  if (!photoUrl || !photoUrl.includes('/uploads/rath-creators/')) return;
-  const filename = path.basename(photoUrl);
-  const fullPath = path.join(creatorUploadsDir, filename);
-  if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+function parseBoolean(value) {
+  return value === true || value === 'true' || value === '1' || value === 'on';
 }
 
 export const listPublicCreators = asyncHandler(async (_req, res) => {
@@ -46,18 +32,29 @@ export const listVolunteerCreators = asyncHandler(async (_req, res) => {
 export const createVolunteerCreator = asyncHandler(async (req, res) => {
   const name = String(req.body?.name ?? '').trim();
   const instagramHandle = normalizeHandle(req.body?.instagramHandle);
-  const tier = req.body?.tier === 'official' ? 'official' : 'digital';
+  const partnerType = String(req.body?.partnerType ?? '').trim() || 'Partner';
+  const details = String(req.body?.details ?? '').trim();
+  const highlighted = parseBoolean(req.body?.highlighted);
+
   if (!name) {
     res.status(400);
-    throw new Error('Creator name is required');
-  }
-  if (!instagramHandle || instagramHandle === '@') {
-    res.status(400);
-    throw new Error('Instagram handle or link is required');
+    throw new Error('Partner name is required');
   }
 
-  const photoUrl = req.file ? photoPublicPath(req.file.filename) : '';
-  const creator = await createCreator({ name, instagramHandle, photoUrl, tier });
+  let photoUrl = '';
+  if (req.file) {
+    const fileId = await saveUploadedImage(req.file, 'creator');
+    photoUrl = mediaPath(fileId);
+  }
+
+  const creator = await createCreator({
+    name,
+    instagramHandle,
+    photoUrl,
+    partnerType,
+    details,
+    highlighted,
+  });
   scheduleDevSnapshot();
   res.status(201).json({ creator });
 });
@@ -66,7 +63,7 @@ export const updateVolunteerCreator = asyncHandler(async (req, res) => {
   const existing = await getCreator(req.params.id);
   if (!existing) {
     res.status(404);
-    throw new Error('Creator not found');
+    throw new Error('Partner not found');
   }
 
   const patch = {};
@@ -74,24 +71,28 @@ export const updateVolunteerCreator = asyncHandler(async (req, res) => {
     const name = String(req.body.name).trim();
     if (!name) {
       res.status(400);
-      throw new Error('Creator name cannot be empty');
+      throw new Error('Partner name cannot be empty');
     }
     patch.name = name;
   }
   if (req.body?.instagramHandle !== undefined) {
-    const instagramHandle = normalizeHandle(req.body.instagramHandle);
-    if (!instagramHandle || instagramHandle === '@') {
-      res.status(400);
-      throw new Error('Instagram handle or link is required');
-    }
-    patch.instagramHandle = instagramHandle;
+    patch.instagramHandle = normalizeHandle(req.body.instagramHandle);
   }
-  if (req.body?.tier !== undefined) {
-    patch.tier = req.body.tier === 'official' ? 'official' : 'digital';
+  if (req.body?.partnerType !== undefined) {
+    patch.partnerType = String(req.body.partnerType).trim() || 'Partner';
+  }
+  if (req.body?.details !== undefined) {
+    patch.details = String(req.body.details).trim();
+  }
+  if (req.body?.highlighted !== undefined) {
+    patch.highlighted = parseBoolean(req.body.highlighted);
   }
   if (req.file) {
-    if (existing.photoUrl) removePhotoFile(existing.photoUrl);
-    patch.photoUrl = photoPublicPath(req.file.filename);
+    if (existing.photoUrl) {
+      await deleteStoredMedia(existing.photoUrl);
+    }
+    const fileId = await saveUploadedImage(req.file, 'creator');
+    patch.photoUrl = mediaPath(fileId);
   }
 
   const creator = await updateCreator(req.params.id, patch);
@@ -103,9 +104,11 @@ export const deleteVolunteerCreator = asyncHandler(async (req, res) => {
   const existing = await deleteCreator(req.params.id);
   if (!existing) {
     res.status(404);
-    throw new Error('Creator not found');
+    throw new Error('Partner not found');
   }
-  if (existing.photoUrl) removePhotoFile(existing.photoUrl);
+  if (existing.photoUrl) {
+    await deleteStoredMedia(existing.photoUrl);
+  }
   scheduleDevSnapshot();
-  res.json({ message: 'Creator removed', creator: existing });
+  res.json({ message: 'Partner removed', creator: existing });
 });

@@ -16,6 +16,7 @@ const GROUPS = [
       { to: '/blogs', icon: '✎', label: 'Blog Posts' },
       { to: '/festivals', icon: '✦', label: 'Festivals' },
       { to: '/timings', icon: '◷', label: 'Timings' },
+      { to: '/prasad', icon: '❋', label: 'Prasad Prices' },
     ],
   },
   {

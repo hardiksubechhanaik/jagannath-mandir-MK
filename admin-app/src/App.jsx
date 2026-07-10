@@ -7,6 +7,8 @@ import Gallery from './pages/Gallery.jsx';
 import Blogs from './pages/Blogs.jsx';
 import Festivals from './pages/Festivals.jsx';
 import Timings from './pages/Timings.jsx';
+import SpecialTimings from './pages/SpecialTimings.jsx';
+import Prasad from './pages/Prasad.jsx';
 import Donations from './pages/Donations.jsx';
 import Messages from './pages/Messages.jsx';
 import Settings from './pages/Settings.jsx';
@@ -35,6 +37,8 @@ export default function App() {
         <Route path="blogs" element={<Blogs />} />
         <Route path="festivals" element={<Festivals />} />
         <Route path="timings" element={<Timings />} />
+        <Route path="special-timings" element={<SpecialTimings />} />
+        <Route path="prasad" element={<Prasad />} />
         <Route path="donations" element={<Donations />} />
         <Route path="messages" element={<Messages />} />
         <Route path="settings" element={<Settings />} />

@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Timing from '../models/Timing.js';
+import { scheduleDevSnapshot } from '../config/devSnapshot.js';
 
 function rowToClient(doc) {
   return {
@@ -40,6 +41,7 @@ export const createTiming = asyncHandler(async (req, res) => {
     time,
     order: order ?? count,
   });
+  scheduleDevSnapshot();
   res.status(201).json(await groupedTimings());
 });
 
@@ -58,6 +60,7 @@ export const updateTiming = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Timing not found');
   }
+  scheduleDevSnapshot();
   res.json(await groupedTimings());
 });
 
@@ -67,6 +70,7 @@ export const deleteTiming = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Timing not found');
   }
+  scheduleDevSnapshot();
   res.json(await groupedTimings());
 });
 
@@ -113,6 +117,7 @@ export const bulkUpdateTimings = asyncHandler(async (req, res) => {
     }
   }
 
+  scheduleDevSnapshot();
   res.json(await groupedTimings());
 });
 

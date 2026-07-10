@@ -153,15 +153,15 @@
   gap: 6px;
   min-height: 36px;
   padding: 6px 12px;
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.95);
   border-radius: 999px;
-  background: linear-gradient(180deg, #ff922b 0%, #f76707 100%);
+  background: linear-gradient(180deg, #fa5252 0%, #e03131 100%);
   color: #fff;
   font-family: 'Coiny', cursive;
   font-size: 13px;
   letter-spacing: 0.02em;
   cursor: pointer;
-  box-shadow: 0 3px 0 #c92a04, 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 0 #9b1c1c, 0 4px 12px rgba(0, 0, 0, 0.22);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -1531,6 +1531,22 @@
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.supportEmergencyNote {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ffc9c9;
+  background: #fff5f5;
+  color: #862e2e;
+  font-family: Mukta, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.supportEmergencyNote strong {
+  color: #c92a04;
+}
+
 .supportBlockTitle {
   margin: 0 0 8px;
   font-family: 'Coiny', cursive;
@@ -1642,6 +1658,20 @@
 .creatorCardOfficial:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 24px rgba(194, 138, 30, 0.28);
+}
+
+.creatorCardStatic {
+  cursor: default;
+}
+
+.creatorCardStatic:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.creatorCardOfficial.creatorCardStatic:hover {
+  transform: none;
+  box-shadow: 0 8px 22px rgba(194, 138, 30, 0.22);
 }
 
 .creatorOfficialBadge {

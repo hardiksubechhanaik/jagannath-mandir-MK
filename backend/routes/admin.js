@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import multer from 'multer';
 import { protect, requireAdmin } from '../middleware/auth.js';
 import {
   listGallery,
@@ -27,6 +26,12 @@ import {
   bulkUpdateTimings,
 } from '../controllers/timingController.js';
 import {
+  listSpecialTimetables,
+  createSpecialTimetable,
+  updateSpecialTimetable,
+  deleteSpecialTimetable,
+} from '../controllers/specialTimetableController.js';
+import {
   listDonations,
   updateDonation,
 } from '../controllers/donationController.js';
@@ -38,24 +43,12 @@ import {
 import { updateSettings } from '../controllers/settingController.js';
 import { getSummary } from '../controllers/statsController.js';
 import { purgeFakeData } from '../controllers/maintenanceController.js';
-import { uploadImage, uploadsDir } from '../controllers/uploadController.js';
+import { uploadImage } from '../controllers/uploadController.js';
 import { uploadLimiter } from '../middleware/rateLimit.js';
-import { imageFileFilter, safeImageFilename } from '../lib/uploadSecurity.js';
+import { createImageUpload, handleMulterError } from '../lib/multerMemory.js';
 
 const adminRouter = Router();
-
-const storage = multer.diskStorage({
-  destination: uploadsDir,
-  filename: (_req, file, cb) => {
-    cb(null, safeImageFilename('upload', file.originalname));
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 15 * 1024 * 1024 },
-  fileFilter: imageFileFilter,
-});
+const upload = createImageUpload();
 
 adminRouter.use(protect, requireAdmin);
 
@@ -80,6 +73,11 @@ adminRouter.post('/timings', createTiming);
 adminRouter.put('/timings/:id', updateTiming);
 adminRouter.delete('/timings/:id', deleteTiming);
 
+adminRouter.get('/special-timings', listSpecialTimetables);
+adminRouter.post('/special-timings', createSpecialTimetable);
+adminRouter.put('/special-timings/:id', updateSpecialTimetable);
+adminRouter.delete('/special-timings/:id', deleteSpecialTimetable);
+
 adminRouter.get('/donations', listDonations);
 adminRouter.put('/donations/:id', updateDonation);
 
@@ -92,12 +90,7 @@ adminRouter.get('/stats/summary', getSummary);
 adminRouter.post('/maintenance/purge-sample', purgeFakeData);
 adminRouter.post('/upload', uploadLimiter, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({ message: 'Image is too large. Please use a file under 15 MB.' });
-      }
-      return res.status(400).json({ message: err.message || 'Upload failed.' });
-    }
+    if (handleMulterError(err, res)) return;
     next();
   });
 }, uploadImage);

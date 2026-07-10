@@ -5,8 +5,12 @@
   align-items: center;
   gap: 5px;
   width: 72px;
-  text-decoration: none;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
   color: inherit;
+  font: inherit;
   transition: transform 0.15s ease;
 }
 

@@ -53,8 +53,6 @@ export default function HomeDonateBand({ donationAmounts }) {
             ))}
           </div>
 
-          <div className={styles.customAmount}>{t('home.otherAmount')}</div>
-
           <Link to="/donate" className={styles.proceedBtn}>{t('home.proceedDonate')}</Link>
           <div className={styles.donateMeta}>{t('home.donateMeta')}</div>
         </div>

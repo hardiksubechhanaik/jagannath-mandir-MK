@@ -767,6 +767,48 @@
   background: var(--maroon);
   color: #F7EFD8;
 }
+.specialScheduleBanner {
+  max-width: 760px;
+  margin: 0 auto 28px;
+  padding: 18px 20px;
+  border-radius: 10px;
+  border: 1.5px solid #e3c36a;
+  background: linear-gradient(180deg, #fffdf5 0%, #fff8e8 100%);
+  text-align: center;
+}
+.specialScheduleEyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #9e2b25;
+  margin-bottom: 6px;
+}
+.specialScheduleTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #3a1009;
+  line-height: 1.15;
+}
+.specialScheduleOdia {
+  font-family: 'Noto Sans Oriya', sans-serif;
+  font-size: 20px;
+  color: #b58a2e;
+}
+.specialScheduleDates {
+  margin-top: 6px;
+  font-family: Mukta, sans-serif;
+  font-size: 14px;
+  color: #7a6550;
+}
+.specialScheduleNote {
+  margin: 10px 0 0;
+  font-family: Mukta, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #5a4a40;
+}
 .nitiGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -964,16 +1006,6 @@
 .amountActive {
   border-color: var(--gold);
   background: #FBF1D9;
-}
-.customAmount {
-  border: 1.5px dashed #DCCBA0;
-  border-radius: 5px;
-  padding: 13px;
-  text-align: center;
-  color: #9A8C70;
-  font-size: 14px;
-  margin-bottom: 18px;
-  cursor: text;
 }
 .proceedBtn {
   display: block;

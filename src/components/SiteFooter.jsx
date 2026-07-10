@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
 import { FOOTER_SOCIAL_LINKS } from '../data/site';
 import { getFooterLinks } from '../i18n/getNav';
 import { useTranslation } from '../i18n/useTranslation';
+import ScrollLink from './ScrollLink';
 import TempleLogo from './TempleLogo';
 import TempleMapEmbed from './TempleMapEmbed';
 import styles from '../styles/siteFooter.module.css';
@@ -40,7 +40,7 @@ export default function SiteFooter() {
             <div className={styles.footerColHead}>{t('site.footerExplore')}</div>
             <div className={styles.footerLinks}>
               {footerLinks.map(({ path, label }) => (
-                <Link key={path} to={path}>{label}</Link>
+                <ScrollLink key={path} to={path}>{label}</ScrollLink>
               ))}
             </div>
           </div>

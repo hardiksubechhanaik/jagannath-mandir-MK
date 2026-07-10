@@ -156,7 +156,7 @@ export default {
     "nextTomorrow": "Tomorrow · 5:00 AM",
     "seeSchedule": "See full schedule →",
     "creatorMarqueeEyebrow": "Creator Spotlight",
-    "creatorMarqueeTitle": "Official & Digital Partners",
+    "creatorMarqueeTitle": "Our Partners & Creators",
     "aboutEyebrow": "About the Mandir",
     "aboutTitle": "A home for Lord Jagannath, far from Puri.",
     "aboutBody1": "Built and cared for by the devotee community of Maruti Kunj, Shree Jagannath Mandir brings the rituals, festivals and living traditions of Puri to Bhondsi. The trinity — Jagannath, Balabhadra and Subhadra — are served daily through the full cycle of niti, from the first Mangala Arati to the night-time Pahuda.",

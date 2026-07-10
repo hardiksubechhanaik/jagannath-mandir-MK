@@ -1,24 +1,25 @@
 import { resolveMediaUrl } from '../../api/client';
 import {
   formatInstagramHandle,
-  instagramProfileUrl,
-  isOfficialCreator,
+  getPartnerTypeLabel,
+  hasInstagramHandle,
+  isHighlightedCreator,
 } from '../../lib/creatorSpotlight';
 import styles from './CreatorMarqueeCard.module.css';
 
-export default function CreatorMarqueeCard({ creator }) {
-  const official = isOfficialCreator(creator);
+export default function CreatorMarqueeCard({ creator, onSelect }) {
+  const highlighted = isHighlightedCreator(creator);
+  const partnerType = getPartnerTypeLabel(creator);
 
   return (
-    <a
-      href={instagramProfileUrl(creator.instagramHandle)}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      type="button"
       className={styles.item}
-      title={`${creator.name} ${formatInstagramHandle(creator.instagramHandle)}`}
+      title={`${creator.name} — ${partnerType}`}
+      onClick={() => onSelect?.(creator)}
     >
-      <div className={`${styles.circle} ${official ? styles.circleOfficial : ''}`}>
-        {official ? <span className={styles.badge}>★</span> : null}
+      <div className={`${styles.circle} ${highlighted ? styles.circleOfficial : ''}`}>
+        {highlighted ? <span className={styles.badge}>★</span> : null}
         {creator.photoUrl ? (
           <img
             src={resolveMediaUrl(creator.photoUrl)}
@@ -27,14 +28,16 @@ export default function CreatorMarqueeCard({ creator }) {
           />
         ) : (
           <span className={styles.fallback} aria-hidden="true">
-            {official ? '★' : '🎥'}
+            {highlighted ? '★' : '🎥'}
           </span>
         )}
       </div>
-      <span className={`${styles.name} ${official ? styles.nameOfficial : ''}`}>{creator.name}</span>
-      <span className={`${styles.handle} ${official ? styles.handleOfficial : ''}`}>
-        {formatInstagramHandle(creator.instagramHandle)}
-      </span>
-    </a>
+      <span className={`${styles.name} ${highlighted ? styles.nameOfficial : ''}`}>{creator.name}</span>
+      {hasInstagramHandle(creator.instagramHandle) ? (
+        <span className={`${styles.handle} ${highlighted ? styles.handleOfficial : ''}`}>
+          {formatInstagramHandle(creator.instagramHandle)}
+        </span>
+      ) : null}
+    </button>
   );
 }

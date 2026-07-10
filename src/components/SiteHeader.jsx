@@ -7,6 +7,7 @@ import {
   isNavItemActive,
 } from '../data/nav';
 import { useTempleStatusCopy } from '../hooks/useTempleStatusCopy';
+import useScrollNavigate from '../hooks/useScrollNavigate';
 import { LOCALES } from '../i18n/LanguageContext';
 import { getNav } from '../i18n/getNav';
 import { useTranslation } from '../i18n/useTranslation';
@@ -15,12 +16,16 @@ import styles from '../styles/siteHeader.module.css';
 
 function NavDropdownLink({ to, label, pathname, locationHash, onNavigate }) {
   const active = isNavItemActive(pathname, locationHash, to);
+  const scrollToTopAndNavigate = useScrollNavigate();
 
   return (
     <Link
       to={to}
       className={active ? `${styles.dropdownLink} ${styles.dropdownLinkActive}` : styles.dropdownLink}
-      onClick={onNavigate}
+      onClick={(event) => {
+        scrollToTopAndNavigate(to, event);
+        onNavigate?.();
+      }}
       onMouseEnter={() => prefetchRoute(to)}
       onFocus={() => prefetchRoute(to)}
       role="menuitem"
@@ -223,6 +228,7 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
   }, []);
 
   const donateActive = pathname === '/donate';
+  const scrollToTopAndNavigate = useScrollNavigate();
 
   return (
     <>
@@ -259,7 +265,11 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
 
         <div className={styles.navBar}>
           <div className={styles.nav}>
-            <Link to="/" className={styles.logoLockup}>
+            <Link
+              to="/"
+              className={styles.logoLockup}
+              onClick={(event) => scrollToTopAndNavigate('/', event)}
+            >
               <TempleLogo className={styles.logoImage} size={46} alt="" />
               <div className={styles.logoText}>
                 <div className={styles.logoName}>{t('site.templeName')}</div>
@@ -270,7 +280,10 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
             <Link
               to="/prasad"
               className={styles.mobileHeaderPrasad}
-              onClick={closeMenus}
+              onClick={(event) => {
+                scrollToTopAndNavigate('/prasad', event);
+                closeMenus();
+              }}
             >
               {t('nav.bookPrasad')}
             </Link>
@@ -313,6 +326,7 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                         className={({ isActive }) =>
                           isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink
                         }
+                        onClick={(event) => scrollToTopAndNavigate(entry.to, event)}
                         onMouseEnter={() => prefetchRoute(entry.to)}
                         onFocus={() => prefetchRoute(entry.to)}
                       >
@@ -347,14 +361,20 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                 <Link
                   to="/prasad"
                   className={styles.loginLink}
-                  onClick={closeMenus}
+                  onClick={(event) => {
+                    scrollToTopAndNavigate('/prasad', event);
+                    closeMenus();
+                  }}
                 >
                   {t('nav.bookPrasad')}
                 </Link>
                 <Link
                   to="/donate"
                   className={donateActive ? styles.donateBtnActive : styles.donateBtn}
-                  onClick={closeMenus}
+                  onClick={(event) => {
+                    scrollToTopAndNavigate('/donate', event);
+                    closeMenus();
+                  }}
                   onMouseEnter={() => prefetchRoute('/donate')}
                   onFocus={() => prefetchRoute('/donate')}
                 >
@@ -379,7 +399,10 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                             ? `${styles.mobileLink} ${styles.mobileLinkActive}`
                             : styles.mobileLink
                         }
-                        onClick={closeMenus}
+                        onClick={(event) => {
+                          scrollToTopAndNavigate(entry.to, event);
+                          closeMenus();
+                        }}
                         onMouseEnter={() => prefetchRoute(entry.to)}
                         onFocus={() => prefetchRoute(entry.to)}
                       >
@@ -402,7 +425,10 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                                 ? `${styles.mobileLink} ${styles.mobileLinkActive}`
                                 : styles.mobileLink
                             }
-                            onClick={closeMenus}
+                            onClick={(event) => {
+                              scrollToTopAndNavigate(item.to, event);
+                              closeMenus();
+                            }}
                             onMouseEnter={() => prefetchRoute(item.to)}
                             onFocus={() => prefetchRoute(item.to)}
                           >
@@ -427,14 +453,20 @@ export default function SiteHeader({ ribbon: ribbonOverride, ribbonExtra }) {
                   <Link
                     to="/prasad"
                     className={styles.mobileLoginBtn}
-                    onClick={closeMenus}
+                    onClick={(event) => {
+                      scrollToTopAndNavigate('/prasad', event);
+                      closeMenus();
+                    }}
                   >
                     {t('nav.bookPrasad')}
                   </Link>
                   <Link
                     to="/donate"
                     className={styles.mobileDonateBtn}
-                    onClick={closeMenus}
+                    onClick={(event) => {
+                      scrollToTopAndNavigate('/donate', event);
+                      closeMenus();
+                    }}
                   >
                     {t('nav.donate')}
                   </Link>

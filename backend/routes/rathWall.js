@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import multer from 'multer';
-import fs from 'node:fs';
 import { requireWallVolunteer } from '../middleware/wallAuth.js';
 import {
   approveWallPhoto,
@@ -14,7 +13,6 @@ import {
   submitWallPhoto,
   updateVolunteerWallSettings,
   volunteerWallLogin,
-  wallUploadsDir,
 } from '../controllers/rathWallController.js';
 import {
   dismissVolunteerDivyangRequest,
@@ -23,7 +21,6 @@ import {
 } from '../controllers/divyangAssistController.js';
 import {
   createVolunteerCreator,
-  creatorUploadsDir,
   deleteVolunteerCreator,
   listPublicCreators,
   listVolunteerCreators,
@@ -45,47 +42,14 @@ import {
 } from '../controllers/diyaController.js';
 import { readMelaStats, trackMelaStat } from '../controllers/melaStatsController.js';
 import { analyticsLimiter, loginLimiter, publicWriteLimiter, uploadLimiter } from '../middleware/rateLimit.js';
-import { imageFileFilter, safeImageFilename } from '../lib/uploadSecurity.js';
+import { createImageUpload, handleMulterError } from '../lib/multerMemory.js';
 
-fs.mkdirSync(wallUploadsDir, { recursive: true });
-fs.mkdirSync(creatorUploadsDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: wallUploadsDir,
-  filename: (_req, file, cb) => {
-    cb(null, safeImageFilename('wall', file.originalname));
-  },
-});
-
-const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
-
-const upload = multer({
-  storage,
-  limits: { fileSize: MAX_UPLOAD_BYTES },
-  fileFilter: imageFileFilter,
-});
-
-const creatorStorage = multer.diskStorage({
-  destination: creatorUploadsDir,
-  filename: (_req, file, cb) => {
-    cb(null, safeImageFilename('creator', file.originalname));
-  },
-});
-
-const creatorUpload = multer({
-  storage: creatorStorage,
-  limits: { fileSize: MAX_UPLOAD_BYTES },
-  fileFilter: imageFileFilter,
-});
+const upload = createImageUpload();
+const creatorUpload = createImageUpload();
 
 function handleCreatorUpload(req, res, next) {
   creatorUpload.single('photo')(req, res, (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({ message: 'Image must be under 15 MB' });
-      }
-      return res.status(400).json({ message: err.message || 'Upload failed' });
-    }
+    if (handleMulterError(err, res)) return;
     next();
   });
 }
@@ -97,12 +61,7 @@ rathWallRouter.get('/photos', getApprovedWallPhotos);
 
 rathWallRouter.post('/submit', uploadLimiter, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({ message: 'Image must be under 15 MB' });
-      }
-      return res.status(400).json({ message: err.message || 'Upload failed' });
-    }
+    if (handleMulterError(err, res)) return;
     next();
   });
 }, submitWallPhoto);

@@ -92,6 +92,9 @@ select.input {
 .toggle-opt.active { background: var(--maroon); color: var(--cream); }
 .toggle-opt.active-green { background: var(--green); color: #fff; }
 .toggle-opt.active-gold { background: var(--gold); color: var(--maroon-deep); }
+.timings-mode-toggle { flex-wrap: wrap; max-width: 100%; }
+.toggle-opt--special { border: 1px dashed #B58A2E; }
+.toggle-opt--special.active { background: #B58A2E; border-color: #B58A2E; color: #fff; }
 
 /* ===========================================================
    LOGIN
@@ -574,4 +577,138 @@ select.input {
   .trow { grid-template-columns: 1fr 1fr; gap: 8px; }
   .topbar-link { flex-shrink: 0; font-size: 12px; }
   .page-title { font-size: 30px; }
+}
+
+.special-rows-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0 10px;
+  flex-wrap: wrap;
+}
+
+.special-rows-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--maroon);
+}
+
+.special-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.special-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.special-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 900px;
+}
+
+.special-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.special-card-active {
+  border-color: #c28a1e;
+  box-shadow: 0 0 0 1px rgba(194, 138, 30, 0.15);
+}
+
+.special-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.special-card-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--maroon);
+}
+
+.special-card-odia {
+  font-family: var(--oriya);
+  font-size: 14px;
+  color: #b58a2e;
+  margin-top: 2px;
+}
+
+.special-card-dates {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.special-card-note,
+.special-card-meta {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.special-card-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge-live {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e6f7ee;
+  color: #157a5c;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-muted {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f3f0e8;
+  color: #7a6550;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.special-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+@media (max-width: 900px) {
+  .special-row {
+    grid-template-columns: 1fr;
+  }
 }

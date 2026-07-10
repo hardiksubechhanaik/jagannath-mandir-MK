@@ -1,8 +1,8 @@
 import GalleryItem from '../models/GalleryItem.js';
 import BlogPost from '../models/BlogPost.js';
 import Festival from '../models/Festival.js';
-import Timing from '../models/Timing.js';
 import Setting from '../models/Setting.js';
+import { resolvePublicNiti } from '../lib/timetableResolver.js';
 import {
   DEITY_IMAGES,
   TEMPLE_IMAGES,
@@ -29,7 +29,7 @@ import {
   BANK,
 } from '../../src/data/donate.js';
 import { NARASIMHA_IMAGE } from '../../src/data/contact.js';
-import { DEITY_MANTRA, SUMMER_NITI, WINTER_NITI } from '../../src/data/niti.js';
+import { DEITY_MANTRA } from '../../src/data/niti.js';
 import { getUpcomingFestivals } from '../../src/lib/todayBand.js';
 import {
   enrichFestival,
@@ -38,6 +38,7 @@ import {
 } from '../../src/lib/festivalDates.js';
 import { getTempleStatus } from '../lib/templeStatus.js';
 import { enrichSchedule } from '../lib/liveSchedule.js';
+import { normalizePrasadPricing } from '../lib/prasadPricing.js';
 import { getYoutubeChannelStats, getYoutubeRecentVideos } from './youtubeService.js';
 
 const API_ORIGIN = process.env.API_ORIGIN || `http://localhost:${process.env.PORT || 5001}`;
@@ -55,24 +56,14 @@ async function getSettingsDoc() {
 }
 
 async function getTimingsGrouped() {
-  const rows = await Timing.find().sort({ season: 1, order: 1 });
-  if (!rows.length) {
-    return {
-      summer: SUMMER_NITI.map(({ time, name, odia, note }) => ({ time, name, odia, note })),
-      winter: WINTER_NITI.map(({ time, name, odia, note }) => ({ time, name, odia, note })),
-    };
-  }
-
-  const grouped = { summer: [], winter: [] };
-  for (const row of rows) {
-    grouped[row.season].push({
-      time: row.time,
-      name: row.name,
-      odia: row.nameOdia,
-      note: row.note || '',
-    });
-  }
-  return grouped;
+  const resolved = await resolvePublicNiti();
+  return {
+    mode: resolved.mode,
+    activeSeason: resolved.activeSeason,
+    summer: resolved.summer,
+    winter: resolved.winter,
+    special: resolved.special,
+  };
 }
 
 function toPublicGalleryItem(doc, index = 0) {
@@ -183,13 +174,17 @@ export async function getPublicAbout() {
 
 export async function getPublicVisit() {
   const niti = await getTimingsGrouped();
+  const hoursSource = niti.mode === 'special' && niti.special?.items?.length
+    ? niti.special.items
+    : niti[niti.activeSeason] ?? niti.summer;
   return {
     glance: GLANCE,
-    hours: buildVisitHours(niti.summer),
+    hours: buildVisitHours(hoursSource),
     reach: REACH,
     dos: DOS,
     donts: DONTS,
     facilities: FACILITIES,
+    niti,
   };
 }
 
@@ -250,6 +245,13 @@ export async function getPublicDonate() {
   };
 }
 
+export async function getPublicPrasad() {
+  const settings = await getSettingsDoc();
+  return {
+    pricing: normalizePrasadPricing(settings.prasadPricing),
+  };
+}
+
 export async function getPublicContact() {
   const settings = await getSettingsDoc();
   return {
@@ -283,7 +285,15 @@ export async function getPublicBlogs() {
 
 export async function getPublicNiti(season) {
   const niti = await getTimingsGrouped();
-  if (season === 'summer') return { season: 'summer', items: niti.summer };
-  if (season === 'winter') return { season: 'winter', items: niti.winter };
+  if (niti.mode === 'special' && niti.special) {
+    return {
+      mode: 'special',
+      special: niti.special,
+      summer: niti.summer,
+      winter: niti.winter,
+    };
+  }
+  if (season === 'summer') return { mode: 'seasonal', season: 'summer', items: niti.summer };
+  if (season === 'winter') return { mode: 'seasonal', season: 'winter', items: niti.winter };
   return niti;
 }

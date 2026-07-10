@@ -38,6 +38,10 @@ export const settingsSeed = {
   morning: '5:00 AM – 1:30 PM',
   evening: '4:00 PM – 9:30 PM',
   paymentsEnabled: false,
+  prasadPricing: {
+    pickup: { weekday: 200, weekend: 120 },
+    'ananda-bazar': { weekday: 150, weekend: 100 },
+  },
   welcomePopupEnabled: true,
   welcomePopupEyebrow: 'Bhakti · Sanskriti · Seva',
   welcomePopupHeading: 'Are you a content creator?',

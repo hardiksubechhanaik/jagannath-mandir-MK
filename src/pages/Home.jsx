@@ -43,7 +43,7 @@ export default function Home() {
           name={t('home.sudarshanName')}
           devanagari={t('home.sudarshanDevanagari')}
         />
-        <NitiTimingsSection />
+        <NitiTimingsSection schedule={data?.niti} />
         <DeityFigureSection
           image={data.deityImages.lakshmi}
           alt={t('home.laxmiAlt')}

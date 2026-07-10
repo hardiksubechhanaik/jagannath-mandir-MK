@@ -54,12 +54,12 @@ export function isWeekend(date) {
   return day === 0 || day === 6;
 }
 
-export function getRatesForMethod(methodId) {
-  return PRICING[methodId] ?? PRICING.pickup;
+export function getRatesForMethod(methodId, pricing = PRICING) {
+  return pricing[methodId] ?? pricing.pickup;
 }
 
-export function getUnitPrice(methodId, dateStr) {
-  const rates = getRatesForMethod(methodId);
+export function getUnitPrice(methodId, dateStr, pricing = PRICING) {
+  const rates = getRatesForMethod(methodId, pricing);
   const parsed = parsePreferredDate(dateStr);
   if (!parsed) return null;
   return isWeekend(parsed) ? rates.weekend : rates.weekday;
@@ -69,9 +69,9 @@ export function formatPrice(amount) {
   return `₹${amount.toLocaleString('en-IN')}`;
 }
 
-export function getPriceLabel(methodId, dateStr) {
-  const rates = getRatesForMethod(methodId);
-  const unit = getUnitPrice(methodId, dateStr);
+export function getPriceLabel(methodId, dateStr, pricing = PRICING) {
+  const rates = getRatesForMethod(methodId, pricing);
+  const unit = getUnitPrice(methodId, dateStr, pricing);
   if (unit != null) {
     const dayType = isWeekend(parsePreferredDate(dateStr)) ? 'Sat–Sun' : 'Weekday';
     return `${formatPrice(unit)} (${dayType})`;

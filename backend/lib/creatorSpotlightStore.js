@@ -17,15 +17,28 @@ const DEFAULT_CREATORS = [
 
 let migrationDone = false;
 
+function legacyPartnerType(tier) {
+  if (tier === OFFICIAL_TIER) return 'Official Creator Partner';
+  if (tier === DIGITAL_TIER) return 'Digital Partner';
+  return 'Partner';
+}
+
 function toPublic(doc) {
   const plain = typeof doc.toObject === 'function' ? doc.toObject() : doc;
+  const tier = plain.tier === OFFICIAL_TIER ? OFFICIAL_TIER : DIGITAL_TIER;
+  const highlighted = plain.highlighted === true
+    || (plain.highlighted !== false && plain.tier === OFFICIAL_TIER && plain.partnerType == null);
+
   return {
     id: plain._id?.toString() ?? plain.id,
     name: plain.name,
     instagramHandle: plain.instagramHandle,
     photoUrl: plain.photoUrl ?? '',
     order: plain.order ?? 0,
-    tier: plain.tier === OFFICIAL_TIER ? OFFICIAL_TIER : DIGITAL_TIER,
+    partnerType: String(plain.partnerType ?? '').trim() || legacyPartnerType(plain.tier),
+    details: plain.details ?? '',
+    highlighted,
+    tier,
     createdAt: plain.createdAt instanceof Date ? plain.createdAt.toISOString() : plain.createdAt,
     updatedAt: plain.updatedAt instanceof Date ? plain.updatedAt.toISOString() : plain.updatedAt,
   };
@@ -44,6 +57,10 @@ async function importLegacyFile() {
         instagramHandle: row.instagramHandle,
         photoUrl: row.photoUrl ?? '',
         order: row.order ?? index,
+        partnerType: row.partnerType ?? legacyPartnerType(row.tier),
+        details: row.details ?? '',
+        highlighted: row.highlighted ?? row.tier === OFFICIAL_TIER,
+        tier: row.tier,
       })),
     );
     return true;
@@ -59,6 +76,8 @@ async function seedDevDefaults() {
       instagramHandle: entry.instagramHandle,
       photoUrl: entry.photoUrl,
       order: index,
+      partnerType: 'Digital Partner',
+      highlighted: false,
     })),
   );
 }
@@ -79,9 +98,8 @@ async function ensureMigrated() {
 
 function sortCreators(rows) {
   return rows.sort((a, b) => {
-    const tierRank = (tier) => (tier === OFFICIAL_TIER ? 0 : 1);
-    const tierDiff = tierRank(a.tier) - tierRank(b.tier);
-    if (tierDiff !== 0) return tierDiff;
+    const highlightDiff = Number(b.highlighted) - Number(a.highlighted);
+    if (highlightDiff !== 0) return highlightDiff;
     const orderDiff = (a.order ?? 0) - (b.order ?? 0);
     if (orderDiff !== 0) return orderDiff;
     return String(a.createdAt).localeCompare(String(b.createdAt));
@@ -100,7 +118,14 @@ export async function getCreator(id) {
   return doc ? toPublic(doc) : null;
 }
 
-export async function createCreator({ name, instagramHandle, photoUrl = '', tier = DIGITAL_TIER }) {
+export async function createCreator({
+  name,
+  instagramHandle,
+  photoUrl = '',
+  partnerType = 'Partner',
+  details = '',
+  highlighted = false,
+}) {
   await ensureMigrated();
   const order = await Creator.countDocuments();
   const doc = await Creator.create({
@@ -108,7 +133,9 @@ export async function createCreator({ name, instagramHandle, photoUrl = '', tier
     instagramHandle,
     photoUrl,
     order,
-    tier: tier === OFFICIAL_TIER ? OFFICIAL_TIER : DIGITAL_TIER,
+    partnerType: String(partnerType).trim() || 'Partner',
+    details: String(details).trim(),
+    highlighted: Boolean(highlighted),
   });
   return toPublic(doc);
 }

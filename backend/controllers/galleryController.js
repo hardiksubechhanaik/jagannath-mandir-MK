@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import GalleryItem from '../models/GalleryItem.js';
 import { scheduleDevSnapshot } from '../config/devSnapshot.js';
+import { deleteStoredMedia } from '../lib/mediaStorage.js';
 
 function toClient(doc) {
   return {
@@ -51,6 +52,9 @@ export const deleteGallery = asyncHandler(async (req, res) => {
   if (!item) {
     res.status(404);
     throw new Error('Gallery item not found');
+  }
+  if (item.imageUrl) {
+    await deleteStoredMedia(item.imageUrl);
   }
   const items = await GalleryItem.find().sort({ createdAt: -1 });
   scheduleDevSnapshot();

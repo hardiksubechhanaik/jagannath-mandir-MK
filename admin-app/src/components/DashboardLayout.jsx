@@ -45,9 +45,6 @@ export default function DashboardLayout() {
               <span>Site is live · jagannathmandir.org</span>
             </div>
           </div>
-          <a className="topbar-link" href="https://jagannathmandir.org" target="_blank" rel="noreferrer">
-            View site ↗
-          </a>
         </div>
         <div className="content">
           <PersistenceNotice />

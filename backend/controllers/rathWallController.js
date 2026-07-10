@@ -1,7 +1,4 @@
 import asyncHandler from 'express-async-handler';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import RathWallPhoto from '../models/RathWallPhoto.js';
 import BlockedWallPhone from '../models/BlockedWallPhone.js';
 import { normalizePhone } from '../lib/wallOtpStore.js';
@@ -14,9 +11,7 @@ import { clearApprovedDiyas } from '../lib/diyaStore.js';
 import { clearApprovedSankalps } from '../lib/sankalpStore.js';
 import { getLiveBoardOccupancy } from '../lib/wallBoardOccupancy.js';
 import { pickNextWallPosition } from '../lib/wallBoardLayout.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export const wallUploadsDir = path.join(__dirname, '../uploads/rath-wall');
+import { deleteStoredMedia, mediaPath, saveUploadedImage } from '../lib/mediaStorage.js';
 
 export const MAX_WALL_PHOTOS = 20;
 const GUEST_PHONE = 'guest';
@@ -29,9 +24,11 @@ async function enforceWallPhotoCap() {
   const oldest = await RathWallPhoto.find({ status: 'approved' })
     .sort({ approvedAt: 1, createdAt: 1 })
     .limit(excessCount)
-    .select('_id');
+    .select('_id imageUrl')
+    .lean();
 
   if (oldest.length > 0) {
+    await Promise.all(oldest.map((doc) => deleteStoredMedia(doc.imageUrl)));
     await RathWallPhoto.deleteMany({ _id: { $in: oldest.map((doc) => doc._id) } });
   }
 }
@@ -87,7 +84,8 @@ export const submitWallPhoto = asyncHandler(async (req, res) => {
   const maxZ = await RathWallPhoto.findOne({ status: 'approved' }).sort({ z: -1 }).lean();
   const z = (maxZ?.z ?? 20) + 1;
 
-  const imageUrl = `/uploads/rath-wall/${req.file.filename}`;
+  const fileId = await saveUploadedImage(req.file, 'wall');
+  const imageUrl = mediaPath(fileId);
   const photo = await RathWallPhoto.create({
     phone: GUEST_PHONE,
     name: name.slice(0, 80),
@@ -262,12 +260,9 @@ export const updateVolunteerWallSettings = asyncHandler(async (req, res) => {
 export const clearPublicWall = asyncHandler(async (_req, res) => {
   const approvedPhotos = await RathWallPhoto.find({ status: 'approved' }).lean();
 
-  approvedPhotos.forEach((photo) => {
-    if (!photo.imageUrl?.includes('/uploads/rath-wall/')) return;
-    const filename = path.basename(photo.imageUrl);
-    const fullPath = path.join(wallUploadsDir, filename);
-    if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
-  });
+  await Promise.all(
+    approvedPhotos.map((photo) => deleteStoredMedia(photo.imageUrl)),
+  );
 
   const photoResult = await RathWallPhoto.deleteMany({ status: 'approved' });
   const sankalpsRemoved = clearApprovedSankalps();

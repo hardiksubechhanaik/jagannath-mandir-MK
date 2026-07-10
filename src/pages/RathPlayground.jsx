@@ -4,11 +4,12 @@ import { apiGet, apiPost, endpoints, resolveMediaUrl } from '../api/client';
 import { INSTAGRAM_URL, TEMPLE_PHONE } from '../data/site';
 import { CERT_NAME_Y_RATIO, certificateFilename, downloadCertificate, renderCertificatePng } from '../lib/melaCertificate';
 import {
-  CREATOR_TIERS,
-  CREATOR_TIER_LABELS,
   formatInstagramHandle,
   instagramProfileUrl,
-  partitionCreators,
+  groupCreatorsByType,
+  getPartnerTypeLabel,
+  hasInstagramHandle,
+  isHighlightedCreator,
   subscribeCreatorSpotlightUpdates,
 } from '../lib/creatorSpotlight';
 import { notifyDivyangAssistUpdate, pushLocalDivyangRequest, saveDivyangRequestLocally } from '../lib/divyangAssist';
@@ -39,10 +40,10 @@ const STALL_KEYS = [
 ];
 
 const SUPPORT_META = {
-  title: 'Support',
-  icon: '🤝',
-  color: '#FF922B',
-  colorLight: '#FFC078',
+  title: 'Emergency Help',
+  icon: '🆘',
+  color: '#E03131',
+  colorLight: '#FF8787',
 };
 
 const STALL_META = {
@@ -1024,9 +1025,12 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
       case 'support':
         return (
           <>
+            <p className={styles.supportEmergencyNote}>
+              <strong>For emergencies at the mela</strong> — medical issues, safety concerns, or urgent seva support. Use this only when you need immediate help.
+            </p>
             <section className={styles.supportBlock}>
-              <h3 className={styles.supportBlockTitle}>Senior Helpline</h3>
-              <p className={styles.modalText}>Tap to call our seva helpline:</p>
+              <h3 className={styles.supportBlockTitle}>Emergency helpline</h3>
+              <p className={styles.modalText}>Call now if this is urgent:</p>
               <a
                 className={styles.helplineLink}
                 href={`tel:${TEMPLE_PHONE.replace(/\s/g, '')}`}
@@ -1036,9 +1040,9 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
               </a>
             </section>
             <section className={styles.supportBlock}>
-              <h3 className={styles.supportBlockTitle}>Request assistance</h3>
+              <h3 className={styles.supportBlockTitle}>Request emergency help</h3>
               <p className={styles.modalText}>
-                Need help during your visit? Leave your number and our seva team will reach out.
+                Can&apos;t call right now? Leave your number and our seva team will contact you as soon as possible.
               </p>
               <IndianMobileInput
                 className={styles.modalInput}
@@ -1062,80 +1066,95 @@ function StallModal({ stallKey, onClose, creators, onInteraction, ropePullCount,
                 onClick={requestDivyang}
                 disabled={divyangSubmitting || !divyangPhone.trim() || divyangPhone.length < 10}
               >
-                {divyangSubmitting ? 'Sending…' : 'Request assistance'}
+                {divyangSubmitting ? 'Sending…' : 'Send emergency request'}
               </button>
               {divyangDone ? <p className={styles.confirmMsg} style={{ marginTop: 12 }}>{divyangDone}</p> : null}
             </section>
           </>
         );
       case 'creators': {
-        const { official, digital } = partitionCreators(creators);
+        const groups = groupCreatorsByType(creators);
 
-        function renderCreatorCard(creator, isOfficial) {
-          return (
-            <a
-              key={creator.id}
-              href={instagramProfileUrl(creator.instagramHandle)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${styles.creatorCard} ${isOfficial ? styles.creatorCardOfficial : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onInteraction?.('creators');
-              }}
-            >
-              {isOfficial ? (
-                <span className={styles.creatorOfficialBadge}>★ Official Partner</span>
-              ) : null}
+        function renderCreatorCard(creator) {
+          const highlighted = isHighlightedCreator(creator);
+          const hasInstagram = hasInstagramHandle(creator.instagramHandle);
+          const cardClass = `${styles.creatorCard} ${highlighted ? styles.creatorCardOfficial : ''} ${hasInstagram ? '' : styles.creatorCardStatic}`;
+
+          const cardBody = (
+            <>
+              {highlighted ? (
+                <span className={styles.creatorOfficialBadge}>★ {getPartnerTypeLabel(creator)}</span>
+              ) : (
+                <span className={styles.creatorOfficialBadge} style={{ background: '#ffe8f3', color: '#c2185b' }}>
+                  {getPartnerTypeLabel(creator)}
+                </span>
+              )}
               {creator.photoUrl ? (
                 <img
                   src={resolveMediaUrl(creator.photoUrl)}
                   alt=""
-                  className={`${styles.creatorPhoto} ${isOfficial ? styles.creatorPhotoOfficial : ''}`}
+                  className={`${styles.creatorPhoto} ${highlighted ? styles.creatorPhotoOfficial : ''}`}
                 />
               ) : (
                 <div
-                  className={`${styles.creatorPhotoFallback} ${isOfficial ? styles.creatorPhotoOfficial : ''}`}
+                  className={`${styles.creatorPhotoFallback} ${highlighted ? styles.creatorPhotoOfficial : ''}`}
                   aria-hidden="true"
                 >
-                  {isOfficial ? '★' : '🎥'}
+                  {highlighted ? '★' : '🎥'}
                 </div>
               )}
               <div className={styles.creatorName}>{creator.name}</div>
-              <div className={styles.creatorHandle}>
-                {formatInstagramHandle(creator.instagramHandle)}
-              </div>
-            </a>
+              {creator.details ? (
+                <div className={styles.modalText} style={{ fontSize: 12, marginBottom: 6 }}>{creator.details}</div>
+              ) : null}
+              {hasInstagram ? (
+                <div className={styles.creatorHandle}>
+                  {formatInstagramHandle(creator.instagramHandle)}
+                </div>
+              ) : null}
+            </>
+          );
+
+          if (hasInstagram) {
+            return (
+              <a
+                key={creator.id}
+                href={instagramProfileUrl(creator.instagramHandle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cardClass}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onInteraction?.('creators');
+                }}
+              >
+                {cardBody}
+              </a>
+            );
+          }
+
+          return (
+            <div key={creator.id} className={cardClass}>
+              {cardBody}
+            </div>
           );
         }
 
         return (
           <>
             {creators.length === 0 ? (
-              <p className={styles.modalText}>Creator spotlight coming soon!</p>
+              <p className={styles.modalText}>Partner spotlight coming soon!</p>
             ) : (
-              <>
-                {official.length > 0 ? (
-                  <section className={styles.creatorSection}>
-                    <h3 className={styles.creatorSectionTitleOfficial}>
-                      {CREATOR_TIER_LABELS[CREATOR_TIERS.OFFICIAL]}
-                    </h3>
-                    <div className={styles.creatorGridOfficial}>
-                      {official.map((creator) => renderCreatorCard(creator, true))}
-                    </div>
-                  </section>
-                ) : null}
-                {digital.length > 0 ? (
-                  <section className={styles.creatorSection}>
-                    <h3 className={styles.creatorSectionTitleDigital}>
-                      {CREATOR_TIER_LABELS[CREATOR_TIERS.DIGITAL]}
-                    </h3>
-                    <div className={styles.creatorGrid}>
-                      {digital.map((creator) => renderCreatorCard(creator, false))}
-                    </div>
-                  </section>
-                ) : null}
-              </>
+              groups.map(({ type, items, highlighted }) => (
+                <section key={type} className={styles.creatorSection}>
+                  <h3 className={highlighted ? styles.creatorSectionTitleOfficial : styles.creatorSectionTitleDigital}>
+                    {type}
+                  </h3>
+                  <div className={highlighted ? styles.creatorGridOfficial : styles.creatorGrid}>
+                    {items.map((creator) => renderCreatorCard(creator))}
+                  </div>
+                </section>
+              ))
             )}
             <a
               className={styles.creatorJoin}
@@ -1794,9 +1813,10 @@ export default function RathPlayground() {
             className={styles.supportHeaderBtn}
             onClick={() => setActiveStall('support')}
             aria-haspopup="dialog"
+            aria-label="Emergency help — call helpline or request urgent assistance"
           >
-            <span className={styles.supportHeaderIcon} aria-hidden="true">🤝</span>
-            Support
+            <span className={styles.supportHeaderIcon} aria-hidden="true">🆘</span>
+            Emergency
           </button>
           <span className={styles.headerTag}>RATHA YATRA 2026 · THE MELA</span>
         </div>

@@ -1,6 +1,6 @@
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
-/** Backend origin for uploaded files (/uploads/...). Strips trailing /api from VITE_API_URL. */
+/** Backend origin for uploaded files (/api/media/... or legacy /uploads/...). */
 function mediaBase() {
   if (!API_BASE) return '';
   return API_BASE.replace(/\/api\/?$/, '');
@@ -136,6 +136,7 @@ export const endpoints = {
   liveDarshan: '/api/live-darshan',
   liveDarshanYoutubeStats: '/api/live-darshan/youtube-stats',
   donate: '/api/donate',
+  prasad: '/api/prasad',
   contact: '/api/contact',
   blogs: '/api/blogs',
   contactMessage: '/messages',

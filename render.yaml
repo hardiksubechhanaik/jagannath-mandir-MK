@@ -4,6 +4,7 @@
 # Required env on Render (old service may use MONGODB_URI — backend accepts both):
 #   MONGODB_URI or MONGO_URI, JWT_SECRET (32+ chars), CLIENT_URL, RATH_TRACKER_SECRET, WALL_VOLUNTEER_SECRET
 #   NODE_ENV=production, USE_MEMORY_DB=false
+# Uploaded images are stored in MongoDB GridFS (not on ephemeral disk).
 #
 # Then on Vercel set: VITE_API_URL=https://jagannath-mandir-mk.onrender.com
 

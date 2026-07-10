@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { apiGet, endpoints } from '../../api/client';
 import {
-  partitionCreators,
+  sortCreatorsForDisplay,
   subscribeCreatorSpotlightUpdates,
 } from '../../lib/creatorSpotlight';
 import { useTranslation } from '../../i18n/useTranslation';
 import CreatorMarqueeCard from './CreatorMarqueeCard';
+import CreatorPartnerModal from './CreatorPartnerModal';
 import styles from './CreatorMarquee.module.css';
 
 const ITEM_STRIDE_PX = 90;
@@ -25,6 +26,7 @@ export default function CreatorMarquee() {
   const marqueeRef = useRef(null);
   const [creators, setCreators] = useState([]);
   const [repeatCount, setRepeatCount] = useState(4);
+  const [selectedCreator, setSelectedCreator] = useState(null);
 
   const fetchCreators = useCallback(async () => {
     try {
@@ -40,10 +42,7 @@ export default function CreatorMarquee() {
     return subscribeCreatorSpotlightUpdates(fetchCreators);
   }, [fetchCreators]);
 
-  const ordered = useMemo(() => {
-    const { official, digital } = partitionCreators(creators);
-    return [...official, ...digital];
-  }, [creators]);
+  const ordered = useMemo(() => sortCreatorsForDisplay(creators), [creators]);
 
   useLayoutEffect(() => {
     if (!ordered.length) return undefined;
@@ -68,28 +67,43 @@ export default function CreatorMarquee() {
   if (!groupItems.length) return null;
 
   return (
-    <section className={styles.section} aria-labelledby="creator-marquee-title">
-      <div className={styles.header}>
-        <span className={styles.eyebrow}>{t('home.creatorMarqueeEyebrow')}</span>
-        <span className={styles.divider} aria-hidden="true" />
-        <h2 id="creator-marquee-title" className={styles.title}>
-          {t('home.creatorMarqueeTitle')}
-        </h2>
-      </div>
-      <div className={styles.marquee} ref={marqueeRef}>
-        <div className={styles.track}>
-          <div className={styles.trackGroup}>
-            {groupItems.map(({ creator, key }) => (
-              <CreatorMarqueeCard key={`a-${key}`} creator={creator} />
-            ))}
-          </div>
-          <div className={styles.trackGroup} aria-hidden="true">
-            {groupItems.map(({ creator, key }) => (
-              <CreatorMarqueeCard key={`b-${key}`} creator={creator} />
-            ))}
+    <>
+      <section className={styles.section} aria-labelledby="creator-marquee-title">
+        <div className={styles.header}>
+          <span className={styles.eyebrow}>{t('home.creatorMarqueeEyebrow')}</span>
+          <span className={styles.divider} aria-hidden="true" />
+          <h2 id="creator-marquee-title" className={styles.title}>
+            {t('home.creatorMarqueeTitle')}
+          </h2>
+        </div>
+        <div className={styles.marquee} ref={marqueeRef}>
+          <div className={styles.track}>
+            <div className={styles.trackGroup}>
+              {groupItems.map(({ creator, key }) => (
+                <CreatorMarqueeCard
+                  key={`a-${key}`}
+                  creator={creator}
+                  onSelect={setSelectedCreator}
+                />
+              ))}
+            </div>
+            <div className={styles.trackGroup} aria-hidden="true">
+              {groupItems.map(({ creator, key }) => (
+                <CreatorMarqueeCard
+                  key={`b-${key}`}
+                  creator={creator}
+                  onSelect={setSelectedCreator}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <CreatorPartnerModal
+        creator={selectedCreator}
+        onClose={() => setSelectedCreator(null)}
+      />
+    </>
   );
 }

@@ -66,7 +66,7 @@ app.use(express.json({ limit: '100kb' }));
 app.use('/uploads', (_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   next();
-}, express.static(uploadsDir));
+}, express.static(uploadsDir)); // legacy disk uploads (pre-GridFS)
 
 app.use('/api', (_req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -95,7 +95,7 @@ connectDB()
           'USE_MEMORY_DB=true — using local file backup (backend/.data/dev-snapshot.json). For production, set USE_MEMORY_DB=false and run MongoDB.',
         );
       } else if (mode === 'mongodb') {
-        console.log('Persistence: MongoDB (data survives restarts)');
+        console.log('Persistence: MongoDB (data + uploaded images via GridFS survive restarts)');
       }
       const rathOk = Boolean(process.env.RATH_TRACKER_SECRET || process.env.NODE_ENV !== 'production');
       console.log(rathOk ? 'Rath tracker: ready' : 'Rath tracker: set RATH_TRACKER_SECRET');

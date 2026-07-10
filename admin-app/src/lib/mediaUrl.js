@@ -9,7 +9,7 @@ export function resolvePreviewUrl(url) {
   const apiOrigin = API_BASE.replace(/\/api\/?$/, '');
   const siteOrigin = SITE_URL.replace(/\/$/, '');
 
-  if (url.startsWith('/uploads')) {
+  if (url.startsWith('/uploads') || url.startsWith('/api/media')) {
     return `${apiOrigin}${url}`;
   }
 

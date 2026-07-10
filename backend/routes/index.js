@@ -20,6 +20,7 @@ import {
   publicLiveDarshan,
   publicYoutubeStats,
   publicDonate,
+  publicPrasad,
   publicContact,
   publicGallery,
   publicTempleStatus,
@@ -29,6 +30,7 @@ import {
 } from '../controllers/publicSiteController.js';
 import { getRathLocationPublic, stopRathLocation, updateRathLocation } from '../controllers/rathController.js';
 import rathWallRouter from './rathWall.js';
+import { serveMedia } from '../controllers/mediaController.js';
 import {
   loginLimiter,
   handoffLimiter,
@@ -38,6 +40,8 @@ import {
 const router = Router();
 
 router.get('/health', publicHealth);
+
+router.get('/media/:id', serveMedia);
 
 router.post('/auth/login', loginLimiter, login);
 router.post('/auth/handoff', loginLimiter, protect, requireAdmin, createAdminHandoff);
@@ -64,6 +68,7 @@ router.get('/festivals', publicFestivals);
 router.get('/live-darshan/youtube-stats', publicYoutubeStats);
 router.get('/live-darshan', publicLiveDarshan);
 router.get('/donate', publicDonate);
+router.get('/prasad', publicPrasad);
 router.get('/contact', publicContact);
 router.get('/gallery', publicGallery);
 router.get('/blogs', publicBlogs);

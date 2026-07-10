@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Setting from '../models/Setting.js';
 import { scheduleDevSnapshot } from '../config/devSnapshot.js';
+import { normalizePrasadPricing } from '../lib/prasadPricing.js';
 
 async function getSettingsDoc() {
   let doc = await Setting.findOne();
@@ -39,6 +40,7 @@ function toClient(doc) {
     welcomePopupHeading: doc.welcomePopupHeading || '',
     welcomePopupSubline: doc.welcomePopupSubline || '',
     welcomePopupImages: images,
+    prasadPricing: normalizePrasadPricing(doc.prasadPricing),
   };
 }
 
@@ -68,6 +70,10 @@ export const updateSettings = asyncHandler(async (req, res) => {
   if (req.body.welcomePopupImages !== undefined) {
     doc.welcomePopupImages = normalizeWelcomePopupImages(req.body.welcomePopupImages);
     doc.markModified('welcomePopupImages');
+  }
+  if (req.body.prasadPricing !== undefined) {
+    doc.prasadPricing = normalizePrasadPricing(req.body.prasadPricing);
+    doc.markModified('prasadPricing');
   }
   await doc.save();
   scheduleDevSnapshot();

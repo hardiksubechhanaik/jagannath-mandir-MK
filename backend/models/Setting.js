@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+const prasadRateSchema = new mongoose.Schema(
+  {
+    weekday: { type: Number, required: true, min: 1, max: 100000 },
+    weekend: { type: Number, required: true, min: 1, max: 100000 },
+  },
+  { _id: false },
+);
+
 const settingSchema = new mongoose.Schema(
   {
     status: { type: String, enum: ['open', 'closed'], default: 'open' },
@@ -10,6 +18,17 @@ const settingSchema = new mongoose.Schema(
     evening: { type: String, default: '' },
     /** When true, the online donation form is shown on the public Donate page. */
     paymentsEnabled: { type: Boolean, default: false },
+    /** Mahaprasad booking rates (₹ per person/pack). */
+    prasadPricing: {
+      pickup: {
+        type: prasadRateSchema,
+        default: () => ({ weekday: 200, weekend: 120 }),
+      },
+      'ananda-bazar': {
+        type: prasadRateSchema,
+        default: () => ({ weekday: 150, weekend: 100 }),
+      },
+    },
     /** Home page welcome overlay — shown once per browser session when enabled. */
     welcomePopupEnabled: { type: Boolean, default: true },
     welcomePopupEyebrow: { type: String, default: 'Bhakti · Sanskriti · Seva' },

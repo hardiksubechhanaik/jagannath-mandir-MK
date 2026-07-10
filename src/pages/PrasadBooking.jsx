@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PageShell from '../components/layout/PageShell';
 import PrasadDatePicker from '../components/prasad/PrasadDatePicker';
 import IndianMobileInput from '../components/IndianMobileInput';
 import { isValidIndianMobile } from '../lib/indianMobile';
+import { apiGet, endpoints } from '../api/client';
 import {
   WHATSAPP_NUMBER,
+  PRICING,
   formatPrice,
   getRatesForMethod,
   getUnitPrice,
@@ -21,9 +23,9 @@ function formatTotal(amount) {
   return formatPrice(amount);
 }
 
-function getLocalizedPriceLabel(method, dateStr, t) {
-  const rates = getRatesForMethod(method);
-  const unit = getUnitPrice(method, dateStr);
+function getLocalizedPriceLabel(method, dateStr, t, pricing) {
+  const rates = getRatesForMethod(method, pricing);
+  const unit = getUnitPrice(method, dateStr, pricing);
   if (unit != null) {
     const dayType = isWeekend(parsePreferredDate(dateStr)) ? t('prasad.weekend') : t('prasad.weekday');
     return `${formatPrice(unit)} (${dayType})`;
@@ -61,6 +63,15 @@ export default function PrasadBooking() {
   const now = useIstClock();
   const methods = t('prasad.methods', { object: true });
   const steps = t('prasad.steps', { object: true });
+  const [pricing, setPricing] = useState(PRICING);
+
+  useEffect(() => {
+    apiGet(endpoints.prasad)
+      .then((data) => {
+        if (data?.pricing) setPricing(data.pricing);
+      })
+      .catch(() => {});
+  }, []);
 
   const [method, setMethod] = useState('pickup');
   const [qty, setQty] = useState(1);
@@ -82,8 +93,8 @@ export default function PrasadBooking() {
     [method, methods],
   );
 
-  const unitPrice = useMemo(() => getUnitPrice(method, date), [method, date]);
-  const priceLabel = useMemo(() => getLocalizedPriceLabel(method, date, t), [method, date, t]);
+  const unitPrice = useMemo(() => getUnitPrice(method, date, pricing), [method, date, pricing]);
+  const priceLabel = useMemo(() => getLocalizedPriceLabel(method, date, t, pricing), [method, date, t, pricing]);
   const total = unitPrice != null ? unitPrice * qty : null;
 
   function handleSubmit(event) {
@@ -115,7 +126,7 @@ export default function PrasadBooking() {
     setDateError(false);
 
     const resolvedUnit =
-      unitPrice ?? getRatesForMethod(method).weekday;
+      unitPrice ?? getRatesForMethod(method, pricing).weekday;
     const resolvedTotal = resolvedUnit * qty;
 
     const message = buildWhatsAppMessage({

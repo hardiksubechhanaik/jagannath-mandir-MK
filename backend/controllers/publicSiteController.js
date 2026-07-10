@@ -9,6 +9,7 @@ import {
   getPublicLiveDarshan,
   getPublicYoutubeStats,
   getPublicDonate,
+  getPublicPrasad,
   getPublicContact,
   getPublicGallery,
   getPublicTempleStatus,
@@ -60,6 +61,10 @@ export const publicYoutubeStats = asyncHandler(async (_req, res) => {
 
 export const publicDonate = asyncHandler(async (_req, res) => {
   res.json(await getPublicDonate());
+});
+
+export const publicPrasad = asyncHandler(async (_req, res) => {
+  res.json(await getPublicPrasad());
 });
 
 export const publicContact = asyncHandler(async (_req, res) => {

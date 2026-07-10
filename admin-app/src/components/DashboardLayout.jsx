@@ -42,7 +42,7 @@ export default function DashboardLayout() {
             </button>
             <div className="topbar-status">
               <span className="dot-green" />
-              <span>Site is live · jagannathmandir.org</span>
+              <span>Site is live · shreejagannathmandirmk.in</span>
             </div>
           </div>
         </div>

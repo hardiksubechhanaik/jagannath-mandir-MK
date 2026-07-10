@@ -9,6 +9,7 @@ const env = {
   ...process.env,
   VITE_ADMIN_BASE: '/admin/',
   VITE_API_URL: process.env.VITE_API_URL || 'https://jagannath-mandir-mk.onrender.com',
+  VITE_SITE_URL: process.env.VITE_SITE_URL || 'https://www.shreejagannathmandirmk.in',
 };
 
 const adminInstall = spawnSync('npm', ['install', '--prefix', 'admin-app'], {

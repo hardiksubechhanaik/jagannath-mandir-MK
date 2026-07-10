@@ -1,3 +1,5 @@
+import { getAdminAppUrl as resolveAdminAppUrl } from '../lib/authSession.js';
+
 export const NAV = [
   { label: 'Home', to: '/' },
   {
@@ -34,8 +36,7 @@ export const LOGIN_PATH = '/login';
 export const ADMIN_LOGIN_URL = LOGIN_PATH;
 
 export function getAdminAppUrl() {
-  const raw = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5173';
-  return raw.replace(/\/login\/?$/, '');
+  return resolveAdminAppUrl();
 }
 
 export function splitRoute(to) {

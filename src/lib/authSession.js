@@ -12,10 +12,10 @@ export function clearAuthSession() {
 }
 
 export function getAdminAppUrl() {
-  const raw = import.meta.env.VITE_ADMIN_URL;
-  if (raw) return raw.replace(/\/login\/?$/, '');
   if (import.meta.env.PROD && typeof window !== 'undefined') {
     return `${window.location.origin}/admin`;
   }
+  const raw = import.meta.env.VITE_ADMIN_URL;
+  if (raw) return raw.replace(/\/login\/?$/, '');
   return 'http://localhost:5173';
 }

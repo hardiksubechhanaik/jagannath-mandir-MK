@@ -11,6 +11,16 @@ const env = {
   VITE_API_URL: process.env.VITE_API_URL || 'https://jagannath-mandir-mk.onrender.com',
 };
 
+const adminInstall = spawnSync('npm', ['install', '--prefix', 'admin-app'], {
+  cwd: root,
+  stdio: 'inherit',
+  shell: process.platform === 'win32',
+});
+
+if (adminInstall.status !== 0) {
+  process.exit(adminInstall.status ?? 1);
+}
+
 const adminBuild = spawnSync('npm', ['run', 'build', '--prefix', 'admin-app'], {
   cwd: root,
   env,

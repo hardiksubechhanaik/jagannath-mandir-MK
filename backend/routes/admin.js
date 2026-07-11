@@ -67,6 +67,7 @@ import {
   getLatestBlogDraft,
   sendNewsletterBroadcast,
   getNewsletterMailStatus,
+  testNewsletterMail,
 } from '../controllers/newsletterController.js';
 
 const adminRouter = Router();
@@ -123,6 +124,7 @@ adminRouter.get('/stats/summary', getSummary);
 adminRouter.post('/maintenance/purge-sample', purgeFakeData);
 
 adminRouter.get('/newsletter/status', getNewsletterMailStatus);
+adminRouter.post('/newsletter/test-mail', broadcastLimiter, testNewsletterMail);
 adminRouter.get('/newsletter/subscribers', listNewsletterSubscribers);
 adminRouter.delete('/newsletter/subscribers/:id', removeNewsletterSubscriber);
 adminRouter.get('/newsletter/broadcasts', listNewsletterBroadcasts);

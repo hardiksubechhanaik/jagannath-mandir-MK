@@ -9,6 +9,7 @@ import {
   getSiteUrl,
   isMailConfigured,
   sendMail,
+  verifyMailConnection,
 } from '../lib/mail.js';
 import { clampText, isValidEmail } from '../lib/validators.js';
 
@@ -61,6 +62,36 @@ async function sendToSubscriber(subscriber, payload) {
     html,
     text,
   });
+}
+
+async function finalizeBroadcast(broadcastId, subscribers, payload) {
+  const broadcast = await NewsletterBroadcast.findById(broadcastId);
+  if (!broadcast || broadcast.status !== 'sending') return;
+
+  let sentCount = 0;
+  let failedCount = 0;
+
+  for (const subscriber of subscribers) {
+    try {
+      await sendToSubscriber(subscriber, payload);
+      sentCount += 1;
+    } catch (err) {
+      failedCount += 1;
+      console.error(`Newsletter send failed for ${subscriber.email}:`, err.message);
+    }
+  }
+
+  const status = failedCount === 0
+    ? 'sent'
+    : sentCount === 0
+      ? 'failed'
+      : 'partial';
+
+  broadcast.sentCount = sentCount;
+  broadcast.failedCount = failedCount;
+  broadcast.status = status;
+  await broadcast.save();
+  scheduleDevSnapshot();
 }
 
 export const subscribeNewsletter = asyncHandler(async (req, res) => {
@@ -184,6 +215,13 @@ export const sendNewsletterBroadcast = asyncHandler(async (req, res) => {
     throw new Error('There are no active subscribers to email yet.');
   }
 
+  try {
+    await verifyMailConnection();
+  } catch (err) {
+    res.status(503);
+    throw err;
+  }
+
   const broadcast = await NewsletterBroadcast.create({
     subject,
     body,
@@ -195,37 +233,24 @@ export const sendNewsletterBroadcast = asyncHandler(async (req, res) => {
     sentBy: req.user?.username || 'admin',
   });
 
-  let sentCount = 0;
-  let failedCount = 0;
   const payload = { subject, body };
+  const subscriberSnapshot = subscribers.map((sub) => ({
+    email: sub.email,
+    unsubscribeToken: sub.unsubscribeToken,
+  }));
 
-  for (const subscriber of subscribers) {
-    try {
-      await sendToSubscriber(subscriber, payload);
-      sentCount += 1;
-    } catch (err) {
-      failedCount += 1;
-      console.error(`Newsletter send failed for ${subscriber.email}:`, err.message);
-    }
-  }
+  finalizeBroadcast(broadcast._id, subscriberSnapshot, payload).catch((err) => {
+    console.error('Newsletter broadcast failed:', err.message);
+    NewsletterBroadcast.findByIdAndUpdate(broadcast._id, {
+      status: 'failed',
+      failedCount: subscribers.length,
+    }).catch(() => {});
+  });
 
-  const status = failedCount === 0
-    ? 'sent'
-    : sentCount === 0
-      ? 'failed'
-      : 'partial';
-
-  broadcast.sentCount = sentCount;
-  broadcast.failedCount = failedCount;
-  broadcast.status = status;
-  await broadcast.save();
-  scheduleDevSnapshot();
-
-  const broadcasts = await NewsletterBroadcast.find().sort({ createdAt: -1 }).limit(50);
-  res.status(201).json({
+  res.status(202).json({
     ok: true,
+    message: 'Broadcast started. Emails are being sent now.',
     broadcast: broadcastToClient(broadcast),
-    broadcasts: broadcasts.map(broadcastToClient),
     mailConfigured: isMailConfigured(),
   });
 });
@@ -235,5 +260,25 @@ export const getNewsletterMailStatus = asyncHandler(async (_req, res) => {
     configured: isMailConfigured(),
     from: process.env.MAIL_FROM || process.env.SMTP_USER || '',
     host: process.env.SMTP_HOST || 'smtp.zoho.in',
+    port: Number(process.env.SMTP_PORT || 465),
   });
+});
+
+export const testNewsletterMail = asyncHandler(async (_req, res) => {
+  if (!isMailConfigured()) {
+    res.status(503);
+    throw new Error('SMTP is not configured. Set SMTP_USER and SMTP_PASS on Render.');
+  }
+
+  await verifyMailConnection();
+
+  const to = process.env.MAIL_FROM || process.env.SMTP_USER;
+  await sendMail({
+    to,
+    subject: 'Mandir newsletter test',
+    text: 'This is a test email from the Shree Jagannath Mandir admin panel. SMTP is working.',
+    html: '<p>This is a test email from the Shree Jagannath Mandir admin panel. <strong>SMTP is working.</strong></p>',
+  });
+
+  res.json({ ok: true, message: `Test email sent to ${to}.` });
 });

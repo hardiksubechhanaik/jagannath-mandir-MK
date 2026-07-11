@@ -19,6 +19,10 @@ function formatWhen(value) {
   });
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export default function Newsletter() {
   const [mailStatus, setMailStatus] = useState(null);
   const [subscribers, setSubscribers] = useState([]);
@@ -30,6 +34,13 @@ export default function Newsletter() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [sending, setSending] = useState(false);
+  const [testingMail, setTestingMail] = useState(false);
+
+  async function loadBroadcasts() {
+    const { data } = await api.get('/admin/newsletter/broadcasts');
+    setBroadcasts(data || []);
+    return data || [];
+  }
 
   async function loadAll() {
     const [statusRes, subsRes, broadcastsRes] = await Promise.all([
@@ -47,6 +58,24 @@ export default function Newsletter() {
     loadAll().catch((err) => setError(err.message || 'Could not load newsletter data.'));
   }, []);
 
+  async function waitForBroadcast(broadcastId) {
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      await sleep(2000);
+      const items = await loadBroadcasts();
+      const item = items.find((entry) => entry.id === broadcastId);
+      if (!item || item.status === 'sending') continue;
+
+      if (item.status === 'sent') {
+        return `Sent to ${item.sentCount} of ${item.recipientCount} subscribers.`;
+      }
+      if (item.status === 'partial') {
+        return `Partially sent: ${item.sentCount} delivered, ${item.failedCount} failed. Check SMTP settings on Render.`;
+      }
+      return `Broadcast failed. Check SMTP_USER, SMTP_PASS, and try SMTP_HOST=smtppro.zoho.in on Render.`;
+    }
+    return 'Broadcast is still processing. Refresh this page in a minute to see the result.';
+  }
+
   async function insertLatestBlog() {
     setError('');
     try {
@@ -60,6 +89,23 @@ export default function Newsletter() {
       setType('blog');
     } catch (err) {
       setError(err.message || 'Could not load latest blog.');
+    }
+  }
+
+  async function testSmtp() {
+    setError('');
+    setSuccess('');
+    setTestingMail(true);
+    try {
+      const { data } = await api.post('/admin/newsletter/test-mail', {}, { timeout: 35000 });
+      setSuccess(data.message || 'Test email sent.');
+    } catch (err) {
+      const message = err.response?.status === 502
+        ? 'Server timed out connecting to Zoho Mail. On Render, set SMTP_HOST to smtppro.zoho.in (custom domain) or smtp.zoho.in, and use a Zoho app password.'
+        : (err.message || 'SMTP test failed.');
+      setError(message);
+    } finally {
+      setTestingMail(false);
     }
   }
 
@@ -78,15 +124,26 @@ export default function Newsletter() {
         subject: subject.trim(),
         body: body.trim(),
         type,
-      });
-      setBroadcasts(data.broadcasts || []);
-      setSuccess(`Sent to ${data.broadcast?.sentCount ?? 0} of ${data.broadcast?.recipientCount ?? 0} subscribers.`);
+      }, { timeout: 35000 });
+
+      const broadcastId = data.broadcast?.id;
+      setSuccess(data.message || 'Broadcast started…');
       setSubject('');
       setBody('');
       setType('general');
-      await loadAll();
+      await loadBroadcasts();
+
+      if (broadcastId) {
+        const result = await waitForBroadcast(broadcastId);
+        setSuccess(result);
+        await loadAll();
+      }
     } catch (err) {
-      setError(err.message || 'Broadcast failed.');
+      const message = err.response?.status === 502
+        ? 'Server timed out (502). Zoho SMTP is likely misconfigured — try SMTP_HOST=smtppro.zoho.in and a Zoho app password on Render.'
+        : (err.message || 'Broadcast failed.');
+      setError(message);
+      await loadBroadcasts();
     } finally {
       setSending(false);
     }
@@ -119,12 +176,18 @@ export default function Newsletter() {
         <div className={`card card--gold mb14 ${mailStatus.configured ? '' : 'login-error'}`} style={{ marginBottom: 20 }}>
           <div className="card-title" style={{ fontSize: 18 }}>Email delivery</div>
           {mailStatus.configured ? (
-            <p style={{ margin: 0, fontSize: 14, color: '#5A5043' }}>
-              Zoho Mail is configured. Messages will send from <strong>{mailStatus.from || 'your Zoho address'}</strong>.
-            </p>
+            <>
+              <p style={{ margin: '0 0 12px', fontSize: 14, color: '#5A5043' }}>
+                Zoho Mail is configured. Messages will send from <strong>{mailStatus.from || 'your Zoho address'}</strong>
+                {' '}via <strong>{mailStatus.host}:{mailStatus.port}</strong>.
+              </p>
+              <button type="button" className="btn btn-soft" onClick={testSmtp} disabled={testingMail || sending}>
+                {testingMail ? 'Testing SMTP…' : 'Send test email to mandir inbox'}
+              </button>
+            </>
           ) : (
             <p style={{ margin: 0, fontSize: 14 }}>
-              SMTP is not configured on the server yet. Set <code>SMTP_USER</code>, <code>SMTP_PASS</code>, and optionally <code>SMTP_HOST=smtp.zoho.in</code> on Render.
+              SMTP is not configured on the server yet. Set <code>SMTP_USER</code>, <code>SMTP_PASS</code>, and optionally <code>SMTP_HOST=smtppro.zoho.in</code> on Render.
             </p>
           )}
         </div>

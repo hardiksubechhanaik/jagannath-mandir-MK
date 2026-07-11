@@ -162,6 +162,8 @@ export default function Newsletter() {
     }
   }
 
+  const latestBroadcast = broadcasts[0] ?? null;
+
   return (
     <>
       <PageHead
@@ -246,21 +248,19 @@ export default function Newsletter() {
 
         <div className="stack">
           <div className="card card--white">
-            <div className="card-title" style={{ fontSize: 18 }}>Recent broadcasts</div>
-            {broadcasts.length === 0 ? (
+            <div className="card-title" style={{ fontSize: 18 }}>Latest broadcast</div>
+            {!latestBroadcast ? (
               <p style={{ margin: 0, color: '#7A6E5C', fontSize: 14 }}>No broadcasts sent yet.</p>
             ) : (
-              broadcasts.map((item) => (
-                <div className="fest-row fest-row--editing" key={item.id} style={{ marginBottom: 12 }}>
-                  <div>
-                    <div className="post-date">{formatWhen(item.createdAt)} · {item.type}</div>
-                    <div className="post-title" style={{ fontSize: 20 }}>{item.subject}</div>
-                    <div style={{ fontSize: 13, color: '#7A6E5C', marginTop: 6 }}>
-                      {item.sentCount}/{item.recipientCount} delivered · status: {item.status}
-                    </div>
+              <div className="fest-row fest-row--editing">
+                <div>
+                  <div className="post-date">{formatWhen(latestBroadcast.createdAt)} · {latestBroadcast.type}</div>
+                  <div className="post-title" style={{ fontSize: 20 }}>{latestBroadcast.subject}</div>
+                  <div style={{ fontSize: 13, color: '#7A6E5C', marginTop: 6 }}>
+                    {latestBroadcast.sentCount}/{latestBroadcast.recipientCount} delivered · status: {latestBroadcast.status}
                   </div>
                 </div>
-              ))
+              </div>
             )}
           </div>
 

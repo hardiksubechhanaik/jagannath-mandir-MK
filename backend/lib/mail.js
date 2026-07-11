@@ -1,8 +1,10 @@
 import nodemailer from 'nodemailer';
 
 const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 20000);
+const DEFAULT_ZOHO_HOSTS = ['smtppro.zoho.in', 'smtp.zoho.in'];
 
 let transport;
+let activeSmtpHost;
 
 function escapeHtml(text) {
   return String(text ?? '')
@@ -21,17 +23,23 @@ export function isMailConfigured() {
   return Boolean(process.env.SMTP_USER?.trim() && process.env.SMTP_PASS?.trim());
 }
 
-function getSmtpHost() {
-  return process.env.SMTP_HOST || 'smtp.zoho.in';
+function getConfiguredSmtpHost() {
+  return process.env.SMTP_HOST?.trim() || '';
 }
 
-function createTransport() {
-  const host = getSmtpHost();
+function getHostsToTry() {
+  const configured = getConfiguredSmtpHost();
+  if (configured) return [configured];
+  return DEFAULT_ZOHO_HOSTS;
+}
+
+function createTransport(host) {
+  const smtpHost = host || activeSmtpHost || getConfiguredSmtpHost() || DEFAULT_ZOHO_HOSTS[0];
   const port = Number(process.env.SMTP_PORT || 465);
   const secure = process.env.SMTP_SECURE !== 'false' && port === 465;
 
   return nodemailer.createTransport({
-    host,
+    host: smtpHost,
     port,
     secure,
     auth: {
@@ -41,18 +49,29 @@ function createTransport() {
     connectionTimeout: SMTP_TIMEOUT_MS,
     greetingTimeout: SMTP_TIMEOUT_MS,
     socketTimeout: SMTP_TIMEOUT_MS,
+    tls: {
+      minVersion: 'TLSv1.2',
+    },
   });
 }
 
 function getTransport() {
   if (!transport) {
-    transport = createTransport();
+    transport = createTransport(activeSmtpHost);
   }
   return transport;
 }
 
 export function resetMailTransport() {
+  if (transport?.close) {
+    try {
+      transport.close();
+    } catch {
+      // ignore close errors while resetting
+    }
+  }
   transport = undefined;
+  activeSmtpHost = undefined;
 }
 
 function withTimeout(promise, ms, label) {
@@ -64,32 +83,54 @@ function withTimeout(promise, ms, label) {
   ]);
 }
 
-function formatSmtpError(err) {
+function formatSmtpError(err, host) {
   const message = err?.message || 'Unknown SMTP error';
-  const host = getSmtpHost();
   const hints = [
-    'Check SMTP_USER and SMTP_PASS (use a Zoho app password, not your login password).',
-    `Current host: ${host} — custom-domain Zoho accounts often need smtppro.zoho.in instead of smtp.zoho.in.`,
-    'Use port 465 (SSL) or 587 with SMTP_SECURE=false.',
+    'Use a Zoho app password (Security → App Passwords), not your login password.',
+    host
+      ? `Tried host: ${host}. Custom-domain mail often needs SMTP_HOST=smtppro.zoho.in.`
+      : 'Set SMTP_HOST to smtppro.zoho.in for custom-domain Zoho Mail.',
+    'Use port 465 (SSL) or port 587 with SMTP_SECURE=false.',
   ];
   return `${message}. ${hints.join(' ')}`;
+}
+
+async function verifyHost(host) {
+  const candidate = createTransport(host);
+  try {
+    await withTimeout(candidate.verify(), SMTP_TIMEOUT_MS, `SMTP connection (${host})`);
+    activeSmtpHost = host;
+    transport = candidate;
+    return host;
+  } catch (err) {
+    if (candidate.close) candidate.close();
+    throw err;
+  }
 }
 
 export async function verifyMailConnection() {
   if (!isMailConfigured()) {
     if (process.env.NODE_ENV !== 'production') {
-      return { ok: true, dev: true };
+      return { ok: true, dev: true, host: 'dev' };
     }
     throw new Error('Email is not configured on the server. Set SMTP_USER and SMTP_PASS for Zoho Mail.');
   }
 
-  try {
-    await withTimeout(getTransport().verify(), SMTP_TIMEOUT_MS, 'SMTP connection');
-    return { ok: true };
-  } catch (err) {
-    resetMailTransport();
-    throw new Error(formatSmtpError(err));
+  resetMailTransport();
+  const hosts = getHostsToTry();
+  let lastError;
+
+  for (const host of hosts) {
+    try {
+      const workingHost = await verifyHost(host);
+      return { ok: true, host: workingHost };
+    } catch (err) {
+      lastError = err;
+      console.error(`[mail] SMTP verify failed for ${host}:`, err.message);
+    }
   }
+
+  throw new Error(formatSmtpError(lastError, hosts.join(', ')));
 }
 
 export function plainTextToHtml(text) {
@@ -133,6 +174,10 @@ export async function sendMail({ to, subject, html, text, replyTo }) {
     throw new Error('Email is not configured on the server. Set SMTP_USER and SMTP_PASS for Zoho Mail.');
   }
 
+  if (!activeSmtpHost && !transport) {
+    await verifyMailConnection();
+  }
+
   const fromEmail = process.env.MAIL_FROM || process.env.SMTP_USER;
   const fromName = process.env.MAIL_FROM_NAME || 'Shree Jagannath Mandir';
 
@@ -151,6 +196,10 @@ export async function sendMail({ to, subject, html, text, replyTo }) {
     );
   } catch (err) {
     resetMailTransport();
-    throw new Error(formatSmtpError(err));
+    throw new Error(formatSmtpError(err, activeSmtpHost || getConfiguredSmtpHost()));
   }
+}
+
+export function getActiveSmtpHost() {
+  return activeSmtpHost || getConfiguredSmtpHost() || DEFAULT_ZOHO_HOSTS[0];
 }

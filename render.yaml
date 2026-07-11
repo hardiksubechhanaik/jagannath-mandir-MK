@@ -40,7 +40,7 @@ services:
       - key: SMTP_PASS
         sync: false
       - key: SMTP_HOST
-        value: smtp.zoho.in
+        value: smtppro.zoho.in
       - key: SMTP_PORT
         value: "465"
       - key: MAIL_FROM

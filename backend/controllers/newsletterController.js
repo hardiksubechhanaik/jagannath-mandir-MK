@@ -6,6 +6,7 @@ import NewsletterBroadcast from '../models/NewsletterBroadcast.js';
 import { scheduleDevSnapshot } from '../config/devSnapshot.js';
 import {
   buildBroadcastEmail,
+  getActiveSmtpHost,
   getSiteUrl,
   isMailConfigured,
   sendMail,
@@ -259,7 +260,7 @@ export const getNewsletterMailStatus = asyncHandler(async (_req, res) => {
   res.json({
     configured: isMailConfigured(),
     from: process.env.MAIL_FROM || process.env.SMTP_USER || '',
-    host: process.env.SMTP_HOST || 'smtp.zoho.in',
+    host: process.env.SMTP_HOST || 'smtppro.zoho.in',
     port: Number(process.env.SMTP_PORT || 465),
   });
 });
@@ -270,15 +271,23 @@ export const testNewsletterMail = asyncHandler(async (_req, res) => {
     throw new Error('SMTP is not configured. Set SMTP_USER and SMTP_PASS on Render.');
   }
 
-  await verifyMailConnection();
+  try {
+    await verifyMailConnection();
 
-  const to = process.env.MAIL_FROM || process.env.SMTP_USER;
-  await sendMail({
-    to,
-    subject: 'Mandir newsletter test',
-    text: 'This is a test email from the Shree Jagannath Mandir admin panel. SMTP is working.',
-    html: '<p>This is a test email from the Shree Jagannath Mandir admin panel. <strong>SMTP is working.</strong></p>',
-  });
+    const to = process.env.MAIL_FROM || process.env.SMTP_USER;
+    await sendMail({
+      to,
+      subject: 'Mandir newsletter test',
+      text: 'This is a test email from the Shree Jagannath Mandir admin panel. SMTP is working.',
+      html: '<p>This is a test email from the Shree Jagannath Mandir admin panel. <strong>SMTP is working.</strong></p>',
+    });
 
-  res.json({ ok: true, message: `Test email sent to ${to}.` });
+    res.json({
+      ok: true,
+      message: `Test email sent to ${to} via ${getActiveSmtpHost()}.`,
+    });
+  } catch (err) {
+    res.status(503);
+    throw err;
+  }
 });

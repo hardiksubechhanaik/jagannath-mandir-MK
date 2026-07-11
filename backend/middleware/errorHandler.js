@@ -10,12 +10,13 @@ export function errorHandler(err, _req, res, _next) {
 
   const status = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
   const isProd = process.env.NODE_ENV === 'production';
-  const message = status >= 500 && isProd
-    ? 'Server error'
-    : (err.message || 'Server error');
+  const exposeMessage = !isProd || status < 500 || status === 503 || status === 502 || status === 429;
+  const message = exposeMessage
+    ? (err.message || 'Server error')
+    : 'Server error';
 
-  if (status >= 500 && !isProd) {
-    console.error('[API error]', err);
+  if (status >= 500) {
+    console.error('[API error]', status, err.message || err);
   }
 
   res.status(status).json({ message });

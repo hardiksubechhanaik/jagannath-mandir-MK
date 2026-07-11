@@ -1,9 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PageShell from '../components/layout/PageShell';
 import PageLoading, { PageError } from '../components/layout/PageLoading';
-import { getCategoriesFromPosts, getPosts } from '../data/blog.js';
+import { getBlogFilterCategories } from '../data/blogCategories.js';
+import { getPosts } from '../data/blog.js';
 import { useRefetchOnFocus } from '../hooks/usePageData.js';
 import { useTranslation } from '../i18n/useTranslation';
+import {
+  formatInstagramHandle,
+  hasInstagramHandle,
+  instagramProfileUrl,
+} from '../lib/creatorSpotlight.js';
+import { formatRichText } from '../lib/richText.js';
+import BlogPostModal from '../components/blog/BlogPostModal.jsx';
 import styles from '../styles/blog.module.css';
 
 const CATEGORY_KEYS = {
@@ -16,6 +24,38 @@ const CATEGORY_KEYS = {
 function translateCategory(category, t) {
   const key = CATEGORY_KEYS[category];
   return key ? t(`blog.categories.${key}`) : category;
+}
+
+function RichExcerpt({ text, className }) {
+  if (!text) return null;
+  return (
+    <div
+      className={`${className} ${styles.richText}`.trim()}
+      dangerouslySetInnerHTML={{ __html: formatRichText(text) }}
+    />
+  );
+}
+
+function PostAuthor({ post, className = '' }) {
+  if (!post.name) return null;
+
+  const showInstagram = hasInstagramHandle(post.instaId);
+
+  return (
+    <p className={`${styles.postAuthor} ${className}`.trim()}>
+      <span>{post.name}</span>
+      {showInstagram && (
+        <a
+          href={instagramProfileUrl(post.instaId)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.postInsta}
+        >
+          {formatInstagramHandle(post.instaId)}
+        </a>
+      )}
+    </p>
+  );
 }
 
 function PostMedia({ post, variant = 'card' }) {
@@ -50,6 +90,7 @@ export default function Blog() {
   const [posts, setPosts] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [category, setCategory] = useState('All');
+  const [selectedPost, setSelectedPost] = useState(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -72,7 +113,7 @@ export default function Blog() {
   useRefetchOnFocus(loadPosts);
 
   const categories = useMemo(
-    () => (posts ? getCategoriesFromPosts(posts) : ['All']),
+    () => (posts ? getBlogFilterCategories(posts) : ['All']),
     [posts],
   );
 
@@ -147,8 +188,9 @@ export default function Blog() {
               <h2 id="featured-post-title" className={styles.featuredTitle}>
                 {featured.title}
               </h2>
-              <p className={styles.featuredExcerpt}>{featured.excerpt}</p>
-              <button type="button" className={styles.readLink}>
+              <PostAuthor post={featured} className={styles.featuredAuthor} />
+              <RichExcerpt text={featured.body} className={styles.featuredExcerpt} />
+              <button type="button" className={styles.readLink} onClick={() => setSelectedPost(featured)}>
                 {t('common.readFullStory')}
               </button>
             </div>
@@ -164,21 +206,22 @@ export default function Blog() {
               {t('blog.gridTitle')}
             </h2>
           </div>
-          <div className={styles.filters} role="group" aria-label={t('blog.filterAria')}>
-            {categories.map((item) => {
-              const active = item === category;
-              return (
-                <button
-                  key={item}
-                  type="button"
-                  className={`${styles.filterPill} ${active ? styles.filterPillActive : ''}`}
-                  aria-pressed={active}
-                  onClick={() => setCategory(item)}
-                >
+          <div className={styles.filterWrap}>
+            <label htmlFor="blog-category-filter" className={styles.filterLabel}>
+              {t('blog.filterAria')}
+            </label>
+            <select
+              id="blog-category-filter"
+              className={styles.filterSelect}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {categories.map((item) => (
+                <option key={item} value={item}>
                   {translateCategory(item, t)}
-                </button>
-              );
-            })}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -202,8 +245,9 @@ export default function Blog() {
                     </time>
                   </div>
                   <h3 className={styles.postTitle}>{post.title}</h3>
-                  <p className={styles.postExcerpt}>{post.excerpt}</p>
-                  <button type="button" className={styles.postFooter}>
+                  <PostAuthor post={post} />
+                  <RichExcerpt text={post.body} className={styles.postExcerpt} />
+                  <button type="button" className={styles.postFooter} onClick={() => setSelectedPost(post)}>
                     {t('common.readMore')}
                   </button>
                 </div>
@@ -212,6 +256,12 @@ export default function Blog() {
           </div>
         )}
       </section>
+
+      <BlogPostModal
+        post={selectedPost}
+        categoryLabel={selectedPost ? translateCategory(selectedPost.category, t) : ''}
+        onClose={() => setSelectedPost(null)}
+      />
 
       <section className={styles.newsletter} aria-labelledby="newsletter-title">
         <div className={styles.newsletterInner}>

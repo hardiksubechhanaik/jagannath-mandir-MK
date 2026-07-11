@@ -28,6 +28,16 @@ async function uploadImage(file) {
 
 export { uploadImage };
 
+async function prepareBlogBody(record) {
+  const body = { ...record };
+  if (record.file instanceof File) {
+    body.imageUrl = await uploadImage(record.file);
+  }
+  delete body.file;
+  delete body.image;
+  return body;
+}
+
 export const store = {
   async list(name) {
     if (name === 'timings') return this.get('timings');
@@ -73,6 +83,12 @@ export const store = {
       return prepend ? data : data;
     }
 
+    if (name === 'blogs') {
+      const body = await prepareBlogBody(record);
+      const { data } = await api.post(ROUTES[name], body);
+      return data;
+    }
+
     const body = { ...record };
     const { data } = await api.post(ROUTES[name], body);
     if (name === 'festivals' && !prepend) return data;
@@ -82,6 +98,12 @@ export const store = {
   async update(name, id, patch) {
     if (name === 'messages' && patch.unread !== undefined) {
       const { data } = await api.patch(`/admin/messages/${id}/read`, { unread: patch.unread });
+      return data;
+    }
+
+    if (name === 'blogs') {
+      const body = await prepareBlogBody(patch);
+      const { data } = await api.put(`${ROUTES[name]}/${id}`, body);
       return data;
     }
 

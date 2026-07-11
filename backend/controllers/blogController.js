@@ -6,9 +6,30 @@ function toClient(doc) {
   return {
     id: doc._id.toString(),
     title: doc.title,
+    name: doc.authorName || '',
+    instaId: doc.instaId || '',
     date: doc.dateLabel,
     body: doc.body,
+    imageUrl: doc.imageUrl || '',
+    image: doc.imageUrl || '',
+    category: doc.category || 'Temple Life',
   };
+}
+
+function pickBlogFields(body) {
+  const { title, date, dateLabel, body: content, name, authorName, instaId, imageUrl, image, category } = body;
+  const patch = {};
+  if (title !== undefined) patch.title = title;
+  if (date !== undefined) patch.dateLabel = date;
+  if (dateLabel !== undefined) patch.dateLabel = dateLabel;
+  if (content !== undefined) patch.body = content;
+  if (name !== undefined) patch.authorName = name;
+  if (authorName !== undefined) patch.authorName = authorName;
+  if (instaId !== undefined) patch.instaId = instaId;
+  if (imageUrl !== undefined) patch.imageUrl = imageUrl;
+  if (image !== undefined) patch.imageUrl = image;
+  if (category !== undefined) patch.category = category;
+  return patch;
 }
 
 export const listBlogs = asyncHandler(async (_req, res) => {
@@ -17,9 +38,20 @@ export const listBlogs = asyncHandler(async (_req, res) => {
 });
 
 export const createBlog = asyncHandler(async (req, res) => {
-  const { title, date, dateLabel, body } = req.body;
+  const { title, date, dateLabel, body, name, authorName } = req.body;
+  if (!String(title || '').trim()) {
+    res.status(400);
+    throw new Error('Title is required');
+  }
+  if (!String(name ?? authorName ?? '').trim()) {
+    res.status(400);
+    throw new Error('Name is required');
+  }
+
   await BlogPost.create({
-    title,
+    ...pickBlogFields(req.body),
+    title: title.trim(),
+    authorName: String(name ?? authorName ?? '').trim(),
     dateLabel: dateLabel || date || 'Today',
     body: body || '',
   });
@@ -29,12 +61,9 @@ export const createBlog = asyncHandler(async (req, res) => {
 });
 
 export const updateBlog = asyncHandler(async (req, res) => {
-  const { title, date, dateLabel, body } = req.body;
-  const patch = {};
-  if (title !== undefined) patch.title = title;
-  if (date !== undefined) patch.dateLabel = date;
-  if (dateLabel !== undefined) patch.dateLabel = dateLabel;
-  if (body !== undefined) patch.body = body;
+  const patch = pickBlogFields(req.body);
+  if (patch.title !== undefined) patch.title = patch.title.trim();
+  if (patch.authorName !== undefined) patch.authorName = patch.authorName.trim();
 
   const post = await BlogPost.findByIdAndUpdate(req.params.id, patch, { new: true });
   if (!post) {

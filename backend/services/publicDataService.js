@@ -164,7 +164,15 @@ export async function getPublicHome() {
     templeStatus: getTempleStatus(settings.status, activeSpecial),
     welcomePopup,
     blogs: await BlogPost.find().sort({ createdAt: -1 }).limit(3).then((rows) =>
-      rows.map((b) => ({ id: b._id.toString(), title: b.title, date: b.dateLabel, body: b.body })),
+      rows.map((b) => ({
+        id: b._id.toString(),
+        title: b.title,
+        name: b.authorName || '',
+        instaId: b.instaId || '',
+        date: b.dateLabel,
+        body: b.body,
+        imageUrl: b.imageUrl || '',
+      })),
     ),
   };
 }
@@ -289,11 +297,14 @@ export async function getPublicBlogs() {
   return posts.map((b) => ({
     id: b._id.toString(),
     title: b.title,
+    name: b.authorName || '',
+    instaId: b.instaId || '',
     category: b.category || 'Temple Life',
     date: b.dateLabel,
     excerpt: b.body,
     body: b.body,
     image: b.imageUrl || null,
+    imageUrl: b.imageUrl || null,
   }));
 }
 

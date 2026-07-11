@@ -1,14 +1,20 @@
-import { apiGet } from '../api/client';
+import { apiGet, resolveMediaUrl } from '../api/client';
+import { plainTextFromRich } from '../lib/richText.js';
+import { getBlogFilterCategories } from './blogCategories.js';
 
 function mapApiPost(row, index) {
-  const excerpt = row.excerpt ?? row.body ?? '';
+  const excerpt = plainTextFromRich(row.excerpt ?? row.body ?? '');
+  const imageUrl = row.imageUrl ?? row.image ?? '';
   return {
     id: row.id ?? index,
     title: row.title ?? 'Untitled',
+    name: row.name ?? row.authorName ?? '',
+    instaId: row.instaId ?? '',
     category: row.category ?? 'Temple Life',
     date: row.date ?? row.dateLabel ?? '',
+    body: row.body ?? row.excerpt ?? '',
     excerpt: excerpt.length > 220 ? `${excerpt.slice(0, 217)}…` : excerpt,
-    image: row.image ?? row.imageUrl ?? null,
+    image: imageUrl ? resolveMediaUrl(imageUrl) : null,
   };
 }
 
@@ -20,11 +26,5 @@ export async function getPosts() {
 }
 
 export function getCategoriesFromPosts(posts) {
-  const categories = ['All'];
-  posts.forEach((post) => {
-    if (post.category && !categories.includes(post.category)) {
-      categories.push(post.category);
-    }
-  });
-  return categories;
+  return getBlogFilterCategories(posts);
 }

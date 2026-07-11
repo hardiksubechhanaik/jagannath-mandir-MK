@@ -72,6 +72,40 @@ select.input {
 }
 .mb14 { margin-bottom: 14px; }
 
+.format-editor { width: 100%; }
+.format-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid #DCCBA0;
+  border-bottom: none;
+  border-radius: 7px 7px 0 0;
+  background: #FBF6EA;
+}
+.format-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #DCCBA0;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--maroon);
+  cursor: pointer;
+  font-size: 14px;
+}
+.format-btn:hover { background: var(--cream-tint); }
+.format-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.format-textarea {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.rich-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.rich-text strong { font-weight: 700; }
+.rich-text em { font-style: italic; }
+
 /* ---------- Buttons ---------- */
 .btn { border: none; border-radius: 7px; font-weight: 700; font-size: 14px; cursor: pointer; padding: 12px 22px; }
 .btn-primary { background: var(--gold); color: var(--maroon-deep); box-shadow: 0 3px 0 #9c6c12; }
@@ -273,7 +307,7 @@ select.input {
 .post-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; }
 .post-date { font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: #9E2B25; margin-bottom: 5px; }
 .post-title { font-family: var(--serif); font-weight: 600; font-size: 22px; color: var(--maroon); line-height: 1.15; margin-bottom: 7px; }
-.post-body { font-size: 14px; line-height: 1.6; color: #5A5043; }
+.post-body { font-size: 14px; line-height: 1.6; color: #5A5043; white-space: pre-wrap; word-break: break-word; }
 
 /* ---------- Festival rows ---------- */
 .fest-row { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; grid-template-columns: 70px 1fr auto; gap: 18px; align-items: center; max-width: 100%; min-width: 0; }

@@ -35,6 +35,7 @@ export default function Newsletter() {
   const [success, setSuccess] = useState('');
   const [sending, setSending] = useState(false);
   const [testingMail, setTestingMail] = useState(false);
+  const [smtpError, setSmtpError] = useState('');
 
   async function loadBroadcasts() {
     const { data } = await api.get('/admin/newsletter/broadcasts');
@@ -95,14 +96,14 @@ export default function Newsletter() {
   async function testSmtp() {
     setError('');
     setSuccess('');
+    setSmtpError('');
     setTestingMail(true);
     try {
-      const { data } = await api.post('/admin/newsletter/test-mail', {}, { timeout: 35000 });
+      const { data } = await api.post('/admin/newsletter/test-mail', {}, { timeout: 90000 });
       setSuccess(data.message || 'Test email sent.');
     } catch (err) {
-      const message = err.response?.status === 502
-        ? 'Server timed out connecting to Zoho Mail. On Render, set SMTP_HOST to smtppro.zoho.in (custom domain) or smtp.zoho.in, and use a Zoho app password.'
-        : (err.message || 'SMTP test failed.');
+      const message = err.response?.data?.message || err.message || 'SMTP test failed.';
+      setSmtpError(message);
       setError(message);
     } finally {
       setTestingMail(false);
@@ -184,6 +185,14 @@ export default function Newsletter() {
               <button type="button" className="btn btn-soft" onClick={testSmtp} disabled={testingMail || sending}>
                 {testingMail ? 'Testing SMTP…' : 'Send test email to mandir inbox'}
               </button>
+              {smtpError && (
+                <div className="login-error" style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5 }}>
+                  {smtpError}
+                </div>
+              )}
+              <p style={{ margin: '12px 0 0', fontSize: 12, color: '#7A6E5C', lineHeight: 1.5 }}>
+                If this fails: create a Zoho app password, enable IMAP/SMTP in Zoho Mail settings, and try removing SMTP_HOST on Render so the server can auto-detect the correct host.
+              </p>
             </>
           ) : (
             <p style={{ margin: 0, fontSize: 14 }}>

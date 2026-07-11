@@ -3,11 +3,13 @@ import { resolveMediaUrl } from '../api/client';
 import { useTranslation } from '../i18n/useTranslation';
 import styles from '../styles/gallery.module.css';
 
+const PREVIEW_LIMIT = 6;
+
 export default function DarshanGallery({ items = [] }) {
   const { t } = useTranslation();
   const localeItems = t('gallery.items', { object: true });
 
-  const mergedItems = items.map((item) => {
+  const mergedItems = items.slice(0, PREVIEW_LIMIT).map((item) => {
     const localeItem = localeItems.find((entry) => entry.id === item.id);
     return {
       ...item,

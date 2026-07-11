@@ -443,6 +443,10 @@ export default {
     "hoursTitle": "When to come for darshan.",
     "hoursBody": "The temple opens before dawn and remains open through the day with a midday rest. Arrive 20–30 minutes before an aarti for the fullest darshan. For the complete ritual timetable, see the daily niti.",
     "hoursCta": "View full niti timetable →",
+    "scheduleFollowing": "Timetable in effect",
+    "scheduleSpecial": "Special timetable",
+    "scheduleSummer": "Summer timetable",
+    "scheduleWinter": "Winter timetable",
     "hours": [
       {
         "name": "Temple Opens",

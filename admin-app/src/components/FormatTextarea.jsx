@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { wrapTextareaSelection } from '../lib/richText.js';
+import { useLayoutEffect, useRef } from 'react';
+import { formatRichText, htmlToRichText } from '../lib/richText.js';
 
 export default function FormatTextarea({
   value,
@@ -9,23 +9,47 @@ export default function FormatTextarea({
   className = '',
   style,
 }) {
-  const textareaRef = useRef(null);
+  const editorRef = useRef(null);
+  const skipExternalSync = useRef(false);
 
-  function applyFormat(before, after) {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  const minHeight = `${Math.max(rows * 26, 120)}px`;
 
-    const { value: nextValue, selectionStart, selectionEnd } = wrapTextareaSelection(
-      textarea,
-      before,
-      after,
-    );
-    onChange(nextValue);
+  function syncFromEditor() {
+    const editor = editorRef.current;
+    if (!editor) return;
+    skipExternalSync.current = true;
+    onChange(htmlToRichText(editor.innerHTML));
+  }
+
+  function applyFormat(command) {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const scrollTop = editor.scrollTop;
+    editor.focus();
+    document.execCommand(command, false);
+    syncFromEditor();
+
     requestAnimationFrame(() => {
-      textarea.focus();
-      textarea.setSelectionRange(selectionStart, selectionEnd);
+      if (editorRef.current) {
+        editorRef.current.scrollTop = scrollTop;
+      }
     });
   }
+
+  useLayoutEffect(() => {
+    if (skipExternalSync.current) {
+      skipExternalSync.current = false;
+      return;
+    }
+
+    const editor = editorRef.current;
+    if (!editor || document.activeElement === editor) return;
+
+    const scrollTop = editor.scrollTop;
+    editor.innerHTML = value ? formatRichText(value) : '';
+    editor.scrollTop = scrollTop;
+  }, [value]);
 
   return (
     <div className={`format-editor ${className}`.trim()} style={style}>
@@ -35,7 +59,8 @@ export default function FormatTextarea({
           className="format-btn"
           title="Bold"
           aria-label="Bold"
-          onClick={() => applyFormat('**', '**')}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => applyFormat('bold')}
         >
           <strong>B</strong>
         </button>
@@ -44,18 +69,23 @@ export default function FormatTextarea({
           className="format-btn"
           title="Italic"
           aria-label="Italic"
-          onClick={() => applyFormat('*', '*')}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => applyFormat('italic')}
         >
           <em>I</em>
         </button>
       </div>
-      <textarea
-        ref={textareaRef}
-        className="textarea format-textarea"
-        rows={rows}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+      <div
+        ref={editorRef}
+        className="textarea format-textarea format-editor-surface rich-text"
+        contentEditable
+        suppressContentEditableWarning
+        role="textbox"
+        aria-multiline="true"
+        data-placeholder={placeholder}
+        style={{ minHeight }}
+        onInput={syncFromEditor}
+        onPaste={() => requestAnimationFrame(syncFromEditor)}
       />
     </div>
   );

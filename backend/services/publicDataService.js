@@ -98,7 +98,7 @@ function toPublicFestival(doc, index = 0) {
     date: doc.date || '',
     weekday: doc.weekday || '',
     featured: doc.featured ?? index === 0,
-    image: doc.image || '',
+    image: doc.imageUrl || doc.image || '',
     description: doc.desc || doc.description || '',
     descriptionLong: doc.descriptionLong || doc.desc || doc.description || '',
   });

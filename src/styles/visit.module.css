@@ -109,6 +109,42 @@
 
 /* Hours card */
 .hoursCard { background: #fff; border: 1px solid #E3D6B8; border-radius: 10px; overflow: hidden; }
+.hoursScheduleBanner {
+  padding: 16px 24px;
+  background: #FBF6EA;
+  border-bottom: 1px solid #F0E8D4;
+}
+.hoursScheduleBannerSpecial {
+  background: #6E1413;
+  color: #F7EFD8;
+}
+.hoursScheduleEyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #B58A2E;
+  margin-bottom: 4px;
+}
+.hoursScheduleBannerSpecial .hoursScheduleEyebrow {
+  color: #E7C36A;
+}
+.hoursScheduleTitle {
+  font-weight: 700;
+  font-size: 16px;
+  color: #6E1413;
+}
+.hoursScheduleBannerSpecial .hoursScheduleTitle {
+  color: #F7EFD8;
+}
+.hoursScheduleDetail {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #7A6E5C;
+}
+.hoursScheduleBannerSpecial .hoursScheduleDetail {
+  color: #E6DCCB;
+}
 .hoursRow  {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 24px; border-top: 1px solid #F0E8D4;

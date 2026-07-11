@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import festivalsFallback from '../../data/festivals';
+import { resolveMediaUrl } from '../../api/client';
 import LiveIndicator from '../LiveIndicator';
 import { addFestivalToCalendar } from '../../lib/addToCalendar';
 import { filterUpcomingFestivals, sortFestivalsByDate } from '../../lib/festivalDates';
@@ -20,6 +21,7 @@ export default function FeaturedFestivalSection({ festivals = festivalsFallback 
 
   const eventDescription =
     featured.descriptionLong || featured.description || t('festivals.rathaDescLong');
+  const featuredImage = featured.image ? resolveMediaUrl(featured.image) : '';
 
   function handleAddToCalendar() {
     addFestivalToCalendar(featured, { description: eventDescription });
@@ -29,7 +31,15 @@ export default function FeaturedFestivalSection({ festivals = festivalsFallback 
     <section className={styles.featuredSection}>
       <div className={styles.featuredCard}>
         <div className={styles.featuredImg}>
-          <span className={styles.phLabelDark}>{t('festivals.featuredImageLabel')}</span>
+          {featuredImage ? (
+            <img
+              src={featuredImage}
+              alt={featured.name}
+              className={styles.featuredPhoto}
+            />
+          ) : (
+            <span className={styles.phLabelDark}>{t('festivals.featuredImageLabel')}</span>
+          )}
         </div>
         <div className={styles.featuredBody}>
           <div className={styles.featuredEyebrow}>

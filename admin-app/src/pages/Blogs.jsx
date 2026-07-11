@@ -3,8 +3,15 @@ import { store } from '../data/store.js';
 import { BLOG_CATEGORIES } from '../data/blogCategories.js';
 import { resolvePreviewUrl } from '../lib/mediaUrl.js';
 import FormatTextarea from '../components/FormatTextarea.jsx';
-import RichTextContent from '../components/RichTextContent.jsx';
+import { plainTextFromRich } from '../lib/richText.js';
 import PageHead from '../components/PageHead.jsx';
+
+function blogExcerpt(body, maxLength = 180) {
+  const plain = plainTextFromRich(body).replace(/\s+/g, ' ').trim();
+  if (!plain) return '';
+  if (plain.length <= maxLength) return plain;
+  return `${plain.slice(0, maxLength - 1).trim()}…`;
+}
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState([]);
@@ -156,26 +163,46 @@ export default function Blogs() {
         </div>
 
         <div className="stack">
-          {blogs.map((b) => (
-            <div className="post-card" key={b.id}>
-              {(b.imageUrl || b.image) && (
-                <img
-                  src={resolvePreviewUrl(b.imageUrl || b.image)}
-                  alt=""
-                  style={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 8, marginBottom: 12 }}
-                />
-              )}
-              <div className="post-date">{b.date}</div>
-              <div className="post-title">{b.title}</div>
-              {b.category && <div style={{ fontSize: 12, color: '#9E2B25', marginBottom: 6, fontFamily: 'var(--mono)' }}>{b.category}</div>}
-              {b.name && <div style={{ fontSize: 13, color: '#7a6f5f', marginBottom: 6 }}>By {b.name}{b.instaId ? ` · ${b.instaId}` : ''}</div>}
-              <RichTextContent text={b.body} className="post-body" />
-              <div className="row-actions">
-                <button className="btn-soft" onClick={() => edit(b)}>Edit</button>
-                <button className="btn-danger" onClick={() => remove(b.id)}>Delete</button>
-              </div>
-            </div>
-          ))}
+          {blogs.map((b) => {
+            const image = b.imageUrl || b.image;
+            const isActive = editId === b.id;
+
+            return (
+              <article className={`post-card post-card--compact ${isActive ? 'post-card--active' : ''}`} key={b.id}>
+                <div className="post-card-media">
+                  {image ? (
+                    <img
+                      src={resolvePreviewUrl(image)}
+                      alt=""
+                      className="post-card-image"
+                    />
+                  ) : (
+                    <div className="post-card-placeholder" aria-hidden="true">
+                      [ {b.title} ]
+                    </div>
+                  )}
+                </div>
+                <div className="post-card-body">
+                  <div className="post-card-meta">
+                    {b.category && <span className="post-card-category">{b.category}</span>}
+                    <span className="post-date">{b.date}</span>
+                  </div>
+                  <h3 className="post-title">{b.title}</h3>
+                  {b.name && (
+                    <div className="post-card-author">
+                      {b.name}
+                      {b.instaId ? ` · ${b.instaId}` : ''}
+                    </div>
+                  )}
+                  <p className="post-card-excerpt">{blogExcerpt(b.body)}</p>
+                  <div className="row-actions">
+                    <button type="button" className="btn-soft" onClick={() => edit(b)}>Edit</button>
+                    <button type="button" className="btn-danger" onClick={() => remove(b.id)}>Delete</button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </>

@@ -352,6 +352,10 @@ export default {
     "hoursTitle": "दर्शन के लिए कब आएँ।",
     "hoursBody": "Mangala Arati से पहले मंदिर खुलता है और मध्याह्न विश्राम के साथ दिन भर खुला रहता है। आरती से 20–30 मिनट पहले आएँ। पूर्ण नीति समयसारणी देखें।",
     "hoursCta": "पूर्ण नीति समयसारणी →",
+    "scheduleFollowing": "वर्तमान समयसारणी",
+    "scheduleSpecial": "विशेष समयसारणी",
+    "scheduleSummer": "ग्रीष्मकालीन समयसारणी",
+    "scheduleWinter": "शीतकालीन समयसारणी",
     "hours": [
       {
         "name": "Temple Opens",

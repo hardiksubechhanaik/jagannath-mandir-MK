@@ -101,6 +101,16 @@
   display: flex;
   align-items: flex-end;
   padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.featuredPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .phLabelDark { font-family: 'Space Mono', monospace; font-size: 12px; color: rgba(231,195,106,.7); }
 

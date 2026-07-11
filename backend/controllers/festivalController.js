@@ -9,6 +9,7 @@ import {
 } from '../../src/lib/festivalDates.js';
 
 function toClient(doc) {
+  const imageUrl = doc.imageUrl || '';
   return enrichFestival({
     id: doc._id.toString(),
     day: doc.day,
@@ -17,6 +18,8 @@ function toClient(doc) {
     desc: doc.desc,
     odia: doc.odia || '',
     featured: doc.featured || false,
+    imageUrl,
+    image: imageUrl,
     date: doc.date || '',
     weekday: doc.weekday || '',
   });
@@ -39,7 +42,7 @@ export const listFestivals = asyncHandler(async (_req, res) => {
 });
 
 export const createFestival = asyncHandler(async (req, res) => {
-  const { day, month, name, desc, odia, featured, date } = req.body;
+  const { day, month, name, desc, odia, featured, date, imageUrl, image } = req.body;
   const isoDate = resolveFestivalDate({ day, month, date });
   const count = await Festival.countDocuments();
   await Festival.create({
@@ -49,6 +52,7 @@ export const createFestival = asyncHandler(async (req, res) => {
     desc: desc || '',
     odia: odia || '',
     featured: Boolean(featured),
+    imageUrl: imageUrl || image || '',
     date: isoDate,
     weekday: weekdayFromIsoDate(isoDate),
     order: count,
@@ -58,7 +62,7 @@ export const createFestival = asyncHandler(async (req, res) => {
 });
 
 export const updateFestival = asyncHandler(async (req, res) => {
-  const { day, month, name, desc, odia, featured, date } = req.body;
+  const { day, month, name, desc, odia, featured, date, imageUrl, image } = req.body;
   const existing = await Festival.findById(req.params.id);
   if (!existing) {
     res.status(404);
@@ -72,6 +76,8 @@ export const updateFestival = asyncHandler(async (req, res) => {
   if (desc !== undefined) patch.desc = desc;
   if (odia !== undefined) patch.odia = odia;
   if (featured !== undefined) patch.featured = Boolean(featured);
+  if (imageUrl !== undefined) patch.imageUrl = imageUrl;
+  if (image !== undefined) patch.imageUrl = image;
 
   const nextDay = patch.day ?? existing.day;
   const nextMonth = patch.month ?? existing.month;

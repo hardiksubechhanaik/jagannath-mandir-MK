@@ -9,6 +9,8 @@ import DarshanGuidelinesSection from '../components/visit/DarshanGuidelinesSecti
 import FacilitiesSection from '../components/visit/FacilitiesSection';
 import AnnadanCtaSection from '../components/visit/AnnadanCtaSection';
 import RathTrackerCta from '../components/rath/RathTrackerCta';
+import usePageData from '../hooks/usePageData';
+import { endpoints } from '../api/client';
 import { isRathYatraSeason } from '../lib/rathSeason';
 import { scrollToHash } from '../lib/scrollToHash';
 import { useTranslation } from '../i18n/useTranslation';
@@ -17,6 +19,7 @@ import styles from '../styles/visit.module.css';
 export default function Visit() {
   const { t } = useTranslation();
   const { hash } = useLocation();
+  const { data } = usePageData(endpoints.visit);
 
   useEffect(() => {
     if (hash) {
@@ -32,7 +35,7 @@ export default function Visit() {
         odia={t('visit.heroOdia')}
       />
       <AtAGlanceSection />
-      <DarshanHoursSection />
+      <DarshanHoursSection hours={data?.hours} niti={data?.niti} />
       <HowToReachSection />
       {isRathYatraSeason() ? <RathTrackerCta /> : null}
       <DarshanGuidelinesSection />

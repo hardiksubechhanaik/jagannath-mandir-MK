@@ -352,6 +352,10 @@ export default {
     "hoursTitle": "ଦର୍ଶନ ପାଇଁ କେବେ ଆସିବେ।",
     "hoursBody": "Mangala Arati ପୂର୍ବରୁ ମନ୍ଦିର ଖୋଲେ ଓ ମଧ୍ୟାହ୍ନ ବିś୍ରାମ ସହିତ ଦିନ ସାରା ଖୋଲା ରହେ। ଆରତୀ ପୂର୍ବରୁ 20–30 ମିନିଟ ପୂର୍ବରୁ ଆସନ୍ତୁ। ସମ୍ପୂର୍ଣ୍ଣ ନୀତି ସମୟସାରଣୀ ଦେଖନ୍ତୁ।",
     "hoursCta": "ସମ୍ପୂର୍ଣ୍ଣ ନୀତି ସମୟସାରଣୀ →",
+    "scheduleFollowing": "ଚାଲୁଥିବା ସମୟସାରଣୀ",
+    "scheduleSpecial": "ବିଶେଷ ସମୟସାରଣୀ",
+    "scheduleSummer": "ଗ୍ରୀଷ୍ମ ସମୟସାରଣୀ",
+    "scheduleWinter": "ଶୀତ ସମୟସାରଣୀ",
     "hours": [
       {
         "name": "Temple Opens",

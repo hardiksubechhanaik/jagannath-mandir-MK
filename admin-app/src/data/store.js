@@ -28,7 +28,7 @@ async function uploadImage(file) {
 
 export { uploadImage };
 
-async function prepareBlogBody(record) {
+async function prepareImageRecord(record) {
   const body = { ...record };
   if (record.file instanceof File) {
     body.imageUrl = await uploadImage(record.file);
@@ -36,6 +36,10 @@ async function prepareBlogBody(record) {
   delete body.file;
   delete body.image;
   return body;
+}
+
+async function prepareBlogBody(record) {
+  return prepareImageRecord(record);
 }
 
 export const store = {
@@ -89,6 +93,12 @@ export const store = {
       return data;
     }
 
+    if (name === 'festivals') {
+      const body = await prepareImageRecord(record);
+      const { data } = await api.post(ROUTES[name], body);
+      return data;
+    }
+
     const body = { ...record };
     const { data } = await api.post(ROUTES[name], body);
     if (name === 'festivals' && !prepend) return data;
@@ -103,6 +113,12 @@ export const store = {
 
     if (name === 'blogs') {
       const body = await prepareBlogBody(patch);
+      const { data } = await api.put(`${ROUTES[name]}/${id}`, body);
+      return data;
+    }
+
+    if (name === 'festivals') {
+      const body = await prepareImageRecord(patch);
       const { data } = await api.put(`${ROUTES[name]}/${id}`, body);
       return data;
     }

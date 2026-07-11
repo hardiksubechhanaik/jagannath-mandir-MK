@@ -8,6 +8,7 @@ const festivalSchema = new mongoose.Schema(
     desc: { type: String, default: '' },
     odia: { type: String, default: '' },
     featured: { type: Boolean, default: false },
+    imageUrl: { type: String, default: '' },
     date: { type: String, default: '' },
     weekday: { type: String, default: '' },
     order: { type: Number, default: 0 },

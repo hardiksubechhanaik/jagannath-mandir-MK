@@ -9,7 +9,8 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('code') && window.location.pathname === '/login') {
+    const onLoginRoute = window.location.pathname.endsWith('/login');
+    if (onLoginRoute && (params.get('code') || params.get('bootstrap') === '1')) {
       setLoading(false);
       return;
     }

@@ -24,6 +24,7 @@ import {
   updateTiming,
   deleteTiming,
   bulkUpdateTimings,
+  repairTimings,
 } from '../controllers/timingController.js';
 import {
   listSpecialTimetables,
@@ -69,6 +70,7 @@ adminRouter.delete('/festivals/:id', deleteFestival);
 
 adminRouter.get('/timings', listTimings);
 adminRouter.put('/timings/bulk', bulkUpdateTimings);
+adminRouter.post('/timings/repair', repairTimings);
 adminRouter.post('/timings', createTiming);
 adminRouter.put('/timings/:id', updateTiming);
 adminRouter.delete('/timings/:id', deleteTiming);

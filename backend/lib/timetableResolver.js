@@ -1,6 +1,7 @@
 import Timing from '../models/Timing.js';
 import SpecialTimetable from '../models/SpecialTimetable.js';
 import { SUMMER_NITI, WINTER_NITI } from '../../src/data/niti.js';
+import { isTimingDataCorrupt, repairCanonicalTimings } from './timingRepair.js';
 import {
   formatIndianDateKey,
   formatIndianDateRange,
@@ -32,7 +33,11 @@ function mapTimingRow(row) {
 }
 
 async function getBaselineTimingsGrouped() {
-  const rows = await Timing.find().sort({ season: 1, order: 1 });
+  let rows = await Timing.find().sort({ season: 1, order: 1 });
+  if (isTimingDataCorrupt(rows)) {
+    await repairCanonicalTimings();
+    rows = await Timing.find().sort({ season: 1, order: 1 });
+  }
   if (!rows.length) {
     return {
       summer: SUMMER_NITI.map(({ time, name, odia, note }) => ({ time, name, odia, note })),
@@ -42,6 +47,7 @@ async function getBaselineTimingsGrouped() {
 
   const grouped = { summer: [], winter: [] };
   for (const row of rows) {
+    if (!String(row.name ?? '').trim() || !String(row.time ?? '').trim()) continue;
     grouped[row.season].push(mapTimingRow(row));
   }
   return grouped;

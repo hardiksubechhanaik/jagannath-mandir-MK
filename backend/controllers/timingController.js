@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Timing from '../models/Timing.js';
 import { scheduleDevSnapshot } from '../config/devSnapshot.js';
+import { repairCanonicalTimings } from '../lib/timingRepair.js';
 
 function rowToClient(doc) {
   return {
@@ -13,10 +14,24 @@ function rowToClient(doc) {
   };
 }
 
+function sanitizeRows(rows = []) {
+  return rows
+    .map((row, index) => ({
+      id: row.id ? String(row.id) : '',
+      name: String(row.name ?? '').trim(),
+      odia: String(row.odia ?? row.nameOdia ?? '').trim(),
+      time: String(row.time ?? '').trim(),
+      note: String(row.note ?? '').trim(),
+      order: index,
+    }))
+    .filter((row) => row.name && row.time);
+}
+
 async function groupedTimings() {
   const rows = await Timing.find().sort({ season: 1, order: 1 });
   const grouped = { summer: [], winter: [] };
   for (const row of rows) {
+    if (!String(row.name ?? '').trim() || !String(row.time ?? '').trim()) continue;
     grouped[row.season].push({
       id: row._id.toString(),
       name: row.name,
@@ -75,7 +90,8 @@ export const deleteTiming = asyncHandler(async (req, res) => {
 });
 
 export const bulkUpdateTimings = asyncHandler(async (req, res) => {
-  const { summer, winter } = req.body;
+  const summer = sanitizeRows(req.body?.summer);
+  const winter = sanitizeRows(req.body?.winter);
   const seasons = [
     ['summer', summer],
     ['winter', winter],
@@ -84,29 +100,36 @@ export const bulkUpdateTimings = asyncHandler(async (req, res) => {
   const keepIds = new Set();
 
   for (const [season, rows] of seasons) {
-    if (!Array.isArray(rows)) continue;
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       if (row.id) {
-        await Timing.findByIdAndUpdate(row.id, {
-          name: row.name,
-          nameOdia: row.odia,
-          time: row.time,
-          note: row.note || '',
-          order: i,
-        });
-        keepIds.add(row.id);
-      } else {
-        const created = await Timing.create({
-          season,
-          name: row.name,
-          nameOdia: row.odia,
-          time: row.time,
-          note: row.note || '',
-          order: i,
-        });
-        keepIds.add(created._id.toString());
+        const updated = await Timing.findByIdAndUpdate(
+          row.id,
+          {
+            name: row.name,
+            nameOdia: row.odia,
+            time: row.time,
+            note: row.note || '',
+            season,
+            order: i,
+          },
+          { new: true },
+        );
+        if (updated) {
+          keepIds.add(updated._id.toString());
+          continue;
+        }
       }
+
+      const created = await Timing.create({
+        season,
+        name: row.name,
+        nameOdia: row.odia,
+        time: row.time,
+        note: row.note || '',
+        order: i,
+      });
+      keepIds.add(created._id.toString());
     }
   }
 
@@ -119,6 +142,17 @@ export const bulkUpdateTimings = asyncHandler(async (req, res) => {
 
   scheduleDevSnapshot();
   res.json(await groupedTimings());
+});
+
+export const repairTimings = asyncHandler(async (_req, res) => {
+  const repaired = await repairCanonicalTimings();
+  scheduleDevSnapshot();
+  res.json({
+    ok: true,
+    message: 'Timings reset to the canonical summer/winter schedule.',
+    repaired,
+    timings: await groupedTimings(),
+  });
 });
 
 export { rowToClient };

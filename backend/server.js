@@ -34,6 +34,9 @@ const defaultOrigins = [
   'http://127.0.0.1:5173',
   'http://localhost:5175',
   'http://127.0.0.1:5175',
+  'https://www.shreejagannathmandirmk.in',
+  'https://shreejagannathmandirmk.in',
+  'https://jagannath-mandir-mk.vercel.app',
 ];
 
 const allowedOrigins = [

@@ -38,7 +38,18 @@ export default function Login() {
       if (ADMIN_ROLES.has(role)) {
         const handoff = await apiPostAuth('/api/auth/handoff', {}, data.token);
         const adminUrl = getAdminAppUrl();
-        window.location.href = `${adminUrl}/login?code=${encodeURIComponent(handoff.code)}`;
+        const sameOrigin = typeof window !== 'undefined'
+          && adminUrl.startsWith(window.location.origin);
+        if (sameOrigin) {
+          sessionStorage.setItem('mandir_admin_bootstrap', JSON.stringify({
+            token: data.token,
+            user: data.user,
+            at: Date.now(),
+          }));
+          window.location.href = `${adminUrl}/login?bootstrap=1`;
+        } else {
+          window.location.href = `${adminUrl}/login?code=${encodeURIComponent(handoff.code)}`;
+        }
         return;
       }
 

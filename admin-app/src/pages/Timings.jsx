@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { store } from '../data/store.js';
 import PageHead from '../components/PageHead.jsx';
@@ -9,10 +9,14 @@ export default function Timings() {
   const initialMode = searchParams.get('view') === 'special' ? 'special' : 'summer';
   const [mode, setMode] = useState(initialMode);
   const [all, setAll] = useState({ summer: [], winter: [] });
+  const saveTimer = useRef(null);
   const rows = mode === 'special' ? [] : all[mode] || [];
 
   useEffect(() => {
     store.get('timings').then(setAll);
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -28,11 +32,23 @@ export default function Timings() {
     }
   }
 
-  async function setTime(i, value) {
+  function queueSave(next) {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      try {
+        const saved = await store.set('timings', next);
+        setAll(saved);
+      } catch {
+        /* keep local edits visible */
+      }
+    }, 450);
+  }
+
+  function setTime(i, value) {
     const next = JSON.parse(JSON.stringify(all));
     next[mode][i].time = value;
-    const saved = await store.set('timings', next);
-    setAll(saved);
+    setAll(next);
+    queueSave(next);
   }
 
   return (
@@ -73,7 +89,7 @@ export default function Timings() {
 
           <div className="timing-list">
             {rows.map((t, i) => (
-              <div className="timing-row" key={`${mode}-${t.time}-${i}`}>
+              <div className="timing-row" key={t.id || `${mode}-${t.name}-${i}`}>
                 <div>
                   <div className="timing-name">{t.name}</div>
                   <div className="timing-odia">{t.odia}</div>

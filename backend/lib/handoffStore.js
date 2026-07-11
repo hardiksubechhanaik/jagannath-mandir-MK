@@ -1,42 +1,45 @@
 import crypto from 'node:crypto';
+import HandoffCode from '../models/HandoffCode.js';
 
 const TTL_MS = 5 * 60_000;
-/** Allow duplicate exchange briefly (React Strict Mode / double navigation). */
 const RECENTLY_USED_MS = 60_000;
-
-/** @type {Map<string, { token: string, expiresAt: number }>} */
-const codes = new Map();
 
 /** @type {Map<string, { token: string, expiresAt: number }>} */
 const recentlyUsed = new Map();
 
-function pruneExpired(store) {
+function pruneRecentlyUsed() {
   const now = Date.now();
-  for (const [key, entry] of store.entries()) {
-    if (entry.expiresAt <= now) store.delete(key);
+  for (const [key, entry] of recentlyUsed.entries()) {
+    if (entry.expiresAt <= now) recentlyUsed.delete(key);
   }
 }
 
-export function createHandoffCode(token) {
-  pruneExpired(codes);
+export async function createHandoffCode(token) {
   const code = crypto.randomBytes(24).toString('hex');
-  codes.set(code, { token, expiresAt: Date.now() + TTL_MS });
+  const expiresAt = new Date(Date.now() + TTL_MS);
+  await HandoffCode.findOneAndUpdate(
+    { code },
+    { code, token, expiresAt },
+    { upsert: true, new: true, setDefaultsOnInsert: true },
+  );
   return code;
 }
 
-export function consumeHandoffCode(code) {
+export async function consumeHandoffCode(code) {
   if (!code) return null;
 
-  pruneExpired(recentlyUsed);
+  pruneRecentlyUsed();
   const replay = recentlyUsed.get(code);
   if (replay && replay.expiresAt > Date.now()) {
     return replay.token;
   }
 
-  const entry = codes.get(code);
-  codes.delete(code);
-  if (!entry || entry.expiresAt <= Date.now()) return null;
+  const doc = await HandoffCode.findOneAndDelete({
+    code: String(code),
+    expiresAt: { $gt: new Date() },
+  });
+  if (!doc?.token) return null;
 
-  recentlyUsed.set(code, { token: entry.token, expiresAt: Date.now() + RECENTLY_USED_MS });
-  return entry.token;
+  recentlyUsed.set(code, { token: doc.token, expiresAt: Date.now() + RECENTLY_USED_MS });
+  return doc.token;
 }

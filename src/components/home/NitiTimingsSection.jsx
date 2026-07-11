@@ -96,8 +96,8 @@ export default function NitiTimingsSection({ schedule }) {
       {specialBanner}
 
       <div className={styles.nitiGrid}>
-        {items.map((n) => (
-          <div className={styles.nitiCard} key={`${n.time}-${n.name}`}>
+        {items.map((n, index) => (
+          <div className={styles.nitiCard} key={`${n.name}-${n.time}-${index}`}>
             <div className={styles.nitiTime}>{n.time}</div>
             <div className={styles.nitiName}>{n.name}</div>
             <div className={styles.nitiOdia}>{n.odia}</div>

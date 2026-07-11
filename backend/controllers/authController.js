@@ -89,7 +89,7 @@ export const createAdminHandoff = asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error('Not authorized');
   }
-  const code = createHandoffCode(token);
+  const code = await createHandoffCode(token);
   res.json({ code });
 });
 
@@ -100,7 +100,7 @@ export const exchangeAdminHandoff = asyncHandler(async (req, res) => {
     throw new Error('Handoff code is required');
   }
 
-  const token = consumeHandoffCode(String(code));
+  const token = await consumeHandoffCode(String(code));
   if (!token) {
     res.status(401);
     throw new Error('Invalid or expired handoff code');

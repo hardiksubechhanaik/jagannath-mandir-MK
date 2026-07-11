@@ -1,9 +1,14 @@
-const API_BASE = import.meta.env.VITE_API_URL ?? '';
+import { resolveApiOrigin } from '../lib/apiBase.js';
+
+function getApiBase() {
+  return resolveApiOrigin();
+}
 
 /** Backend origin for uploaded files (/api/media/... or legacy /uploads/...). */
 function mediaBase() {
-  if (!API_BASE) return '';
-  return API_BASE.replace(/\/api\/?$/, '');
+  const base = getApiBase();
+  if (!base) return '';
+  return base.replace(/\/api\/?$/, '');
 }
 
 async function parseError(res) {
@@ -16,7 +21,7 @@ async function parseError(res) {
 }
 
 export async function apiGet(path) {
-  const res = await fetch(`${API_BASE}${path}`, { cache: 'no-store' });
+  const res = await fetch(`${getApiBase()}${path}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(await parseError(res));
   return res.json();
 }
@@ -25,7 +30,7 @@ export async function apiPost(path, body, token) {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
@@ -35,7 +40,7 @@ export async function apiPost(path, body, token) {
 }
 
 export async function apiPostAuth(path, body, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -48,7 +53,7 @@ export async function apiPostAuth(path, body, token) {
 }
 
 export async function apiGetAuth(path, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error(await parseError(res));
@@ -56,7 +61,7 @@ export async function apiGetAuth(path, token) {
 }
 
 export async function apiDeleteAuth(path, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -65,7 +70,7 @@ export async function apiDeleteAuth(path, token) {
 }
 
 export async function apiPutAuth(path, body, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -78,7 +83,7 @@ export async function apiPutAuth(path, body, token) {
 }
 
 export async function apiUpload(path, formData) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     method: 'POST',
     body: formData,
   });
@@ -87,7 +92,7 @@ export async function apiUpload(path, formData) {
 }
 
 export async function apiUploadAuth(path, formData, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
@@ -97,7 +102,7 @@ export async function apiUploadAuth(path, formData, token) {
 }
 
 export async function apiUploadPutAuth(path, formData, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${getApiBase()}${path}`, {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
@@ -113,7 +118,7 @@ export function resolveMediaUrl(url) {
 }
 
 export async function adminPost(path, body) {
-  const prefix = API_BASE || '';
+  const prefix = getApiBase() || '';
   const url = `${prefix}/api${path.startsWith('/') ? path : `/${path}`}`;
   const res = await fetch(url, {
     method: 'POST',

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
+import { resolveApiBaseUrl } from '../lib/apiBase.js';
 
 const BOOTSTRAP_KEY = 'mandir_admin_bootstrap';
 
@@ -22,12 +23,6 @@ function getAdminHome() {
 
 /** Survives React Strict Mode remounts within the same page load. */
 const exchangeStarted = new Set();
-
-function resolveApiBaseUrl() {
-  const raw = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-  const trimmed = raw.replace(/\/$/, '');
-  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
-}
 
 function finishLogin(data, lockKey) {
   if (lockKey) sessionStorage.setItem(lockKey, 'done');

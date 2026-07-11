@@ -1,4 +1,5 @@
 import api from '../api/axios.js';
+import { resolveApiOrigin } from '../lib/apiBase.js';
 
 export const PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
@@ -21,7 +22,7 @@ async function uploadImage(file) {
   const { data } = await api.post('/admin/upload', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
-  const base = (import.meta.env.VITE_API_URL || 'http://localhost:5001/api').replace(/\/api$/, '');
+  const base = resolveApiOrigin();
   return `${base}${data.url}`;
 }
 

@@ -1,10 +1,5 @@
 import axios from 'axios';
-
-function resolveApiBaseUrl() {
-  const raw = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-  const trimmed = raw.replace(/\/$/, '');
-  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
-}
+import { resolveApiBaseUrl } from '../lib/apiBase.js';
 
 const api = axios.create({
   baseURL: resolveApiBaseUrl(),

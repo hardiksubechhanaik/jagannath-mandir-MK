@@ -58,8 +58,16 @@ import { updateSettings } from '../controllers/settingController.js';
 import { getSummary } from '../controllers/statsController.js';
 import { purgeFakeData } from '../controllers/maintenanceController.js';
 import { uploadImage } from '../controllers/uploadController.js';
-import { uploadLimiter } from '../middleware/rateLimit.js';
+import { uploadLimiter, broadcastLimiter } from '../middleware/rateLimit.js';
 import { createImageUpload, handleMulterError } from '../lib/multerMemory.js';
+import {
+  listNewsletterSubscribers,
+  removeNewsletterSubscriber,
+  listNewsletterBroadcasts,
+  getLatestBlogDraft,
+  sendNewsletterBroadcast,
+  getNewsletterMailStatus,
+} from '../controllers/newsletterController.js';
 
 const adminRouter = Router();
 const upload = createImageUpload();
@@ -113,6 +121,14 @@ adminRouter.delete('/messages/:id', deleteMessage);
 adminRouter.put('/settings', updateSettings);
 adminRouter.get('/stats/summary', getSummary);
 adminRouter.post('/maintenance/purge-sample', purgeFakeData);
+
+adminRouter.get('/newsletter/status', getNewsletterMailStatus);
+adminRouter.get('/newsletter/subscribers', listNewsletterSubscribers);
+adminRouter.delete('/newsletter/subscribers/:id', removeNewsletterSubscriber);
+adminRouter.get('/newsletter/broadcasts', listNewsletterBroadcasts);
+adminRouter.get('/newsletter/latest-blog', getLatestBlogDraft);
+adminRouter.post('/newsletter/broadcasts', broadcastLimiter, sendNewsletterBroadcast);
+
 adminRouter.post('/upload', uploadLimiter, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (handleMulterError(err, res)) return;

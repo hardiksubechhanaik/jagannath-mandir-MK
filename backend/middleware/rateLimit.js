@@ -44,3 +44,15 @@ export const uploadLimiter = limiter({
   max: 15,
   message: 'Too many uploads. Please try again later.',
 });
+
+export const newsletterSubscribeLimiter = limiter({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  message: 'Too many subscription attempts. Please try again later.',
+});
+
+export const broadcastLimiter = limiter({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  message: 'Too many broadcasts sent recently. Please wait before sending again.',
+});

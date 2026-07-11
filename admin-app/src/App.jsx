@@ -12,6 +12,7 @@ import Prasad from './pages/Prasad.jsx';
 import DevotionalMusic from './pages/DevotionalMusic.jsx';
 import Donations from './pages/Donations.jsx';
 import Messages from './pages/Messages.jsx';
+import Newsletter from './pages/Newsletter.jsx';
 import Settings from './pages/Settings.jsx';
 
 function Protected({ children }) {
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="devotional-music" element={<DevotionalMusic />} />
         <Route path="donations" element={<Donations />} />
         <Route path="messages" element={<Messages />} />
+        <Route path="newsletter" element={<Newsletter />} />
         <Route path="settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

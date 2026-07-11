@@ -37,7 +37,12 @@ import {
   loginLimiter,
   handoffLimiter,
   publicWriteLimiter,
+  newsletterSubscribeLimiter,
 } from '../middleware/rateLimit.js';
+import {
+  subscribeNewsletter,
+  unsubscribeNewsletter,
+} from '../controllers/newsletterController.js';
 
 const router = Router();
 
@@ -54,6 +59,8 @@ router.get('/settings', getSettings);
 
 router.post('/donations', publicWriteLimiter, createDonation);
 router.post('/messages', publicWriteLimiter, createMessage);
+router.post('/newsletter/subscribe', newsletterSubscribeLimiter, subscribeNewsletter);
+router.get('/newsletter/unsubscribe', unsubscribeNewsletter);
 router.post('/live-darshan/notify', publicWriteLimiter, createLiveNotification);
 
 router.post('/rath/update-location', publicWriteLimiter, updateRathLocation);

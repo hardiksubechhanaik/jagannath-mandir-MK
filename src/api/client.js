@@ -147,6 +147,7 @@ export const endpoints = {
   devotionalMusic: '/api/devotional-music',
   devotionalMusicSuggestion: '/devotional-music/suggestions',
   contactMessage: '/messages',
+  newsletterSubscribe: '/api/newsletter/subscribe',
   donation: '/donations',
   liveNotify: '/api/live-darshan/notify',
   rathLocation: '/api/rath/location',

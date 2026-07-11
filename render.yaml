@@ -3,6 +3,9 @@
 #
 # Required env on Render (old service may use MONGODB_URI — backend accepts both):
 #   MONGODB_URI or MONGO_URI, JWT_SECRET (32+ chars), CLIENT_URL, RATH_TRACKER_SECRET, WALL_VOLUNTEER_SECRET
+#   SMTP_USER, SMTP_PASS (Zoho Mail app password), SMTP_HOST=smtp.zoho.in, SMTP_PORT=465
+#   MAIL_FROM=office@shreejagannathmandirmk.in, MAIL_FROM_NAME=Shree Jagannath Mandir
+#   SITE_URL=https://www.shreejagannathmandirmk.in
 #   NODE_ENV=production, USE_MEMORY_DB=false
 # Uploaded images are stored in MongoDB GridFS (not on ephemeral disk).
 #
@@ -31,6 +34,20 @@ services:
       - key: RATH_TRACKER_SECRET
         sync: false
       - key: WALL_VOLUNTEER_SECRET
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.zoho.in
+      - key: SMTP_PORT
+        value: "465"
+      - key: MAIL_FROM
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: Shree Jagannath Mandir
+      - key: SITE_URL
         sync: false
       - key: WALL_OTP_DEV
         value: false

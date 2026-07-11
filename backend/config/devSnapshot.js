@@ -9,6 +9,8 @@ import Setting from '../models/Setting.js';
 import Creator from '../models/Creator.js';
 import Timing from '../models/Timing.js';
 import SpecialTimetable from '../models/SpecialTimetable.js';
+import NewsletterSubscriber from '../models/NewsletterSubscriber.js';
+import NewsletterBroadcast from '../models/NewsletterBroadcast.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SNAPSHOT_DIR = path.join(__dirname, '../.data');
@@ -36,7 +38,7 @@ function stripDoc(doc) {
 export async function saveDevSnapshot() {
   if (!isMemoryDb()) return;
 
-  const [gallery, blogs, festivals, settings, creators, timings, specialTimetables, devotionalMusic] = await Promise.all([
+  const [gallery, blogs, festivals, settings, creators, timings, specialTimetables, devotionalMusic, newsletterSubscribers, newsletterBroadcasts] = await Promise.all([
     GalleryItem.find().sort({ createdAt: -1 }).lean(),
     BlogPost.find().sort({ createdAt: -1 }).lean(),
     Festival.find().sort({ order: 1, createdAt: 1 }).lean(),
@@ -45,6 +47,8 @@ export async function saveDevSnapshot() {
     Timing.find().sort({ season: 1, order: 1 }).lean(),
     SpecialTimetable.find().sort({ startDate: -1, priority: -1 }).lean(),
     DevotionalMusic.find().sort({ order: 1, featured: -1, createdAt: -1 }).lean(),
+    NewsletterSubscriber.find().sort({ createdAt: -1 }).lean(),
+    NewsletterBroadcast.find().sort({ createdAt: -1 }).lean(),
   ]);
 
   const snapshot = {
@@ -57,6 +61,8 @@ export async function saveDevSnapshot() {
     timings: timings.map(stripDoc),
     specialTimetables: specialTimetables.map(stripDoc),
     devotionalMusic: devotionalMusic.map(stripDoc),
+    newsletterSubscribers: newsletterSubscribers.map(stripDoc),
+    newsletterBroadcasts: newsletterBroadcasts.map(stripDoc),
   };
 
   fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
@@ -86,7 +92,7 @@ export async function restoreDevSnapshot() {
 
   const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, 'utf8'));
 
-  const [galleryRestored, blogsRestored, festivalsRestored, creatorsRestored, timingsRestored, specialRestored, musicRestored] = await Promise.all([
+  const [galleryRestored, blogsRestored, festivalsRestored, creatorsRestored, timingsRestored, specialRestored, musicRestored, subscribersRestored, broadcastsRestored] = await Promise.all([
     replaceCollection(GalleryItem, snapshot.gallery),
     replaceCollection(BlogPost, snapshot.blogs),
     replaceCollection(Festival, snapshot.festivals),
@@ -94,6 +100,8 @@ export async function restoreDevSnapshot() {
     replaceCollection(Timing, snapshot.timings),
     replaceCollection(SpecialTimetable, snapshot.specialTimetables),
     replaceCollection(DevotionalMusic, snapshot.devotionalMusic),
+    replaceCollection(NewsletterSubscriber, snapshot.newsletterSubscribers),
+    replaceCollection(NewsletterBroadcast, snapshot.newsletterBroadcasts),
   ]);
 
   if (snapshot.settings) {
@@ -105,7 +113,7 @@ export async function restoreDevSnapshot() {
     }
   }
 
-  if (galleryRestored || blogsRestored || festivalsRestored || creatorsRestored || timingsRestored || specialRestored || musicRestored || snapshot.settings) {
+  if (galleryRestored || blogsRestored || festivalsRestored || creatorsRestored || timingsRestored || specialRestored || musicRestored || subscribersRestored || broadcastsRestored || snapshot.settings) {
     console.log(
       `Restored dev snapshot (${[
         galleryRestored ? `${snapshot.gallery.length} gallery` : null,
@@ -115,6 +123,8 @@ export async function restoreDevSnapshot() {
         timingsRestored ? `${snapshot.timings?.length ?? 0} timings` : null,
         specialRestored ? `${snapshot.specialTimetables?.length ?? 0} special timetables` : null,
         musicRestored ? `${snapshot.devotionalMusic?.length ?? 0} devotional music` : null,
+        subscribersRestored ? `${snapshot.newsletterSubscribers?.length ?? 0} newsletter subscribers` : null,
+        broadcastsRestored ? `${snapshot.newsletterBroadcasts?.length ?? 0} newsletter broadcasts` : null,
         snapshot.settings ? 'settings' : null,
       ]
         .filter(Boolean)

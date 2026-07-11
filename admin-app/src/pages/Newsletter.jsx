@@ -1,0 +1,210 @@
+import { useEffect, useState } from 'react';
+import api from '../api/axios.js';
+import PageHead from '../components/PageHead.jsx';
+
+const TYPES = [
+  { value: 'general', label: 'General update' },
+  { value: 'blog', label: 'Blog / Temple Journal' },
+  { value: 'emergency', label: 'Emergency notice' },
+];
+
+function formatWhen(value) {
+  if (!value) return '';
+  return new Date(value).toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+export default function Newsletter() {
+  const [mailStatus, setMailStatus] = useState(null);
+  const [subscribers, setSubscribers] = useState([]);
+  const [subscriberCount, setSubscriberCount] = useState(0);
+  const [broadcasts, setBroadcasts] = useState([]);
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+  const [type, setType] = useState('general');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [sending, setSending] = useState(false);
+
+  async function loadAll() {
+    const [statusRes, subsRes, broadcastsRes] = await Promise.all([
+      api.get('/admin/newsletter/status'),
+      api.get('/admin/newsletter/subscribers'),
+      api.get('/admin/newsletter/broadcasts'),
+    ]);
+    setMailStatus(statusRes.data);
+    setSubscribers(subsRes.data.subscribers || []);
+    setSubscriberCount(subsRes.data.count || 0);
+    setBroadcasts(broadcastsRes.data || []);
+  }
+
+  useEffect(() => {
+    loadAll().catch((err) => setError(err.message || 'Could not load newsletter data.'));
+  }, []);
+
+  async function insertLatestBlog() {
+    setError('');
+    try {
+      const { data } = await api.get('/admin/newsletter/latest-blog');
+      if (!data.available) {
+        setError('No blog posts found yet. Publish a post first.');
+        return;
+      }
+      setSubject(data.suggestedSubject || '');
+      setBody(data.suggestedBody || '');
+      setType('blog');
+    } catch (err) {
+      setError(err.message || 'Could not load latest blog.');
+    }
+  }
+
+  async function sendBroadcast() {
+    setError('');
+    setSuccess('');
+    if (!subject.trim() || !body.trim()) {
+      setError('Subject and message are required.');
+      return;
+    }
+    if (!window.confirm(`Send this email to ${subscriberCount} subscriber(s)?`)) return;
+
+    setSending(true);
+    try {
+      const { data } = await api.post('/admin/newsletter/broadcasts', {
+        subject: subject.trim(),
+        body: body.trim(),
+        type,
+      });
+      setBroadcasts(data.broadcasts || []);
+      setSuccess(`Sent to ${data.broadcast?.sentCount ?? 0} of ${data.broadcast?.recipientCount ?? 0} subscribers.`);
+      setSubject('');
+      setBody('');
+      setType('general');
+      await loadAll();
+    } catch (err) {
+      setError(err.message || 'Broadcast failed.');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function removeSubscriber(id) {
+    if (!window.confirm('Remove this subscriber?')) return;
+    setError('');
+    try {
+      const { data } = await api.delete(`/admin/newsletter/subscribers/${id}`);
+      setSubscribers(data.subscribers || []);
+      setSubscriberCount(data.count || 0);
+    } catch (err) {
+      setError(err.message || 'Could not remove subscriber.');
+    }
+  }
+
+  return (
+    <>
+      <PageHead
+        eyebrow="Sambad · ସମ୍ବାଦ"
+        title="Newsletter Broadcast"
+        right={<div className="count-note">{subscriberCount} subscribers</div>}
+      />
+      <p className="page-sub">
+        Email everyone who subscribed on the blog page. Works with Zoho Mail SMTP and reaches Gmail, Yahoo, Outlook, and all other inboxes.
+      </p>
+
+      {mailStatus && (
+        <div className={`card card--gold mb14 ${mailStatus.configured ? '' : 'login-error'}`} style={{ marginBottom: 20 }}>
+          <div className="card-title" style={{ fontSize: 18 }}>Email delivery</div>
+          {mailStatus.configured ? (
+            <p style={{ margin: 0, fontSize: 14, color: '#5A5043' }}>
+              Zoho Mail is configured. Messages will send from <strong>{mailStatus.from || 'your Zoho address'}</strong>.
+            </p>
+          ) : (
+            <p style={{ margin: 0, fontSize: 14 }}>
+              SMTP is not configured on the server yet. Set <code>SMTP_USER</code>, <code>SMTP_PASS</code>, and optionally <code>SMTP_HOST=smtp.zoho.in</code> on Render.
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="editor-2col">
+        <div className="card card--gold sticky-top">
+          <div className="card-title">Compose broadcast</div>
+          <label className="field-label">Type</label>
+          <select className="input mb14" value={type} onChange={(e) => setType(e.target.value)}>
+            {TYPES.map((item) => (
+              <option key={item.value} value={item.value}>{item.label}</option>
+            ))}
+          </select>
+          <label className="field-label">Subject</label>
+          <input className="input mb14" placeholder="Email subject line" value={subject} onChange={(e) => setSubject(e.target.value)} />
+          <label className="field-label">Message</label>
+          <textarea
+            className="textarea mb14"
+            rows={10}
+            placeholder="Write your notice or blog summary…"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+          />
+          <div className="row-inline mb14">
+            <button type="button" className="btn btn-soft flex1" onClick={insertLatestBlog}>
+              Insert latest blog
+            </button>
+          </div>
+          {error && <div className="login-error" style={{ marginBottom: 12 }}>{error}</div>}
+          {success && <div style={{ marginBottom: 12, color: '#2f6b2f', fontSize: 14, fontWeight: 600 }}>{success}</div>}
+          <button
+            type="button"
+            className="btn btn-primary"
+            style={{ width: '100%' }}
+            onClick={sendBroadcast}
+            disabled={sending || subscriberCount === 0}
+          >
+            {sending ? 'Sending…' : `Send to ${subscriberCount} subscriber(s)`}
+          </button>
+        </div>
+
+        <div className="stack">
+          <div className="card card--white">
+            <div className="card-title" style={{ fontSize: 18 }}>Recent broadcasts</div>
+            {broadcasts.length === 0 ? (
+              <p style={{ margin: 0, color: '#7A6E5C', fontSize: 14 }}>No broadcasts sent yet.</p>
+            ) : (
+              broadcasts.map((item) => (
+                <div className="fest-row fest-row--editing" key={item.id} style={{ marginBottom: 12 }}>
+                  <div>
+                    <div className="post-date">{formatWhen(item.createdAt)} · {item.type}</div>
+                    <div className="post-title" style={{ fontSize: 20 }}>{item.subject}</div>
+                    <div style={{ fontSize: 13, color: '#7A6E5C', marginTop: 6 }}>
+                      {item.sentCount}/{item.recipientCount} delivered · status: {item.status}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="card card--white">
+            <div className="card-title" style={{ fontSize: 18 }}>Subscribers</div>
+            {subscribers.length === 0 ? (
+              <p style={{ margin: 0, color: '#7A6E5C', fontSize: 14 }}>No subscribers yet. They appear when visitors subscribe on the blog page.</p>
+            ) : (
+              subscribers.map((sub) => (
+                <div className="fest-row" key={sub.id} style={{ marginBottom: 10, gridTemplateColumns: '1fr auto' }}>
+                  <div>
+                    <div className="fest-name" style={{ fontSize: 15 }}>{sub.email}</div>
+                    <div style={{ fontSize: 12, color: '#9A8C70' }}>Joined {formatWhen(sub.subscribedAt)}</div>
+                  </div>
+                  <button type="button" className="btn-danger" onClick={() => removeSubscriber(sub.id)}>Remove</button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

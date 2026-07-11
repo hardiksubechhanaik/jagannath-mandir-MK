@@ -25,6 +25,7 @@ const GROUPS = [
     items: [
       { to: '/donations', icon: '❦', label: 'Donations' },
       { to: '/messages', icon: '✉', label: 'Messages', badge: 'messages' },
+      { to: '/newsletter', icon: '◎', label: 'Newsletter' },
       { to: '/settings', icon: '⚙', label: 'Settings' },
     ],
   },

@@ -15,6 +15,7 @@ import LiveDarshan from './pages/LiveDarshan'
 import Donate from './pages/Donate'
 import PrasadBooking from './pages/PrasadBooking'
 import Blog from './pages/Blog'
+import NewsletterUnsubscribe from './pages/NewsletterUnsubscribe'
 import Gallery from './pages/Gallery'
 import DevotionalMusic from './pages/DevotionalMusic'
 import RathTracker from './pages/RathTracker'
@@ -78,6 +79,7 @@ function App() {
         <Route path="/donate" element={<Donate />} />
         <Route path="/prasad" element={<PrasadBooking />} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/newsletter/unsubscribe" element={<NewsletterUnsubscribe />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/devotional-music" element={<DevotionalMusic />} />
       </Routes>

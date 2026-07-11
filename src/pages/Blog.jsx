@@ -3,6 +3,7 @@ import PageShell from '../components/layout/PageShell';
 import PageLoading, { PageError } from '../components/layout/PageLoading';
 import { getBlogFilterCategories } from '../data/blogCategories.js';
 import { getPosts } from '../data/blog.js';
+import { apiPost, endpoints } from '../api/client';
 import { useRefetchOnFocus } from '../hooks/usePageData.js';
 import { useTranslation } from '../i18n/useTranslation';
 import {
@@ -94,6 +95,7 @@ export default function Blog() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
   const loadPosts = useCallback(() => {
     return getPosts()
@@ -127,7 +129,7 @@ export default function Blog() {
   const gridPosts = featured ? filtered.slice(1) : filtered;
   const isEmpty = filtered.length === 0;
 
-  function handleSubscribe(event) {
+  async function handleSubscribe(event) {
     event.preventDefault();
     setSubscribed(false);
 
@@ -137,7 +139,16 @@ export default function Blog() {
     }
 
     setEmailError('');
-    setSubscribed(true);
+    setSubscribing(true);
+    try {
+      await apiPost(endpoints.newsletterSubscribe, { email: email.trim(), source: 'blog' });
+      setSubscribed(true);
+      setEmail('');
+    } catch (err) {
+      setEmailError(err.message || t('forms.newsletterInvalid'));
+    } finally {
+      setSubscribing(false);
+    }
   }
 
   if (loadError) {
@@ -304,8 +315,8 @@ export default function Blog() {
                 </p>
               )}
             </div>
-            <button type="submit" className={styles.subscribeBtn}>
-              {t('common.subscribe')}
+            <button type="submit" className={styles.subscribeBtn} disabled={subscribing}>
+              {subscribing ? '…' : t('common.subscribe')}
             </button>
           </form>
         </div>

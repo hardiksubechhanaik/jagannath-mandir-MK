@@ -170,7 +170,7 @@ export default function Newsletter() {
         right={<div className="count-note">{subscriberCount} subscribers</div>}
       />
       <p className="page-sub">
-        Email everyone who subscribed on the blog page. Works with Zoho Mail SMTP and reaches Gmail, Yahoo, Outlook, and all other inboxes.
+        Email everyone who subscribed on the blog page. Delivered via Brevo and reaches Gmail, Yahoo, Outlook, and all other inboxes.
       </p>
 
       {mailStatus && (
@@ -179,24 +179,29 @@ export default function Newsletter() {
           {mailStatus.configured ? (
             <>
               <p style={{ margin: '0 0 12px', fontSize: 14, color: '#5A5043' }}>
-                Zoho Mail is configured. Messages will send from <strong>{mailStatus.from || 'your Zoho address'}</strong>
-                {' '}via <strong>{mailStatus.host}:{mailStatus.port}</strong>.
+                {mailStatus.provider === 'brevo' ? 'Brevo' : 'SMTP'} is configured. Messages will send from{' '}
+                <strong>{mailStatus.from || 'your sender address'}</strong>
+                {mailStatus.provider === 'brevo'
+                  ? ' via the Brevo API.'
+                  : <> via <strong>{mailStatus.host}:{mailStatus.port}</strong>.</>}
               </p>
               <button type="button" className="btn btn-soft" onClick={testSmtp} disabled={testingMail || sending}>
-                {testingMail ? 'Testing SMTP…' : 'Send test email to mandir inbox'}
+                {testingMail ? 'Sending test…' : 'Send test email to mandir inbox'}
               </button>
               {smtpError && (
                 <div className="login-error" style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5 }}>
                   {smtpError}
                 </div>
               )}
-              <p style={{ margin: '12px 0 0', fontSize: 12, color: '#7A6E5C', lineHeight: 1.5 }}>
-                If this fails: create a Zoho app password, enable IMAP/SMTP in Zoho Mail settings, and try removing SMTP_HOST on Render so the server can auto-detect the correct host.
-              </p>
+              {mailStatus.provider === 'brevo' && (
+                <p style={{ margin: '12px 0 0', fontSize: 12, color: '#7A6E5C', lineHeight: 1.5 }}>
+                  In Brevo, verify <strong>{mailStatus.from}</strong> under Senders &amp; IP before sending.
+                </p>
+              )}
             </>
           ) : (
             <p style={{ margin: 0, fontSize: 14 }}>
-              SMTP is not configured on the server yet. Set <code>SMTP_USER</code>, <code>SMTP_PASS</code>, and optionally <code>SMTP_HOST=smtppro.zoho.in</code> on Render.
+              Email is not configured on the server yet. Set <code>BREVO_API_KEY</code>, <code>MAIL_FROM</code>, and <code>MAIL_FROM_NAME</code> on Render.
             </p>
           )}
         </div>

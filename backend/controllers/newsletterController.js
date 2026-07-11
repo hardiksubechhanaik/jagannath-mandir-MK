@@ -6,7 +6,9 @@ import NewsletterBroadcast from '../models/NewsletterBroadcast.js';
 import { scheduleDevSnapshot } from '../config/devSnapshot.js';
 import {
   buildBroadcastEmail,
-  getActiveSmtpHost,
+  getActiveMailLabel,
+  getMailStatus,
+  getSenderEmail,
   getSiteUrl,
   isMailConfigured,
   sendMail,
@@ -196,7 +198,7 @@ export const getLatestBlogDraft = asyncHandler(async (_req, res) => {
 export const sendNewsletterBroadcast = asyncHandler(async (req, res) => {
   if (!isMailConfigured() && process.env.NODE_ENV === 'production') {
     res.status(503);
-    throw new Error('Zoho Mail SMTP is not configured. Set SMTP_USER and SMTP_PASS on the server.');
+    throw new Error('Email is not configured. Set BREVO_API_KEY on the server.');
   }
 
   const subject = clampText(req.body?.subject, 200);
@@ -257,34 +259,29 @@ export const sendNewsletterBroadcast = asyncHandler(async (req, res) => {
 });
 
 export const getNewsletterMailStatus = asyncHandler(async (_req, res) => {
-  res.json({
-    configured: isMailConfigured(),
-    from: process.env.MAIL_FROM || process.env.SMTP_USER || '',
-    host: process.env.SMTP_HOST || 'smtppro.zoho.in',
-    port: Number(process.env.SMTP_PORT || 465),
-  });
+  res.json(getMailStatus());
 });
 
 export const testNewsletterMail = asyncHandler(async (_req, res) => {
   if (!isMailConfigured()) {
     res.status(503);
-    throw new Error('SMTP is not configured. Set SMTP_USER and SMTP_PASS on Render.');
+    throw new Error('Email is not configured. Set BREVO_API_KEY on Render.');
   }
 
   try {
     await verifyMailConnection();
 
-    const to = process.env.MAIL_FROM || process.env.SMTP_USER;
+    const to = getSenderEmail();
     await sendMail({
       to,
       subject: 'Mandir newsletter test',
-      text: 'This is a test email from the Shree Jagannath Mandir admin panel. SMTP is working.',
-      html: '<p>This is a test email from the Shree Jagannath Mandir admin panel. <strong>SMTP is working.</strong></p>',
+      text: 'This is a test email from the Shree Jagannath Mandir admin panel. Email delivery is working.',
+      html: '<p>This is a test email from the Shree Jagannath Mandir admin panel. <strong>Email delivery is working.</strong></p>',
     });
 
     res.json({
       ok: true,
-      message: `Test email sent to ${to} via ${getActiveSmtpHost()}.`,
+      message: `Test email sent to ${to} via ${getActiveMailLabel()}.`,
     });
   } catch (err) {
     res.status(503);

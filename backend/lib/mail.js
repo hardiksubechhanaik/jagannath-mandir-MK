@@ -1,10 +1,5 @@
-import nodemailer from 'nodemailer';
-
-const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 20000);
-const SMTP_VERIFY_TIMEOUT_MS = Number(process.env.SMTP_VERIFY_TIMEOUT_MS || 12000);
-
-let transport;
-let activeProfile;
+import * as brevo from './brevo.js';
+import * as smtp from './smtp.js';
 
 function escapeHtml(text) {
   return String(text ?? '')
@@ -19,161 +14,48 @@ export function getSiteUrl() {
   return raw.replace(/\/$/, '');
 }
 
-function smtpUser() {
-  return process.env.SMTP_USER?.trim() || '';
-}
-
-function smtpPass() {
-  return process.env.SMTP_PASS?.trim() || '';
+export function getMailProvider() {
+  if (brevo.isBrevoConfigured()) return 'brevo';
+  if (smtp.isSmtpConfigured()) return 'smtp';
+  return null;
 }
 
 export function isMailConfigured() {
-  return Boolean(smtpUser() && smtpPass());
+  return getMailProvider() !== null;
 }
 
-function getConfiguredSmtpHost() {
-  return process.env.SMTP_HOST?.trim() || '';
+export function getSenderEmail() {
+  return process.env.MAIL_FROM?.trim()
+    || process.env.SMTP_USER?.trim()
+    || 'office@shreejagannathmandirmk.in';
 }
 
-function getConfiguredPort() {
-  const raw = process.env.SMTP_PORT?.trim();
-  return raw ? Number(raw) : null;
+export function getSenderName() {
+  return process.env.MAIL_FROM_NAME?.trim() || 'Shree Jagannath Mandir';
 }
 
-function getProfilesToTry() {
-  const configuredHost = getConfiguredSmtpHost();
-  const configuredPort = getConfiguredPort();
-  const profiles = [];
-  const seen = new Set();
-
-  function add(host, port, secure) {
-    const key = `${host}:${port}`;
-    if (!host || seen.has(key)) return;
-    seen.add(key);
-    profiles.push({ host, port, secure });
-  }
-
-  if (configuredHost) {
-    if (configuredPort) {
-      add(configuredHost, configuredPort, configuredPort === 465);
-    } else {
-      add(configuredHost, 465, true);
-      add(configuredHost, 587, false);
-    }
-  }
-
-  const fallbackHosts = configuredHost
-    ? ['smtppro.zoho.in', 'smtp.zoho.in'].filter((host) => host !== configuredHost)
-    : ['smtppro.zoho.in', 'smtp.zoho.in'];
-
-  for (const host of fallbackHosts) {
-    add(host, 465, true);
-    add(host, 587, false);
-  }
-
-  return profiles;
-}
-
-function createTransport(profile) {
-  return nodemailer.createTransport({
-    host: profile.host,
-    port: profile.port,
-    secure: profile.secure,
-    requireTLS: !profile.secure,
-    auth: {
-      user: smtpUser(),
-      pass: smtpPass(),
-    },
-    connectionTimeout: SMTP_TIMEOUT_MS,
-    greetingTimeout: SMTP_TIMEOUT_MS,
-    socketTimeout: SMTP_TIMEOUT_MS,
-    tls: {
-      minVersion: 'TLSv1.2',
-      servername: profile.host,
-    },
-  });
-}
-
-function getTransport() {
-  if (!transport || !activeProfile) {
-    throw new Error('SMTP is not connected yet.');
-  }
-  return transport;
-}
-
-export function resetMailTransport() {
-  if (transport?.close) {
-    try {
-      transport.close();
-    } catch {
-      // ignore close errors while resetting
-    }
-  }
-  transport = undefined;
-  activeProfile = undefined;
-}
-
-function withTimeout(promise, ms, label) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      setTimeout(() => reject(new Error(`${label} timed out after ${Math.round(ms / 1000)}s`)), ms);
-    }),
-  ]);
-}
-
-function formatSmtpError(err, attempts = []) {
-  const message = err?.message || 'Unknown SMTP error';
-  const tried = attempts.length
-    ? `Tried: ${attempts.join('; ')}. `
-    : '';
-  return `${message}. ${tried}Use a Zoho app password (accounts.zoho.com → Security → App Passwords). Free Zoho plans usually need smtp.zoho.in; paid custom-domain plans need smtppro.zoho.in. Enable IMAP/SMTP access in Zoho Mail settings.`;
-}
-
-async function verifyProfile(profile) {
-  const candidate = createTransport(profile);
-  try {
-    await withTimeout(
-      candidate.verify(),
-      SMTP_VERIFY_TIMEOUT_MS,
-      `SMTP ${profile.host}:${profile.port}`,
-    );
-    activeProfile = profile;
-    transport = candidate;
-    return profile;
-  } catch (err) {
-    if (candidate.close) candidate.close();
-    throw err;
-  }
+export function getMailStatus() {
+  const provider = getMailProvider();
+  return {
+    configured: Boolean(provider),
+    provider,
+    from: getSenderEmail(),
+    host: provider === 'brevo' ? 'api.brevo.com' : (process.env.SMTP_HOST || 'smtppro.zoho.in'),
+    port: provider === 'brevo' ? 443 : Number(process.env.SMTP_PORT || 465),
+  };
 }
 
 export async function verifyMailConnection() {
-  if (!isMailConfigured()) {
-    if (process.env.NODE_ENV !== 'production') {
-      return { ok: true, dev: true, profile: 'dev' };
-    }
-    throw new Error('Email is not configured on the server. Set SMTP_USER and SMTP_PASS for Zoho Mail.');
+  if (brevo.isBrevoConfigured()) {
+    return brevo.verifyBrevoConnection();
   }
-
-  resetMailTransport();
-  const profiles = getProfilesToTry();
-  const attempts = [];
-  let lastError;
-
-  for (const profile of profiles) {
-    const label = `${profile.host}:${profile.port}`;
-    try {
-      const working = await verifyProfile(profile);
-      console.log(`[mail] SMTP connected via ${label}`);
-      return { ok: true, profile: working };
-    } catch (err) {
-      lastError = err;
-      attempts.push(`${label} (${err.message})`);
-      console.error(`[mail] SMTP verify failed for ${label}:`, err.message);
-    }
+  if (smtp.isSmtpConfigured()) {
+    return smtp.verifyMailConnection();
   }
-
-  throw new Error(formatSmtpError(lastError, attempts));
+  if (process.env.NODE_ENV !== 'production') {
+    return { ok: true, dev: true };
+  }
+  throw new Error('Email is not configured. Set BREVO_API_KEY on Render.');
 }
 
 export function plainTextToHtml(text) {
@@ -209,43 +91,45 @@ export function buildBroadcastEmail({ subject, bodyText, unsubscribeUrl }) {
 }
 
 export async function sendMail({ to, subject, html, text, replyTo }) {
-  if (!isMailConfigured()) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[mail:dev]', { to, subject });
-      return { messageId: 'dev-logged' };
-    }
-    throw new Error('Email is not configured on the server. Set SMTP_USER and SMTP_PASS for Zoho Mail.');
+  const senderEmail = getSenderEmail();
+  const senderName = getSenderName();
+  const replyToEmail = replyTo || senderEmail;
+
+  if (brevo.isBrevoConfigured()) {
+    return brevo.sendBrevoMail({
+      to,
+      subject,
+      html,
+      text,
+      replyTo: replyToEmail,
+      senderEmail,
+      senderName,
+    });
   }
 
-  if (!activeProfile || !transport) {
-    await verifyMailConnection();
+  if (smtp.isSmtpConfigured()) {
+    return smtp.sendSmtpMail({
+      to,
+      subject,
+      html,
+      text,
+      replyTo: replyToEmail,
+      senderEmail,
+      senderName,
+    });
   }
 
-  const fromEmail = process.env.MAIL_FROM?.trim() || smtpUser();
-  const fromName = process.env.MAIL_FROM_NAME || 'Shree Jagannath Mandir';
-
-  try {
-    return await withTimeout(
-      getTransport().sendMail({
-        from: `"${fromName}" <${fromEmail}>`,
-        to,
-        replyTo: replyTo || fromEmail,
-        subject,
-        html,
-        text,
-      }),
-      SMTP_TIMEOUT_MS,
-      `Sending to ${to}`,
-    );
-  } catch (err) {
-    resetMailTransport();
-    throw new Error(formatSmtpError(err, activeProfile ? [`${activeProfile.host}:${activeProfile.port}`] : []));
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[mail:dev]', { to, subject, provider: 'dev' });
+    return { messageId: 'dev-logged' };
   }
+
+  throw new Error('Email is not configured. Set BREVO_API_KEY on Render.');
 }
 
-export function getActiveSmtpHost() {
-  if (activeProfile) return `${activeProfile.host}:${activeProfile.port}`;
-  const host = getConfiguredSmtpHost() || 'smtppro.zoho.in';
-  const port = getConfiguredPort() || 465;
-  return `${host}:${port}`;
+export function getActiveMailLabel() {
+  const provider = getMailProvider();
+  if (provider === 'brevo') return 'Brevo API';
+  if (provider === 'smtp') return smtp.getActiveSmtpHost();
+  return 'not configured';
 }

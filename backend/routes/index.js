@@ -26,8 +26,10 @@ import {
   publicTempleStatus,
   publicBlogs,
   publicNiti,
+  publicDevotionalMusic,
   createLiveNotification,
 } from '../controllers/publicSiteController.js';
+import { createMusicSuggestion } from '../controllers/musicSuggestionController.js';
 import { getRathLocationPublic, stopRathLocation, updateRathLocation } from '../controllers/rathController.js';
 import rathWallRouter from './rathWall.js';
 import { serveMedia } from '../controllers/mediaController.js';
@@ -72,6 +74,8 @@ router.get('/prasad', publicPrasad);
 router.get('/contact', publicContact);
 router.get('/gallery', publicGallery);
 router.get('/blogs', publicBlogs);
+router.get('/devotional-music', publicDevotionalMusic);
+router.post('/devotional-music/suggestions', publicWriteLimiter, createMusicSuggestion);
 router.get('/temple/status', publicTempleStatus);
 router.get('/niti', publicNiti);
 

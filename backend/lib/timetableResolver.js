@@ -74,6 +74,11 @@ function mapSpecialDoc(doc) {
     note: plain.note || '',
     active: plain.active !== false,
     priority: plain.priority ?? 0,
+    templeStatusMode: plain.templeStatusMode || 'auto',
+    templeStatusHead: plain.templeStatusHead || '',
+    templeStatusSub: plain.templeStatusSub || '',
+    templeStatusRibbon: plain.templeStatusRibbon || '',
+    accentColor: plain.accentColor || '',
     items,
   };
 }

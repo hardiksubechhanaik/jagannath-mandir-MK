@@ -16,6 +16,7 @@ import Donate from './pages/Donate'
 import PrasadBooking from './pages/PrasadBooking'
 import Blog from './pages/Blog'
 import Gallery from './pages/Gallery'
+import DevotionalMusic from './pages/DevotionalMusic'
 import RathTracker from './pages/RathTracker'
 import RathAdmin from './pages/RathAdmin'
 import RathYatraWall from './pages/RathYatraWall'
@@ -78,6 +79,7 @@ function App() {
         <Route path="/prasad" element={<PrasadBooking />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/devotional-music" element={<DevotionalMusic />} />
       </Routes>
     </BrowserRouter>
   )

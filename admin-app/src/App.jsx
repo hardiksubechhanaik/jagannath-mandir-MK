@@ -9,6 +9,7 @@ import Festivals from './pages/Festivals.jsx';
 import Timings from './pages/Timings.jsx';
 import SpecialTimings from './pages/SpecialTimings.jsx';
 import Prasad from './pages/Prasad.jsx';
+import DevotionalMusic from './pages/DevotionalMusic.jsx';
 import Donations from './pages/Donations.jsx';
 import Messages from './pages/Messages.jsx';
 import Settings from './pages/Settings.jsx';
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="timings" element={<Timings />} />
         <Route path="special-timings" element={<SpecialTimings />} />
         <Route path="prasad" element={<Prasad />} />
+        <Route path="devotional-music" element={<DevotionalMusic />} />
         <Route path="donations" element={<Donations />} />
         <Route path="messages" element={<Messages />} />
         <Route path="settings" element={<Settings />} />

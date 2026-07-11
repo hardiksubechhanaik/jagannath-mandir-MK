@@ -21,7 +21,7 @@ export const createGallery = asyncHandler(async (req, res) => {
   const { caption, category, url, imageUrl } = req.body;
   const item = await GalleryItem.create({
     caption: caption || 'Untitled',
-    category: category || 'General',
+    category: String(category || 'General').trim() || 'General',
     imageUrl: imageUrl || url || '',
   });
   const items = await GalleryItem.find().sort({ createdAt: -1 });

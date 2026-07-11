@@ -234,3 +234,9 @@ body[data-menu-open='true'] a[aria-label='Enter the Ratha Yatra Mela Ground'] {
   visibility: hidden;
   pointer-events: none;
 }
+
+/* Hide floating mela FAB while gallery lightbox is open */
+body[data-gallery-lightbox='true'] a[aria-label='Enter the Ratha Yatra Mela Ground'] {
+  visibility: hidden;
+  pointer-events: none;
+}

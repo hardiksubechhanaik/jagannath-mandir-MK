@@ -15,6 +15,7 @@ const GROUPS = [
       { to: '/gallery', icon: '▦', label: 'Gallery' },
       { to: '/blogs', icon: '✎', label: 'Blog Posts' },
       { to: '/festivals', icon: '✦', label: 'Festivals' },
+      { to: '/devotional-music', icon: '♫', label: 'Devotional Music' },
       { to: '/timings', icon: '◷', label: 'Timings' },
       { to: '/prasad', icon: '❋', label: 'Prasad Prices' },
     ],

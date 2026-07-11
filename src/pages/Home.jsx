@@ -2,6 +2,7 @@ import PageShell from '../components/layout/PageShell';
 import PageLoading, { PageError } from '../components/layout/PageLoading';
 import WelcomeOverlay from '../components/WelcomeOverlay';
 import HomeHero from '../components/home/HomeHero';
+import useResolvedTempleStatus from '../hooks/useResolvedTempleStatus';
 import useTempleStatusCopy from '../hooks/useTempleStatusCopy';
 import RathCountdown from '../components/RathCountdown';
 import CreatorMarquee from '../components/home/CreatorMarquee';
@@ -19,8 +20,12 @@ import styles from '../styles/home.module.css';
 
 export default function Home() {
   const { t } = useTranslation();
-  const { statusText: liveStatusText } = useTempleStatusCopy();
   const { data, loading, error } = usePageData(endpoints.home);
+  const resolvedStatus = useResolvedTempleStatus(data?.templeStatus);
+  const fallbackStatus = useTempleStatusCopy();
+  const welcomeStatusText = data?.templeStatus?.specialStatusActive
+    ? resolvedStatus.statusText
+    : fallbackStatus.statusText;
 
   let content;
   if (loading && !data) {
@@ -30,7 +35,7 @@ export default function Home() {
   } else {
     content = (
       <>
-        <HomeHero deityImages={data.deityImages} />
+        <HomeHero deityImages={data.deityImages} status={resolvedStatus} />
         <RathCountdown />
         <CreatorMarquee />
         <TodayBand />
@@ -60,8 +65,8 @@ export default function Home() {
 
   return (
     <>
-      <WelcomeOverlay status={liveStatusText} config={data?.welcomePopup} />
-      <PageShell active="home" className={styles.page}>
+      <WelcomeOverlay status={welcomeStatusText} config={data?.welcomePopup} />
+      <PageShell active="home" className={styles.page} ribbon={data ? resolvedStatus : undefined}>
         {content}
       </PageShell>
     </>

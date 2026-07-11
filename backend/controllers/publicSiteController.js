@@ -15,6 +15,7 @@ import {
   getPublicTempleStatus,
   getPublicBlogs,
   getPublicNiti,
+  getPublicDevotionalMusic,
 } from '../services/publicDataService.js';
 import { getPersistenceMode } from '../config/devSnapshot.js';
 import { isValidEmail, isValidIndianMobile, sanitizeIndianMobileDigits } from '../lib/validators.js';
@@ -81,6 +82,10 @@ export const publicTempleStatus = asyncHandler(async (_req, res) => {
 
 export const publicBlogs = asyncHandler(async (_req, res) => {
   res.json(await getPublicBlogs());
+});
+
+export const publicDevotionalMusic = asyncHandler(async (_req, res) => {
+  res.json(await getPublicDevotionalMusic());
 });
 
 export const publicNiti = asyncHandler(async (req, res) => {

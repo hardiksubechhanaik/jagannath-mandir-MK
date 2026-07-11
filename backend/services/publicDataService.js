@@ -1,6 +1,7 @@
 import GalleryItem from '../models/GalleryItem.js';
 import BlogPost from '../models/BlogPost.js';
 import Festival from '../models/Festival.js';
+import DevotionalMusic from '../models/DevotionalMusic.js';
 import Setting from '../models/Setting.js';
 import { resolvePublicNiti } from '../lib/timetableResolver.js';
 import {
@@ -37,6 +38,8 @@ import {
   sortFestivalsByDate,
 } from '../../src/lib/festivalDates.js';
 import { getTempleStatus } from '../lib/templeStatus.js';
+import { buildYoutubeLinks } from '../lib/youtubeUrl.js';
+import { normalizeFeaturedTracks } from '../controllers/devotionalMusicController.js';
 import { enrichSchedule } from '../lib/liveSchedule.js';
 import { normalizePrasadPricing } from '../lib/prasadPricing.js';
 import { getYoutubeChannelStats, getYoutubeRecentVideos } from './youtubeService.js';
@@ -72,6 +75,7 @@ function toPublicGalleryItem(doc, index = 0) {
   return {
     id: doc._id?.toString() || doc.id || String(index),
     label: doc.caption || doc.label,
+    category: String(doc.category || 'General').trim() || 'General',
     image: absUrl(doc.imageUrl || doc.url || doc.image),
     alt: doc.alt || doc.caption || doc.label,
     ratio: doc.ratio || ratios[index % ratios.length],
@@ -132,6 +136,8 @@ export async function getPublicHome() {
     getTimingsGrouped(),
   ]);
 
+  const activeSpecial = niti.mode === 'special' ? niti.special : null;
+
   const welcomePopup = {
     enabled: settings.welcomePopupEnabled !== false,
     eyebrow: settings.welcomePopupEyebrow || '',
@@ -155,7 +161,7 @@ export async function getPublicHome() {
     festivalPreview: getUpcomingFestivals(3),
     donationAmounts: DONATION_AMOUNTS,
     niti,
-    templeStatus: getTempleStatus(settings.status),
+    templeStatus: getTempleStatus(settings.status, activeSpecial),
     welcomePopup,
     blogs: await BlogPost.find().sort({ createdAt: -1 }).limit(3).then((rows) =>
       rows.map((b) => ({ id: b._id.toString(), title: b.title, date: b.dateLabel, body: b.body })),
@@ -216,16 +222,18 @@ export async function getPublicFestivals() {
 }
 
 export async function getPublicLiveDarshan() {
-  const [settings, youtubeStats, recordings] = await Promise.all([
+  const [settings, niti, youtubeStats, recordings] = await Promise.all([
     getSettingsDoc(),
+    getTimingsGrouped(),
     getYoutubeChannelStats(),
     getYoutubeRecentVideos(3),
   ]);
+  const activeSpecial = niti.mode === 'special' ? niti.special : null;
   return {
     cameras: CAMERAS,
     schedule: enrichSchedule(SCHEDULE),
     recordings,
-    templeStatus: getTempleStatus(settings.status),
+    templeStatus: getTempleStatus(settings.status, activeSpecial),
     youtubeStats,
   };
 }
@@ -262,12 +270,18 @@ export async function getPublicContact() {
 
 export async function getPublicGallery() {
   const items = await getGalleryItems();
-  return { items };
+  const categories = [...new Set(items.map((item) => item.category).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  return { items, categories };
 }
 
 export async function getPublicTempleStatus() {
-  const settings = await getSettingsDoc();
-  return getTempleStatus(settings.status);
+  const [settings, niti] = await Promise.all([
+    getSettingsDoc(),
+    getTimingsGrouped(),
+  ]);
+  const activeSpecial = niti.mode === 'special' ? niti.special : null;
+  return getTempleStatus(settings.status, activeSpecial);
 }
 
 export async function getPublicBlogs() {
@@ -281,6 +295,32 @@ export async function getPublicBlogs() {
     body: b.body,
     image: b.imageUrl || null,
   }));
+}
+
+export async function getPublicDevotionalMusic() {
+  await normalizeFeaturedTracks();
+  const rows = await DevotionalMusic.find({ published: true })
+    .sort({ order: 1, featured: -1, createdAt: -1 });
+
+  const items = rows.map((row) => {
+    const links = buildYoutubeLinks(row.videoId || row.youtubeUrl);
+    return {
+      id: row._id.toString(),
+      title: row.title,
+      artist: row.artist || '',
+      category: row.category || 'Bhajan',
+      youtubeUrl: links?.youtubeUrl || row.youtubeUrl,
+      videoId: links?.videoId || row.videoId,
+      embedUrl: links?.embedUrl || '',
+      thumbnail: links?.thumbnail || '',
+      description: row.description || '',
+      featured: Boolean(row.featured),
+    };
+  });
+
+  const categories = [...new Set(items.map((item) => item.category))];
+
+  return { items, categories };
 }
 
 export async function getPublicNiti(season) {

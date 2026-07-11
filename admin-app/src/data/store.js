@@ -10,6 +10,7 @@ const ROUTES = {
   gallery: '/admin/gallery',
   blogs: '/admin/blogs',
   festivals: '/admin/festivals',
+  devotionalMusic: '/admin/devotional-music',
   donations: '/admin/donations',
   messages: '/admin/messages',
 };

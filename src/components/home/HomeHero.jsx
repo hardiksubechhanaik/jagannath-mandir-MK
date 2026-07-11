@@ -1,4 +1,4 @@
-import { useTempleStatusCopy } from '../../hooks/useTempleStatusCopy';
+import useTempleStatusCopy from '../../hooks/useTempleStatusCopy';
 import { DEITY_IMAGES } from '../../data/home';
 import { useTranslation } from '../../i18n/useTranslation';
 import styles from '../../styles/home.module.css';
@@ -18,9 +18,10 @@ function DwarapaalaLabel({ name }) {
   );
 }
 
-export default function HomeHero({ deityImages = DEITY_IMAGES }) {
+export default function HomeHero({ deityImages = DEITY_IMAGES, status }) {
   const { t } = useTranslation();
-  const { statusDot, statusGlow, statusHead, statusSub } = useTempleStatusCopy();
+  const fallback = useTempleStatusCopy();
+  const { statusDot, statusGlow, statusHead, statusSub } = status ?? fallback;
 
   return (
     <section className={styles.hero}>

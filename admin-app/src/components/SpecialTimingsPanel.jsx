@@ -11,11 +11,31 @@ const EMPTY_FORM = {
   endDate: '',
   note: '',
   active: true,
+  templeStatusMode: 'auto',
+  templeStatusHead: '',
+  templeStatusSub: '',
+  templeStatusRibbon: '',
+  accentColor: '',
   rows: [{ ...EMPTY_ROW }],
 };
 
+const ACCENT_PRESETS = [
+  { id: 'default', label: 'Temple gold', color: '' },
+  { id: 'green', label: 'Open green', color: '#1F8A5B' },
+  { id: 'gold', label: 'Closed gold', color: '#C28A1E' },
+  { id: 'maroon', label: 'Maroon', color: '#9E2B25' },
+  { id: 'purple', label: 'Festival purple', color: '#6B3FA0' },
+  { id: 'blue', label: 'Sky blue', color: '#2B6CB0' },
+];
+
 function formatDateRange(startDate, endDate) {
   return formatIndianDateRange(startDate, endDate);
+}
+
+function statusModeLabel(mode) {
+  if (mode === 'open') return 'Force open';
+  if (mode === 'closed') return 'Force closed';
+  return 'Auto';
 }
 
 function isActiveNow(item) {
@@ -77,6 +97,11 @@ export default function SpecialTimingsPanel() {
       endDate: item.endDate || '',
       note: item.note || '',
       active: item.active !== false,
+      templeStatusMode: item.templeStatusMode || 'auto',
+      templeStatusHead: item.templeStatusHead || '',
+      templeStatusSub: item.templeStatusSub || '',
+      templeStatusRibbon: item.templeStatusRibbon || '',
+      accentColor: item.accentColor || '',
       rows: item.items?.length
         ? item.items.map((row) => ({
           time: row.time || '',
@@ -135,6 +160,11 @@ export default function SpecialTimingsPanel() {
       endDate: form.endDate,
       note: form.note.trim(),
       active: form.active,
+      templeStatusMode: form.templeStatusMode,
+      templeStatusHead: form.templeStatusHead.trim(),
+      templeStatusSub: form.templeStatusSub.trim(),
+      templeStatusRibbon: form.templeStatusRibbon.trim(),
+      accentColor: form.accentColor.trim(),
       rows: form.rows.map((row, index) => ({
         time: row.time.trim(),
         name: row.name.trim(),
@@ -255,6 +285,116 @@ export default function SpecialTimingsPanel() {
           Active — show on website when dates match
         </label>
 
+        <div className="status-mode-block">
+          <h4 className="special-rows-title">Mandir status on homepage</h4>
+          <p className="page-sub" style={{ marginBottom: 12 }}>
+            While this schedule is active, override the top ribbon, hero status card, and badge on the homepage.
+          </p>
+          <div className="status-mode-row">
+            {[
+              { id: 'auto', label: 'Auto (daily hours)' },
+              { id: 'open', label: 'Force open' },
+              { id: 'closed', label: 'Force closed' },
+            ].map((option) => (
+              <label key={option.id} className="status-mode-opt">
+                <input
+                  type="radio"
+                  name="templeStatusMode"
+                  value={option.id}
+                  checked={form.templeStatusMode === option.id}
+                  onChange={() => setForm((prev) => ({ ...prev, templeStatusMode: option.id }))}
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+
+          {form.templeStatusMode !== 'auto' ? (
+            <>
+              <label className="field-label" htmlFor="special-status-ribbon">Top ribbon status (optional)</label>
+              <input
+                id="special-status-ribbon"
+                className="input"
+                value={form.templeStatusRibbon}
+                onChange={(e) => setForm((prev) => ({ ...prev, templeStatusRibbon: e.target.value }))}
+                placeholder='e.g. Closed — Anavasar in progress'
+              />
+              <p className="page-sub" style={{ margin: '6px 0 14px' }}>
+                The short line at the very top of the site (next to the colored dot). Leave blank to use the headline below.
+              </p>
+
+              <label className="field-label" htmlFor="special-status-head">Hero badge headline (optional)</label>
+              <input
+                id="special-status-head"
+                className="input"
+                value={form.templeStatusHead}
+                onChange={(e) => setForm((prev) => ({ ...prev, templeStatusHead: e.target.value }))}
+                placeholder='e.g. Temple Closed — Anavasar'
+              />
+
+              <label className="field-label" htmlFor="special-status-sub">Hero card message (optional)</label>
+              <textarea
+                id="special-status-sub"
+                className="input"
+                rows={3}
+                value={form.templeStatusSub}
+                onChange={(e) => setForm((prev) => ({ ...prev, templeStatusSub: e.target.value }))}
+                placeholder="Shown under the badge on the homepage. Leave blank to use the banner note above."
+              />
+            </>
+          ) : null}
+        </div>
+
+        <div className="accent-color-block">
+          <h4 className="special-rows-title">Accent color (optional)</h4>
+          <p className="page-sub" style={{ marginBottom: 10 }}>
+            Colors the special schedule banner. When status is forced open/closed, it also colors the homepage status dot.
+          </p>
+          <div className="accent-presets">
+            {ACCENT_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                className={`accent-swatch${form.accentColor === preset.color ? ' accent-swatch-active' : ''}`}
+                onClick={() => setForm((prev) => ({ ...prev, accentColor: preset.color }))}
+                title={preset.label}
+              >
+                <span
+                  className="accent-swatch-dot"
+                  style={{ background: preset.color || 'linear-gradient(135deg, #e3c36a, #9e2b25)' }}
+                />
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          <div className="accent-custom-row">
+            <input
+              id="special-accent-color"
+              type="color"
+              className="accent-color-input"
+              value={form.accentColor || '#C28A1E'}
+              onChange={(e) => setForm((prev) => ({ ...prev, accentColor: e.target.value.toUpperCase() }))}
+              aria-label="Pick a custom accent color"
+            />
+            <input
+              className="input"
+              value={form.accentColor}
+              onChange={(e) => setForm((prev) => ({ ...prev, accentColor: e.target.value.toUpperCase() }))}
+              placeholder="#C28A1E"
+              pattern="^#[0-9A-Fa-f]{6}$"
+            />
+            {form.accentColor ? (
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => setForm((prev) => ({ ...prev, accentColor: '' }))}
+              >
+                Clear
+              </button>
+            ) : null}
+          </div>
+        </div>
+
         <div className="special-rows-head">
           <h4 className="special-rows-title">Timing rows</h4>
           <button type="button" className="btn-soft" onClick={copyFromSummer} disabled={!summerRows.length}>
@@ -329,9 +469,23 @@ export default function SpecialTimingsPanel() {
                 <div className="special-card-badges">
                   {isActiveNow(item) ? <span className="badge-live">Live now</span> : null}
                   {!item.active ? <span className="badge-muted">Inactive</span> : null}
+                  {item.templeStatusMode && item.templeStatusMode !== 'auto' ? (
+                    <span className="badge-muted">Status: {statusModeLabel(item.templeStatusMode)}</span>
+                  ) : null}
                 </div>
               </div>
               {item.note ? <p className="special-card-note">{item.note}</p> : null}
+              {item.accentColor ? (
+                <p className="special-card-meta">
+                  Accent:
+                  <span
+                    className="special-card-color"
+                    style={{ background: item.accentColor }}
+                    aria-hidden="true"
+                  />
+                  {item.accentColor}
+                </p>
+              ) : null}
               <p className="special-card-meta">{item.items?.length ?? 0} timing rows</p>
               <div className="special-card-actions">
                 <button type="button" className="btn-soft" onClick={() => startEdit(item)} disabled={saving}>

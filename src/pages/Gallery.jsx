@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PageShell from '../components/layout/PageShell';
 import PageLoading, { PageError } from '../components/layout/PageLoading';
-import { getFilterCategories, getGalleryPhotos } from '../data/gallery.js';
+import { loadGalleryPageData } from '../data/gallery.js';
 import { useRefetchOnFocus } from '../hooks/usePageData.js';
 import { useTranslation } from '../i18n/useTranslation';
 import styles from '../styles/galleryPage.module.css';
@@ -121,14 +121,16 @@ function GalleryCard({ photo, onOpen }) {
 export default function Gallery() {
   const { t } = useTranslation();
   const [photos, setPhotos] = useState(null);
+  const [filterCategories, setFilterCategories] = useState(['all']);
   const [loadError, setLoadError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [activePhoto, setActivePhoto] = useState(null);
 
   const loadPhotos = useCallback(() => {
-    return getGalleryPhotos()
+    return loadGalleryPageData()
       .then((result) => {
-        setPhotos(result);
+        setPhotos(result.photos);
+        setFilterCategories(result.categories);
         setLoadError(null);
       })
       .catch((err) => {
@@ -142,10 +144,7 @@ export default function Gallery() {
 
   useRefetchOnFocus(loadPhotos);
 
-  const categories = useMemo(
-    () => (photos ? getFilterCategories(photos) : ['all']),
-    [photos],
-  );
+  const categories = filterCategories;
 
   const visiblePhotos = useMemo(() => {
     if (!photos) return [];
@@ -177,6 +176,17 @@ export default function Gallery() {
   useEffect(() => {
     setActivePhoto(null);
   }, [filter]);
+
+  useEffect(() => {
+    if (activePhoto) {
+      document.body.dataset.galleryLightbox = 'true';
+    } else {
+      delete document.body.dataset.galleryLightbox;
+    }
+    return () => {
+      delete document.body.dataset.galleryLightbox;
+    };
+  }, [activePhoto]);
 
   const heroImage = photos?.find((p) => p.image)?.image ?? null;
 

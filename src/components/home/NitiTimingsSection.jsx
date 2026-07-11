@@ -48,7 +48,13 @@ export default function NitiTimingsSection({ schedule }) {
     : (season === 'summer' ? resolved.summer : resolved.winter);
 
   const specialBanner = isSpecial ? (
-    <div className={styles.specialScheduleBanner}>
+    <div
+      className={styles.specialScheduleBanner}
+      style={resolved.special.accentColor ? {
+        '--special-accent': resolved.special.accentColor,
+        '--special-accent-soft': `${resolved.special.accentColor}22`,
+      } : undefined}
+    >
       <div className={styles.specialScheduleEyebrow}>Special schedule</div>
       <div className={styles.specialScheduleTitle}>
         {resolved.special.title}

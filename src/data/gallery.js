@@ -23,12 +23,16 @@ function normalizeRatio(ratio, index) {
   return String(ratio).replace(/\s/g, '');
 }
 
+function normalizeCategory(value) {
+  return String(value ?? '').trim() || 'General';
+}
+
 function mapPhoto(row, index) {
   const label = row.label ?? row.caption ?? 'Untitled';
   return {
     id: row.id ?? String(index),
     label,
-    category: row.category ?? 'Mandir',
+    category: normalizeCategory(row.category),
     ratio: normalizeRatio(row.ratio, index),
     image: row.image ? resolveMediaUrl(row.image) : null,
     alt: row.alt ?? label,
@@ -47,18 +51,36 @@ function mapSeed(row, index) {
 }
 
 /** Loads gallery photos from the admin-backed API. */
-export async function getGalleryPhotos() {
+export async function loadGalleryPageData() {
   try {
     const data = await apiGet(endpoints.gallery);
     const rows = Array.isArray(data?.items) ? data.items : [];
-    return rows.map(mapPhoto);
+    const photos = rows.map(mapPhoto);
+    return {
+      photos,
+      categories: getFilterCategories(photos, data?.categories),
+    };
   } catch {
-    return SEED_PHOTOS.map(mapSeed);
+    const photos = SEED_PHOTOS.map(mapSeed);
+    return {
+      photos,
+      categories: getFilterCategories(photos),
+    };
   }
 }
 
-export function getFilterCategories(photos) {
-  const categories = [...new Set(photos.map((p) => p.category).filter(Boolean))].sort();
+/** @deprecated Use loadGalleryPageData() */
+export async function getGalleryPhotos() {
+  const data = await loadGalleryPageData();
+  return data.photos;
+}
+
+export function getFilterCategories(photos, apiCategories = []) {
+  const fromPhotos = photos.map((p) => normalizeCategory(p.category));
+  const fromApi = Array.isArray(apiCategories) ? apiCategories.map(normalizeCategory) : [];
+  const categories = [...new Set([...fromPhotos, ...fromApi])]
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   return ['all', ...categories];
 }
 

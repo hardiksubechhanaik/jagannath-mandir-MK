@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import GalleryItem from '../models/GalleryItem.js';
 import BlogPost from '../models/BlogPost.js';
 import Festival from '../models/Festival.js';
+import DevotionalMusic from '../models/DevotionalMusic.js';
 import Setting from '../models/Setting.js';
 import Creator from '../models/Creator.js';
 import Timing from '../models/Timing.js';
@@ -35,7 +36,7 @@ function stripDoc(doc) {
 export async function saveDevSnapshot() {
   if (!isMemoryDb()) return;
 
-  const [gallery, blogs, festivals, settings, creators, timings, specialTimetables] = await Promise.all([
+  const [gallery, blogs, festivals, settings, creators, timings, specialTimetables, devotionalMusic] = await Promise.all([
     GalleryItem.find().sort({ createdAt: -1 }).lean(),
     BlogPost.find().sort({ createdAt: -1 }).lean(),
     Festival.find().sort({ order: 1, createdAt: 1 }).lean(),
@@ -43,6 +44,7 @@ export async function saveDevSnapshot() {
     Creator.find().sort({ order: 1, createdAt: 1 }).lean(),
     Timing.find().sort({ season: 1, order: 1 }).lean(),
     SpecialTimetable.find().sort({ startDate: -1, priority: -1 }).lean(),
+    DevotionalMusic.find().sort({ order: 1, featured: -1, createdAt: -1 }).lean(),
   ]);
 
   const snapshot = {
@@ -54,6 +56,7 @@ export async function saveDevSnapshot() {
     creators: creators.map(stripDoc),
     timings: timings.map(stripDoc),
     specialTimetables: specialTimetables.map(stripDoc),
+    devotionalMusic: devotionalMusic.map(stripDoc),
   };
 
   fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
@@ -83,13 +86,14 @@ export async function restoreDevSnapshot() {
 
   const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, 'utf8'));
 
-  const [galleryRestored, blogsRestored, festivalsRestored, creatorsRestored, timingsRestored, specialRestored] = await Promise.all([
+  const [galleryRestored, blogsRestored, festivalsRestored, creatorsRestored, timingsRestored, specialRestored, musicRestored] = await Promise.all([
     replaceCollection(GalleryItem, snapshot.gallery),
     replaceCollection(BlogPost, snapshot.blogs),
     replaceCollection(Festival, snapshot.festivals),
     replaceCollection(Creator, snapshot.creators),
     replaceCollection(Timing, snapshot.timings),
     replaceCollection(SpecialTimetable, snapshot.specialTimetables),
+    replaceCollection(DevotionalMusic, snapshot.devotionalMusic),
   ]);
 
   if (snapshot.settings) {
@@ -101,7 +105,7 @@ export async function restoreDevSnapshot() {
     }
   }
 
-  if (galleryRestored || blogsRestored || festivalsRestored || creatorsRestored || timingsRestored || specialRestored || snapshot.settings) {
+  if (galleryRestored || blogsRestored || festivalsRestored || creatorsRestored || timingsRestored || specialRestored || musicRestored || snapshot.settings) {
     console.log(
       `Restored dev snapshot (${[
         galleryRestored ? `${snapshot.gallery.length} gallery` : null,
@@ -110,6 +114,7 @@ export async function restoreDevSnapshot() {
         creatorsRestored ? `${snapshot.creators?.length ?? 0} creators` : null,
         timingsRestored ? `${snapshot.timings?.length ?? 0} timings` : null,
         specialRestored ? `${snapshot.specialTimetables?.length ?? 0} special timetables` : null,
+        musicRestored ? `${snapshot.devotionalMusic?.length ?? 0} devotional music` : null,
         snapshot.settings ? 'settings' : null,
       ]
         .filter(Boolean)

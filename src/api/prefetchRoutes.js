@@ -12,6 +12,7 @@ export const ROUTE_PREFETCH = {
   '/donate': endpoints.donate,
   '/gallery': endpoints.gallery,
   '/blog': endpoints.blogs,
+  '/devotional-music': endpoints.devotionalMusic,
 };
 
 export function prefetchRoute(pathname) {

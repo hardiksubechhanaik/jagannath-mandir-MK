@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import SpecialTimetable from '../models/SpecialTimetable.js';
 import { mapSpecialDoc } from '../lib/timetableResolver.js';
+import { normalizeHexColor } from '../lib/colorUtils.js';
 import { scheduleDevSnapshot } from '../config/devSnapshot.js';
 
 const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -28,6 +29,11 @@ function validateDateRange(startDate, endDate) {
   return null;
 }
 
+function normalizeStatusMode(mode) {
+  const value = String(mode ?? 'auto').trim();
+  return ['auto', 'open', 'closed'].includes(value) ? value : 'auto';
+}
+
 function toClient(doc) {
   return mapSpecialDoc(doc);
 }
@@ -45,6 +51,11 @@ export const createSpecialTimetable = asyncHandler(async (req, res) => {
   const note = String(req.body?.note ?? '').trim();
   const active = req.body?.active !== false;
   const priority = Number(req.body?.priority) || 0;
+  const templeStatusMode = normalizeStatusMode(req.body?.templeStatusMode);
+  const templeStatusHead = String(req.body?.templeStatusHead ?? '').trim();
+  const templeStatusSub = String(req.body?.templeStatusSub ?? '').trim();
+  const templeStatusRibbon = String(req.body?.templeStatusRibbon ?? '').trim();
+  const accentColor = normalizeHexColor(req.body?.accentColor);
   const rows = normalizeRows(req.body?.rows);
 
   if (!title) {
@@ -71,6 +82,11 @@ export const createSpecialTimetable = asyncHandler(async (req, res) => {
     note,
     active,
     priority,
+    templeStatusMode,
+    templeStatusHead,
+    templeStatusSub,
+    templeStatusRibbon,
+    accentColor,
     rows,
   });
 
@@ -98,6 +114,21 @@ export const updateSpecialTimetable = asyncHandler(async (req, res) => {
   if (req.body?.note !== undefined) patch.note = String(req.body.note).trim();
   if (req.body?.active !== undefined) patch.active = Boolean(req.body.active);
   if (req.body?.priority !== undefined) patch.priority = Number(req.body.priority) || 0;
+  if (req.body?.templeStatusMode !== undefined) {
+    patch.templeStatusMode = normalizeStatusMode(req.body.templeStatusMode);
+  }
+  if (req.body?.templeStatusHead !== undefined) {
+    patch.templeStatusHead = String(req.body.templeStatusHead).trim();
+  }
+  if (req.body?.templeStatusSub !== undefined) {
+    patch.templeStatusSub = String(req.body.templeStatusSub).trim();
+  }
+  if (req.body?.templeStatusRibbon !== undefined) {
+    patch.templeStatusRibbon = String(req.body.templeStatusRibbon).trim();
+  }
+  if (req.body?.accentColor !== undefined) {
+    patch.accentColor = normalizeHexColor(req.body.accentColor);
+  }
 
   const startDate = req.body?.startDate !== undefined
     ? String(req.body.startDate).trim()

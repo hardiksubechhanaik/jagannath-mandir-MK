@@ -132,6 +132,10 @@ const FALLBACKS = {
     info: [],
     narasimhaImage: NARASIMHA_IMAGE,
   },
+  [endpoints.devotionalMusic]: {
+    items: [],
+    categories: [],
+  },
 };
 
 /** Static page payloads used for instant first paint before the API responds. */

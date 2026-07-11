@@ -33,6 +33,19 @@ import {
   deleteSpecialTimetable,
 } from '../controllers/specialTimetableController.js';
 import {
+  listDevotionalMusic,
+  createDevotionalMusic,
+  updateDevotionalMusic,
+  deleteDevotionalMusic,
+} from '../controllers/devotionalMusicController.js';
+import {
+  listMusicSuggestions,
+  createMusicSuggestion,
+  dismissMusicSuggestion,
+  approveMusicSuggestion,
+  deleteMusicSuggestion,
+} from '../controllers/musicSuggestionController.js';
+import {
   listDonations,
   updateDonation,
 } from '../controllers/donationController.js';
@@ -79,6 +92,16 @@ adminRouter.get('/special-timings', listSpecialTimetables);
 adminRouter.post('/special-timings', createSpecialTimetable);
 adminRouter.put('/special-timings/:id', updateSpecialTimetable);
 adminRouter.delete('/special-timings/:id', deleteSpecialTimetable);
+
+adminRouter.get('/devotional-music', listDevotionalMusic);
+adminRouter.post('/devotional-music', createDevotionalMusic);
+adminRouter.put('/devotional-music/:id', updateDevotionalMusic);
+adminRouter.delete('/devotional-music/:id', deleteDevotionalMusic);
+
+adminRouter.get('/music-suggestions', listMusicSuggestions);
+adminRouter.post('/music-suggestions/:id/approve', approveMusicSuggestion);
+adminRouter.patch('/music-suggestions/:id/dismiss', dismissMusicSuggestion);
+adminRouter.delete('/music-suggestions/:id', deleteMusicSuggestion);
 
 adminRouter.get('/donations', listDonations);
 adminRouter.put('/donations/:id', updateDonation);

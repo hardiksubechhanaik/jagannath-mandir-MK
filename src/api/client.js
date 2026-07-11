@@ -139,6 +139,8 @@ export const endpoints = {
   prasad: '/api/prasad',
   contact: '/api/contact',
   blogs: '/api/blogs',
+  devotionalMusic: '/api/devotional-music',
+  devotionalMusicSuggestion: '/devotional-music/suggestions',
   contactMessage: '/messages',
   donation: '/donations',
   liveNotify: '/api/live-darshan/notify',

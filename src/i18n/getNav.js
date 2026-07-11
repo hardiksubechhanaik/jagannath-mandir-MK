@@ -10,6 +10,7 @@ export function getNav(t) {
         { label: t('nav.darshanTimings'), to: '/visit#timings' },
         { label: t('nav.theDeities'), to: '/deities' },
         { label: t('nav.liveDarshan'), to: '/live-darshan' },
+        { label: t('nav.devotionalMusic'), to: '/devotional-music' },
       ],
     },
     {
@@ -37,6 +38,7 @@ export function getFooterLinks(t) {
     { path: '/visit', label: t('nav.visit') },
     { path: '/deities', label: t('nav.theDeities') },
     { path: '/live-darshan', label: t('nav.liveDarshan') },
+    { path: '/devotional-music', label: t('nav.devotionalMusic') },
     { path: '/festivals', label: t('nav.festivals') },
     { path: '/donate', label: t('nav.donate') },
     { path: '/about', label: t('nav.about') },

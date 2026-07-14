@@ -10,7 +10,7 @@ import { getVolunteerSession } from '../../lib/rathWallSession';
 import styles from '../../styles/rathAdmin.module.css';
 
 export default function RathGpsPanel() {
-  const { sharing, coords, geoError, sendError, lastSent } = useSyncExternalStore(
+  const { sharing, coords, geoError, sendError, lastSent, wakeLockActive } = useSyncExternalStore(
     subscribeGps,
     getGpsState,
   );
@@ -77,8 +77,19 @@ export default function RathGpsPanel() {
       )}
 
       <p className={styles.hint}>
-        Location keeps sharing while you use other volunteer tabs. Stop manually or tap Sign out to end.
-        Position is sent every 10 seconds.
+        Position is sent every <strong>2 seconds</strong>.
+        {sharing ? (
+          <>
+            {' '}
+            Screen stay-awake: <strong>{wakeLockActive ? 'on' : 'off'}</strong>.
+          </>
+        ) : null}
+      </p>
+      <p className={styles.hint}>
+        Keep this page open during the Yatra. Leave the phone unlocked / screen on if possible,
+        or plug it into power. Browsers <strong>cannot</strong> keep sending GPS after the browser
+        is fully closed — that needs a native app. Background / sleep works best on Android while
+        this tab stays open.
       </p>
     </div>
   );

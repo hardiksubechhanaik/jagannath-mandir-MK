@@ -38,6 +38,7 @@ import {
   handoffLimiter,
   publicWriteLimiter,
   newsletterSubscribeLimiter,
+  rathLocationLimiter,
 } from '../middleware/rateLimit.js';
 import {
   subscribeNewsletter,
@@ -63,8 +64,8 @@ router.post('/newsletter/subscribe', newsletterSubscribeLimiter, subscribeNewsle
 router.get('/newsletter/unsubscribe', unsubscribeNewsletter);
 router.post('/live-darshan/notify', publicWriteLimiter, createLiveNotification);
 
-router.post('/rath/update-location', publicWriteLimiter, updateRathLocation);
-router.post('/rath/stop-location', publicWriteLimiter, stopRathLocation);
+router.post('/rath/update-location', rathLocationLimiter, updateRathLocation);
+router.post('/rath/stop-location', rathLocationLimiter, stopRathLocation);
 router.get('/rath/location', getRathLocationPublic);
 
 router.use('/rath-wall', rathWallRouter);

@@ -57,6 +57,9 @@ export default function RathMap({ lat, lng, live, popupText, refocusLabel }) {
   const endIcon = createRathEndIcon();
   const trackerIcon = createRathTrackerIcon();
   const showLive = hasPosition && live;
+
+  // When live: only draw the route still ahead of the Rath.
+  // When offline: show the full planned path.
   const routeWaypoints = useMemo(() => {
     if (showLive) {
       return getRemainingRouteWaypoints(RATH_ROUTE_WAYPOINTS, lat, lng);
@@ -64,8 +67,12 @@ export default function RathMap({ lat, lng, live, popupText, refocusLabel }) {
     return RATH_ROUTE_WAYPOINTS;
   }, [showLive, lat, lng]);
 
+  // Remount only when the planned route definition changes — not on every GPS tick.
+  const mapKey = RATH_ROUTE_WAYPOINTS.map((point) => point.join(',')).join('|');
+
   return (
     <MapContainer
+      key={mapKey}
       center={center}
       zoom={RATH_MAP_ZOOM}
       className="rath-leaflet-map"

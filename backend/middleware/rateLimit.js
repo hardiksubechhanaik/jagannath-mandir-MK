@@ -32,6 +32,13 @@ export const publicWriteLimiter = limiter({
   message: 'Too many submissions. Please try again in a few minutes.',
 });
 
+/** Volunteer GPS — every ~2s during Rath Yatra tracking. */
+export const rathLocationLimiter = limiter({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: 'Too many location updates. Please slow down.',
+});
+
 /** Mela stall counters — separate bucket so rope pulls etc. do not block form submissions. */
 export const analyticsLimiter = limiter({
   windowMs: 60 * 60 * 1000,

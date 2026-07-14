@@ -12,14 +12,15 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-/** Map default centre — Maruti Kunj (Shree Jagannath Mandir) */
-export const RATH_MAP_CENTER = [28.3582, 77.0789];
+/** Map default centre — middle of the current Rath route loop */
+export const RATH_MAP_CENTER = [28.3584, 77.0797];
 export const RATH_MAP_ZOOM = 16;
 
 /** Location is stale after this many ms without an update from the volunteer. */
-export const RATH_LIVE_STALE_MS = 90_000;
+export const RATH_LIVE_STALE_MS = 30_000;
 
-export const RATH_POLL_MS = 10_000;
+/** How often the public map polls the server for the live Rath position. */
+export const RATH_POLL_MS = 2_000;
 
 const MARKER_SIZE = 36;
 const END_MARKER_HEIGHT = 32;
